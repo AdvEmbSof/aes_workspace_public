@@ -1,0 +1,32 @@
+files: ^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/tests)
+exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)$
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  -   id: check-yaml
+      args: [--allow-multiple-documents]
+  -   id: end-of-file-fixer
+  -   id: trailing-whitespace
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: 'v21.1.1'
+  hooks:
+  -   id: clang-format
+- repo: https://github.com/cpplint/cpplint
+  rev: '2.0.2'
+  hooks:
+  -   id: cpplint
+- repo: local
+  hooks:
+  -   id: lizard
+      name: lizard
+      entry: lizard
+      language: system
+      args: [-C 20]
+- repo: local
+  hooks:
+  -   id: cppcheck
+      name: cppcheck
+      require_serial: true
+      entry: cppcheck --enable=all --suppressions-list=cppcheck_suppressions.txt --inline-suppr -i ../zephyr --std=c++14 --error-exitcode=1 -v --checkers-report=cppcheck-report.txt
+      language: system
