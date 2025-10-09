@@ -87,9 +87,6 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
 
   // used for managing tasks info
   TaskManager _taskManager;
-
-  // used for logging cpu usage
-  //  advembsof::CPULogger _cpuLogger;
 };
 
 }  // namespace static_scheduling
