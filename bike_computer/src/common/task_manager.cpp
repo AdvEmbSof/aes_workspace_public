@@ -67,7 +67,7 @@ void TaskManager::simulateComputationTime(TaskType taskType) {
       elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     }
 
-    logPeriodAndExecutionTime(taskType);
+    logTaskTime(taskType);
   } else {
     auto expectedTaskEndTime = _phase +
                                (kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1)) -
@@ -83,7 +83,7 @@ void TaskManager::simulateComputationTime(TaskType taskType) {
   _nbrOfCalls[taskIndex]++;
 }
 
-void TaskManager::logPeriodAndExecutionTime(TaskType taskType) {
+void TaskManager::logTaskTime(TaskType taskType) {
   uint8_t taskIndex = (uint8_t)taskType;
 #if CONFIG_TEST == 1
   __ASSERT(taskIndex < kNbrOfTaskTypes, "Invalid task index %d", taskIndex);

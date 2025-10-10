@@ -59,7 +59,7 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
 
  private:
   // private methods
-  void logPeriodAndExecutionTime(TaskType taskType);
+  void logTaskTime(TaskType taskType);
   void logDropTask(TaskType taskType);
   bool isWithinExpectedTime(TaskType taskType);
 
