@@ -49,7 +49,6 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
 
   // method called in main() for starting the system
   [[nodiscard]] zpp_lib::ZephyrResult start();
-  [[nodiscard]] zpp_lib::ZephyrResult startTTCE();
 
   // method called for stopping the system
   void stop();
