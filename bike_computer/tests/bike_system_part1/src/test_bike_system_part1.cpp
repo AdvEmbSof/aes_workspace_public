@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file test_bike_system.cpp
+ * @file test_bike_system_part1.cpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
- * @brief Test program for the BikeSystem class
+ * @brief Test program for the BikeSystem class (codelab part 1)
  *
  * @date 2025-07-01
  * @version 1.0.0
