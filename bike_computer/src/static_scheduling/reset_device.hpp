@@ -50,7 +50,6 @@ class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
   void onFallButton1();
 
   // data members
-  // We use two buttons that must be pressed together for reset
   zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> _button1;
   std::chrono::microseconds _pressTime;
 };

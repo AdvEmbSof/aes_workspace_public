@@ -45,15 +45,15 @@ using namespace std::literals;
 static constexpr std::chrono::milliseconds testDuration = 10s;
 
 // test_bike_system_event_queue handler function
-ZTEST(bike_system, test_bike_system_ttce) {
+ZTEST(bike_system_part2, test_bike_system_ttce) {
   // create the BikeSystem instance
   static bike_computer::static_scheduling_with_event::BikeSystem bikeSystem;
 
   // run the bike system in a separate thread
   zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal,
                          "Test BS TTCE");
-  auto res = thread.start(
-      std::bind(&bike_computer::static_scheduling_with_event::BikeSystem::start, &bikeSystem));
+  auto res = thread.start(std::bind(
+      &bike_computer::static_scheduling_with_event::BikeSystem::start, &bikeSystem));
   zassert_true(res, "Could not start thread");
 
   // let the bike system run for the test duration
@@ -64,13 +64,13 @@ ZTEST(bike_system, test_bike_system_ttce) {
 
   // wait for thread to terminate
   zpp_lib::ThisThread::sleep_for(5s);
-  
+
 #ifdef CONFIG_BOARD_QEMU_X86
-    printk("Skipping join on QEMU\n");
+  printk("Skipping join on QEMU\n");
 #else
-    res = thread.join();
-    zassert_true(res, "Could not join thread");
+  res = thread.join();
+  zassert_true(res, "Could not join thread");
 #endif
 }
 
-ZTEST_SUITE(bike_system, NULL, NULL, NULL, NULL, NULL);
+ZTEST_SUITE(bike_system_part2, NULL, NULL, NULL, NULL, NULL);
