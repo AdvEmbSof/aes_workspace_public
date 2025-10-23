@@ -46,8 +46,8 @@ class WaitOnButton {
   void waitForButtonEvent();
   void buttonPressed();
 
-  static constexpr uint8_t kPressedEventFlag = BIT(0);
-  static constexpr uint8_t kStartedEventFlag = BIT(1);
+  static constexpr uint8_t kPressedEvent = BIT(0);
+  static constexpr uint8_t kStartedEvent = BIT(1);
 
   zpp_lib::Thread _thread;
   std::chrono::microseconds _pressedTime;
