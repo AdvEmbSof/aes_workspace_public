@@ -54,9 +54,6 @@ int main(void) {
       return -1;
     }
   
-    // log thread statistics
-    zpp_lib::Utils::logThreadsSummary();
-  
     // wait that the WaitOnButton thread started
     LOG_DBG("Calling wait_started()");
     waitOnButton.wait_started();
@@ -68,7 +65,7 @@ int main(void) {
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
     // waitOnButton.wait_exit();
     // or do busy waiting
-    while (true) {            
+    while (true) {   
     }
   }
 
