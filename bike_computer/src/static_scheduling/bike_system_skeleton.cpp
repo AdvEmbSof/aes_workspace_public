@@ -87,9 +87,6 @@ zpp_lib::ZephyrResult BikeSystem::start() {
 
 void BikeSystem::stop() {
   atomic_set_bit(&_stopFlag, 1);
-  if (gTTCE.isStarted()) {
-    gTTCE.stop();
-  }
 }
 
 zpp_lib::ZephyrResult BikeSystem::initialize() {
