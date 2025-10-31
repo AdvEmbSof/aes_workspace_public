@@ -47,12 +47,16 @@ uint8_t GearDevice::getCurrentGear() {
     if (!hasChanged) {
       if (_button2.read() == zpp_lib::kPolarityPressed) {
         if (_button3.read() == zpp_lib::kPolarityPressed) {
-          _currentGear--;
+          if (_currentGear > bike_computer::kMinGear) {
+            _currentGear--;
+          }
           hasChanged = true;
         }
 
         if (_button4.read() == zpp_lib::kPolarityPressed) {
-          _currentGear++;
+          if (_currentGear < bike_computer::kMaxGear) {
+            _currentGear++;
+          }
           hasChanged = true;
         }
       }
