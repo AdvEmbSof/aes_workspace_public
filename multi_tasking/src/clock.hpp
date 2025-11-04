@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file main.cpp
+ * @file clock.hpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
  * @brief Declaration of the Clock class
@@ -25,6 +25,7 @@
 #pragma once
 
 // stl
+#include <chrono>
 #include <functional>
 
 // zpp_lib
@@ -57,12 +58,12 @@ class Clock {
   void updateCurrentTime();
 
   // type definition used by tickers and queues
-  using TickerFunction = std::function<void()>;
-  using WorkQueueFunction = std::function<void()>;  
+  using TickerFunction    = std::function<void()>;
+  using WorkQueueFunction = std::function<void()>;
   // used for display the current time
   zpp_lib::WorkQueue _displayQueue;
   zpp_lib::Ticker<TickerFunction> _displayTicker;
-  zpp_lib::Work<WorkQueueFunction> _displayWork;  
+  zpp_lib::Work<WorkQueueFunction> _displayWork;
   // used for updating _currentTime
   zpp_lib::WorkQueue _updateQueue;
   zpp_lib::Thread _updateThread;

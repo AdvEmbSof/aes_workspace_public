@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file main.cpp
+ * @file clock.cpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
  * @brief Implementation of the Clock class
@@ -34,14 +34,12 @@ LOG_MODULE_REGISTER(clock, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
-Clock::Clock() : 
-  _displayQueue("CDQueue"), 
-  _displayWork(std::bind(&Clock::displayCurrentTime, this)),
-  _updateQueue("TQueue"), 
-  _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
-  _updateWork(std::bind(&Clock::updateCurrentTime, this)) {
-
-}
+Clock::Clock()
+    : _displayQueue("CDQueue"),
+      _displayWork(std::bind(&Clock::displayCurrentTime, this)),
+      _updateQueue("TQueue"),
+      _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
+      _updateWork(std::bind(&Clock::updateCurrentTime, this)) {}
 
 zpp_lib::ZephyrResult Clock::start() {
   // Start a thread for running the _tickerQueue work queue.
@@ -51,10 +49,10 @@ zpp_lib::ZephyrResult Clock::start() {
     LOG_ERR("Cannot start ticker thread: %d", (int)res.error());
     return res;
   }
-  
+
   // Call the updateFromTicker() method every second (from ISR context)
   TickerFunction updateFromTickerFunction = std::bind(&Clock::updateFromTicker, this);
-  res                           = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
+  res = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
   if (!res) {
     LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
     return res;
@@ -62,7 +60,7 @@ zpp_lib::ZephyrResult Clock::start() {
 
   // Call the displayFromTicker() method every second (from ISR context)
   TickerFunction displayFromTickerFunction = std::bind(&Clock::displayFromTicker, this);
-  res                           = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
+  res = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
   if (!res) {
     LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
     return res;
@@ -70,7 +68,7 @@ zpp_lib::ZephyrResult Clock::start() {
 
   // run the displayQueue from the calling thread
   _displayQueue.run();
-  
+
   // should not get here
   __ASSERT(false, "Should not get here");
 
@@ -78,9 +76,10 @@ zpp_lib::ZephyrResult Clock::start() {
 }
 
 void Clock::displayFromTicker() {
-  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden operations
+  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
+  // operations
   auto res = _displayQueue.call(_displayWork);
-  __ASSERT(res, "Cannot call display on queue: %d", (int) res.error());
+  __ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
 }
 
 void Clock::displayCurrentTime() {
@@ -96,9 +95,10 @@ void Clock::displayCurrentTime() {
 }
 
 void Clock::updateFromTicker() {
-  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden operations
+  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
+  // operations
   auto res = _updateQueue.call(_updateWork);
-  __ASSERT(res, "Cannot call update on queue: %d", (int) res.error());
+  __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }
 
 void Clock::updateCurrentTime() {

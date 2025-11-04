@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file main.cpp
+ * @file wait_on_button.hpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
  * @brief Declaration of the WaitOnButton class

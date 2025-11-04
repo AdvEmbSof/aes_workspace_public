@@ -31,8 +31,9 @@
 #include "zpp_include/utils.hpp"
 
 // local
-#include "wait_on_button.hpp"
 #include "clock_with_mutex.hpp"
+#include "deadlock.hpp"
+#include "wait_on_button.hpp"
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 
@@ -44,6 +45,7 @@ int main(void) {
   // check which button is pressed
   zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> button1;
   zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON2> button2;
+  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON3> button3;
   if (button1.read() == zpp_lib::kPolarityPressed) {
     // log thread statistics
     zpp_lib::Utils::logThreadsSummary();
@@ -74,6 +76,18 @@ int main(void) {
     // create and start a clock
     multi_tasking::Clock clock;
     clock.start();
+  } else if (button3.read() == zpp_lib::kPolarityPressed) {
+    // create a first deadlock instance
+    multi_tasking::Deadlock deadlock0(0, "Thread0");
+    deadlock0.start();
+
+    // create a second deadlock instance
+    multi_tasking::Deadlock deadlock1(1, "Thread1");
+    deadlock1.start();
+
+    // wait for both threads to terminate (will not because of deadlock)
+    deadlock0.wait();
+    deadlock1.wait();
   }
 
   return 0;
