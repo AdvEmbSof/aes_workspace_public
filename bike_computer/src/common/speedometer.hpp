@@ -93,8 +93,6 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   float _totalDistance = 0.0f;
   uint8_t _gearSize    = 1;
 
-  zpp_lib::Thread _thread;
-
 #if CONFIG_TEST == 1
   std::function<void()> _cb;
 #endif  // CONFIG_TEST == 1

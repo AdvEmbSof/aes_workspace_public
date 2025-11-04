@@ -27,11 +27,12 @@
 #include <zephyr/logging/log.h>
 
 // zpp_lib
-#include "zpp_include/utils.hpp"
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/utils.hpp"
 
 // local
 #include "wait_on_button.hpp"
+#include "clock_with_mutex.hpp"
 
 LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
 
@@ -39,12 +40,14 @@ int main(void) {
   using namespace std::literals;
 
   LOG_DBG("Multi-tasking program started");
-  // log thread statistics
-  zpp_lib::Utils::logThreadsSummary();
-  
+
   // check which button is pressed
   zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> button1;
+  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON2> button2;
   if (button1.read() == zpp_lib::kPolarityPressed) {
+    // log thread statistics
+    zpp_lib::Utils::logThreadsSummary();
+
     LOG_DBG("Starting WaitOnButton demo");
     // create the WaitOnButton instance and start it
     multi_tasking::WaitOnButton waitOnButton("ButtonThread");
@@ -53,7 +56,7 @@ int main(void) {
       LOG_ERR("Cannot start waitOnButton: %d", static_cast<int>(res.error()));
       return -1;
     }
-  
+
     // wait that the WaitOnButton thread started
     LOG_DBG("Calling wait_started()");
     waitOnButton.wait_started();
@@ -63,10 +66,14 @@ int main(void) {
     zpp_lib::Utils::logThreadsSummary();
 
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
-    // waitOnButton.wait_exit();
+    waitOnButton.wait_exit();
     // or do busy waiting
-    while (true) {   
+    while (true) {
     }
+  } else if (button2.read() == zpp_lib::kPolarityPressed) {
+    // create and start a clock
+    multi_tasking::Clock clock;
+    clock.start();
   }
 
   return 0;
