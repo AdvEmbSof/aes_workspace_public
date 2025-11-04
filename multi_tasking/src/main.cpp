@@ -35,7 +35,7 @@
 #include "deadlock.hpp"
 #include "wait_on_button.hpp"
 
-LOG_MODULE_REGISTER(main, CONFIG_APP_LOG_LEVEL);
+LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 int main(void) {
   using namespace std::literals;
@@ -73,10 +73,13 @@ int main(void) {
     while (true) {
     }
   } else if (button2.read() == zpp_lib::kPolarityPressed) {
+    LOG_DBG("Starting Clock demo");
     // create and start a clock
     multi_tasking::Clock clock;
     clock.start();
   } else if (button3.read() == zpp_lib::kPolarityPressed) {
+    LOG_DBG("Starting Deadlock demo");
+
     // create a first deadlock instance
     multi_tasking::Deadlock deadlock0(0, "Thread0");
     deadlock0.start();

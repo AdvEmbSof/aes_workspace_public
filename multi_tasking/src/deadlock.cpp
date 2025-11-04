@@ -24,6 +24,11 @@
 
 #include "deadlock.hpp"
 
+// zephyr
+#include <zephyr/logging/log.h>
+
+LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
+
 namespace multi_tasking {
 
 // static data member allocation
@@ -47,22 +52,22 @@ void Deadlock::execute() {
   // enter the first critical section
   auto res = _mutex[_index].lock();
   __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  printk("Thread %d entered critical section %d", _index, _index);
+  LOG_DBG("Thread %d entered critical section %d", _index, _index);
 
   // perform some operations
   zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  printk("Thread %d processing in mutex %d done", _index, _index);
+  LOG_DBG("Thread %d processing in mutex %d done", _index, _index);
 
   // enter the second critical section
   int secondIndex = (_index + 1) % kNbrOfMutexes;
-  printk("Thread %d trying to enter critical section %d", _index, secondIndex);
+  LOG_DBG("Thread %d trying to enter critical section %d", _index, secondIndex);
   res = _mutex[secondIndex].lock();
   __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  printk("Thread %d entered critical section %d", _index, secondIndex);
+  LOG_DBG("Thread %d entered critical section %d", _index, secondIndex);
 
   // perform some operations
   zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  printk("Thread %d processing in mutex %d and %d done", _index, _index, secondIndex);
+  LOG_DBG("Thread %d processing in mutex %d and %d done", _index, _index, secondIndex);
 
   // exit the second critical section
   res = _mutex[secondIndex].unlock();
@@ -70,7 +75,7 @@ void Deadlock::execute() {
 
   // perform some operations
   zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  printk("Thread %d processing in mutex %d done", _index, _index);
+  LOG_DBG("Thread %d processing in mutex %d done", _index, _index);
 
   // exit the first critical section
   res = _mutex[_index].unlock();

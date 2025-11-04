@@ -29,7 +29,7 @@
 // zpp_lib
 #include "zpp_include/time.hpp"
 
-LOG_MODULE_REGISTER(wait_on_button, CONFIG_APP_LOG_LEVEL);
+LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
