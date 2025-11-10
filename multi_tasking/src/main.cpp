@@ -31,11 +31,49 @@
 #include "zpp_include/utils.hpp"
 
 // local
+#include "buffer_solution.hpp"
 #include "clock_with_mutex.hpp"
+#include "consumer.hpp"
 #include "deadlock.hpp"
+#include "producer.hpp"
 #include "wait_on_button.hpp"
 
 LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
+
+class RandomIntGenerator {
+ public:
+  static constexpr uint8_t kMaxRandomValue = 20;
+
+  static uint32_t produceNextValue() { return sys_rand32_get() % kMaxRandomValue; }
+};
+
+class RandomDoubleGenerator {
+ public:
+  static constexpr double randomValues[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+  static double produceNextValue() {
+    return randomValues[sys_rand32_get() %
+                        (sizeof(randomValues) / sizeof(randomValues[0]))];
+  }
+};
+
+struct Rect {
+  int32_t x;
+  int32_t y;
+};
+
+std::ostream& operator<<(std::ostream& os, const Rect& rect) {
+  os << "(" << rect.y << ", " << rect.x << ")";
+  return os;
+}
+
+class RandomRectGenerator {
+ public:
+  static constexpr Rect randomValues[] = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+  static Rect produceNextValue() {
+    return randomValues[sys_rand32_get() %
+                        (sizeof(randomValues) / sizeof(randomValues[0]))];
+  }
+};
 
 int main(void) {
   using namespace std::literals;
@@ -68,7 +106,7 @@ int main(void) {
     zpp_lib::Utils::logThreadsSummary();
 
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
-    waitOnButton.wait_exit();
+    // waitOnButton.wait_exit();
     // or do busy waiting
     while (true) {
     }
@@ -91,6 +129,21 @@ int main(void) {
     // wait for both threads to terminate (will not because of deadlock)
     deadlock0.wait();
     deadlock1.wait();
+  } else {
+    LOG_DBG("Starting Consumer/Producer demo");
+
+    using BufferType     = Rect;
+    using ValueGenerator = RandomRectGenerator;
+    multi_tasking::Buffer<BufferType> buffer;
+    multi_tasking::Producer<BufferType, ValueGenerator> producer(buffer);
+    multi_tasking::Consumer<BufferType> consumer(buffer);
+
+    producer.start();
+    consumer.start();
+
+    // wait for threads to terminate (will not)
+    producer.wait();
+    consumer.wait();
   }
 
   return 0;
