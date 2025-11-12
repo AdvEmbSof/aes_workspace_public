@@ -62,15 +62,8 @@ ZTEST(bike_system_part2, test_bike_system_ttce) {
   // stop the bike system
   bikeSystem.stop();
 
-  // wait for thread to terminate
-  zpp_lib::ThisThread::sleep_for(5s);
-
-#ifdef CONFIG_BOARD_QEMU_X86
-  printk("Skipping join on QEMU\n");
-#else
   res = thread.join();
   zassert_true(res, "Could not join thread");
-#endif
 }
 
 ZTEST_SUITE(bike_system_part2, NULL, NULL, NULL, NULL, NULL);
