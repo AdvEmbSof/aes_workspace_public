@@ -68,20 +68,26 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
   }
 
   void stop() {
+    if (!_isStarted) {
+      return;
+    }
     // first stop the time
     k_timer_stop(&_timer);
     // drain the work queue
-    auto rc = k_work_queue_drain(&_workQueue, true);
-    if (rc < 0) {
-      __ASSERT(false, "k_work_queue_drain failed with code %d", rc);
+    auto ret = k_work_queue_drain(&_workQueue, true);
+    if (ret < 0) {
+      __ASSERT(false, "k_work_queue_drain failed with code %d", ret);
     }
-    rc = k_work_queue_stop(&_workQueue, K_SECONDS(1));
-    if (rc != 0) {
-      __ASSERT(false, "k_work_queue_stop failed with code %d", rc);
+    ret = k_work_queue_stop(&_workQueue, K_SECONDS(1));
+    if (ret != 0) {
+      __ASSERT(false, "k_work_queue_stop failed with code %d", ret);
     }
+    _isStarted = false;
   }
 
   bool isStarted() { return _isStarted; }
+
+  void addInitialTask(F f) { _initialTask = f; }
 
   [[nodiscard]] zpp_lib::ZephyrResult addTask(uint16_t minorCycleIndex, F f) {
     zpp_lib::ZephyrResult res;
@@ -129,6 +135,12 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     // cppcheck-suppress dangerousTypeCast
     TTCE* pTTCE = (TTCE*)item;  // NOLINT(readability/casting)
 
+    // if an initial task is set, execute it and result it
+    if (pTTCE->_initialTask != nullptr) {
+      pTTCE->_initialTask();
+      pTTCE->_initialTask = nullptr;
+    }
+
     // execute tasks based on schedule table
     for (uint16_t taskIndex = 0; taskIndex < MaxMinorCycleSize; taskIndex++) {
       if (pTTCE->_tasks[pTTCE->_minorCycleIndex][taskIndex] != nullptr) {
@@ -147,6 +159,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
   uint16_t _minorCycleIndex                          = 0;
   F _tasks[NbrOfMinorCycles][MaxMinorCycleSize]      = {nullptr};
   uint16_t _nbrOfTasksInMinorCycle[NbrOfMinorCycles] = {0};
+  F _initialTask                                     = nullptr;
 };
 
 }  // namespace bike_computer

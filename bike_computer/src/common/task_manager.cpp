@@ -34,6 +34,9 @@
 // std
 #include <chrono>
 
+// zpp_lib
+#include "zpp_include/this_thread.hpp"
+
 LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 namespace bike_computer {
@@ -59,42 +62,42 @@ void TaskManager::registerTaskStart(TaskType taskType) {
   _dephasedTaskStartTime[taskIndex] = _taskStartTime[taskIndex] - _phase;
 }
 
-void TaskManager::simulateComputationTime(TaskType taskType) {
+void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   uint8_t taskIndex = (uint8_t)taskType;
-  if (isWithinExpectedTime(taskType)) {
-    auto elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+  auto elapsedTime  = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+  if (allowSleep) {
+    zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime -
+                                   kAllowedDelta);
+    elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+    // make sure that we slept long enough
     while (elapsedTime < getTaskComputationTime(taskType)) {
       elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     }
-
-    logTaskTime(taskType);
   } else {
-    auto expectedTaskEndTime = _phase +
-                               (kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1)) -
-                               kTaskOverheadTime;
-
-    auto currentTime = zpp_lib::Time::getUpTime();
-    while (currentTime < expectedTaskEndTime) {
-      currentTime = zpp_lib::Time::getUpTime();
+    while (elapsedTime < getTaskComputationTime(taskType)) {
+      elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     }
-
-    logDropTask(taskType);
   }
+#if CONFIG_TEST == 1
+  checkTaskTime(taskType);
+#endif
   _nbrOfCalls[taskIndex]++;
 }
 
-void TaskManager::logTaskTime(TaskType taskType) {
-  uint8_t taskIndex = (uint8_t)taskType;
 #if CONFIG_TEST == 1
+void TaskManager::checkTaskTime(TaskType taskType) {
+  uint8_t taskIndex = (uint8_t)taskType;
   __ASSERT(taskIndex < kNbrOfTaskTypes, "Invalid task index %d", taskIndex);
   std::chrono::microseconds taskComputationTime =
       zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
   zassert_true(taskComputationTime <= kTaskComputationTimes[taskIndex] + kAllowedDelta,
-               "Task %d computation time is too large at call #%d (%lld vs %lld us)",
+               "Task %d computation time is too large at call #%d (%lld vs %lld us, "
+               "allowed delta %lld us)",
                taskIndex,
                _nbrOfCalls[taskIndex],
                taskComputationTime.count(),
-               kTaskComputationTimes[taskIndex].count());
+               kTaskComputationTimes[taskIndex].count(),
+               kAllowedDelta.count());
 
   // The minimum task start time is the period x nbrOfCalls
   // The minimum task start time is the period x (nbrOfCalls + 1) - task computation time
@@ -103,57 +106,22 @@ void TaskManager::logTaskTime(TaskType taskType) {
   std::chrono::microseconds maxDephasedTaskStartTime =
       kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1) -
       kTaskComputationTimes[taskIndex];
-  LOG_DBG("Task %s: start time %lld (bounds %lld - %lld), computation time %lld",
-          kTaskDescriptors[taskIndex],
-          _dephasedTaskStartTime[taskIndex].count(),
-          minDephasedTaskStartTime.count(),
-          maxDephasedTaskStartTime.count(),
-          taskComputationTime.count());
   zassert_true(
       _dephasedTaskStartTime[taskIndex] >= minDephasedTaskStartTime - kAllowedDelta,
-      "Task %s started too early at call #%d (%lld vs %lld us)",
+      "Task %s started too early at call #%d (%lld vs %lld us, allowedDelta %lld us)",
       kTaskDescriptors[taskIndex],
       _nbrOfCalls[taskIndex],
       _dephasedTaskStartTime[taskIndex].count(),
-      minDephasedTaskStartTime.count());
+      minDephasedTaskStartTime.count(),
+      kAllowedDelta.count());
   zassert_true(
       _dephasedTaskStartTime[taskIndex] <= maxDephasedTaskStartTime + kAllowedDelta,
-      "Task %s started too late at call #%d (%lld vs %lld us)",
+      "Task %s started too late at call #%d (%lld vs %lld us, allowedDelta %lld us)",
       kTaskDescriptors[taskIndex],
       _nbrOfCalls[taskIndex],
       _dephasedTaskStartTime[taskIndex].count(),
-      maxDephasedTaskStartTime.count());
-#else
-  std::chrono::microseconds taskComputationTime =
-      zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
-  std::chrono::microseconds minDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * _nbrOfCalls[taskIndex];
-  std::chrono::microseconds maxDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1) -
-      kTaskComputationTimes[taskIndex];
-  sys_trace_named_event("Task end", taskIndex, 0);
-  LOG_DBG("Task %s: start time %lld (bounds %lld - %lld), computation time %lld",
-          kTaskDescriptors[taskIndex],
-          _dephasedTaskStartTime[taskIndex].count(),
-          minDephasedTaskStartTime.count(),
-          maxDephasedTaskStartTime.count(),
-          taskComputationTime.count());
-#endif  // CONFIG_TEST == 1
-}
-
-void TaskManager::logDropTask(TaskType taskType) {
-  uint8_t taskIndex = (uint8_t)taskType;
-  std::chrono::microseconds minDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * _nbrOfCalls[taskIndex];
-  std::chrono::microseconds maxDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1) -
-      kTaskComputationTimes[taskIndex];
-  LOG_DBG("Task %s DROPPED: start time %lld (bounds %lld - %lld), computation time %lld",
-          kTaskDescriptors[taskIndex],
-          _dephasedTaskStartTime[taskIndex].count(),
-          minDephasedTaskStartTime.count(),
-          maxDephasedTaskStartTime.count(),
-          kTaskComputationTimes[taskIndex].count());
+      maxDephasedTaskStartTime.count(),
+      kAllowedDelta.count());
 }
 
 bool TaskManager::isWithinExpectedTime(TaskType taskType) {
@@ -162,5 +130,6 @@ bool TaskManager::isWithinExpectedTime(TaskType taskType) {
   return (_dephasedTaskStartTime[taskIndex] + kTaskComputationTimes[taskIndex]) <
          expectedTaskEndTime;
 }
+#endif  // CONFIG_TEST == 1
 
 }  // namespace bike_computer

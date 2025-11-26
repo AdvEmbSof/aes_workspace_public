@@ -67,13 +67,14 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   float getWheelCircumference() const;
   float getTraySize() const;
   std::chrono::milliseconds getCurrentPedalRotationTime() const;
-  void setOnResetCallback(std::function<void()> cb);
+  using CallbackFunction = std::function<void()>;
+  void setOnResetCallback(CallbackFunction cb);
 #endif  // CONFIG_TEST == 1
 
  private:
   // private methods
   void computeSpeed();
-  void computeDistance();
+  float computeDistance();
 
   // definition of task period time
   static constexpr std::chrono::milliseconds kTaskPeriod = 400ms;

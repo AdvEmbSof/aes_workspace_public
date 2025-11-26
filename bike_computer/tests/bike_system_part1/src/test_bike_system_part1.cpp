@@ -42,7 +42,7 @@ LOG_MODULE_REGISTER(bike_system, CONFIG_APP_LOG_LEVEL);
 // for ms or s literals
 using namespace std::literals;
 
-static constexpr std::chrono::milliseconds testDuration = 10s;
+static constexpr std::chrono::milliseconds testDuration = 30s;
 
 // test_bike_system_static handler function
 ZTEST(bike_system_part1, test_bike_system_static) {

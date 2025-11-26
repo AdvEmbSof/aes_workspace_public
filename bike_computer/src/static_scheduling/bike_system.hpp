@@ -24,6 +24,9 @@
 
 #pragma once
 
+// stl
+#include <atomic>
+
 // local
 #include "gear_device.hpp"
 #include "pedal_device.hpp"
@@ -63,8 +66,10 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
   void displayTask1();
   void displayTask2();
 
+  // flag stating whether sleep is allows when simulating computation times
+  static constexpr bool kAllowSleep = true;
   // stop flag, used for stopping the super-loop (set in stop())
-  atomic_t _stopFlag = ATOMIC_INIT(0x00);
+  volatile std::atomic<bool> _stopFlag = false;
   // data member that represents the device for manipulating the gear
   GearDevice _gearDevice;
   uint8_t _currentGear     = bike_computer::kMinGear;

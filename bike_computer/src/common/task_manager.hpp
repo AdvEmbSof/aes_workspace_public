@@ -51,31 +51,32 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
   TaskManager() = default;
   void initializePhase();
   void registerTaskStart(TaskType taskType);
-  void simulateComputationTime(TaskType taskType);
+  void simulateComputationTime(TaskType taskType, bool allowSleep);
   static inline std::chrono::microseconds getTaskComputationTime(TaskType taskType) {
     uint8_t taskIndex = (uint8_t)taskType;
     return kTaskComputationTimes[taskIndex] - kTaskOverheadTime;
   }
 
  private:
-  // private methods
-  void logTaskTime(TaskType taskType);
-  void logDropTask(TaskType taskType);
+  // private
+#if CONFIG_TEST == 1
+  void checkTaskTime(TaskType taskType);
   bool isWithinExpectedTime(TaskType taskType);
+#endif
 
   // constants
   static const char* kTaskDescriptors[kNbrOfTaskTypes];
-  // kTaskOverheadTime accounts for additional time needed for logging between tasks
-#if CONFIG_LOG == 1
-  static constexpr std::chrono::microseconds kTaskOverheadTime = 13000us;
-#else
-  static constexpr std::chrono::microseconds kTaskOverheadTime = 5us;
-#endif
+  // kTaskOverheadTime accounts for additional time needed for switching between tasks
+  static constexpr std::chrono::microseconds kTaskOverheadTime                      = 1us;
   static constexpr std::chrono::microseconds kTaskComputationTimes[kNbrOfTaskTypes] = {
       100000us, 200000us, 100000us, 100000us, 200000us, 100000us};
   static constexpr std::chrono::microseconds kTaskPeriods[kNbrOfTaskTypes] = {
       800000us, 400000us, 1600000us, 800000us, 1600000us, 1600000us};
-  static constexpr std::chrono::microseconds kAllowedDelta = 1000us;
+
+  // set the allowed delta to be 100 ticks (100'000'000 over the number of ticks per sec)
+  static constexpr std::chrono::microseconds kAllowedDelta =
+      std::chrono::microseconds(100000000 / CONFIG_SYS_CLOCK_TICKS_PER_SEC);
+
   // data members
   std::chrono::microseconds _taskStartTime[kNbrOfTaskTypes]         = {0ms};
   std::chrono::microseconds _dephasedTaskStartTime[kNbrOfTaskTypes] = {0ms};
