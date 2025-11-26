@@ -56,7 +56,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
   void start() {
     // first start the timer
     k_timeout_t period = zpp_lib::milliseconds_to_ticks(_minorCycle);
-    k_timer_start(&_timer, K_SECONDS(0), period);
+    k_timer_start(&_timer, period, period);
 
     // then run the work queue
     struct k_work_queue_config cfg = {
