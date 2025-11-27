@@ -71,13 +71,13 @@ zpp_lib::ZephyrResult BikeSystem::start() {
         std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     LOG_DBG("Repeating cycle time is %" PRIu64 " milliseconds", cycle.count());
 
-    if (atomic_test_bit(&_stopFlag, 1)) {
+    if (_stopFlag.load()) {
       break;
     }
 
     // fix the schedule drift to pass the tests
     // this demonstrates that static scheduling is very sensitive to overload
-    if (iteration % iterationsForFixingDrift == 0) {
+    if (iteration++ % iterationsForFixingDrift == 0) {
       _taskManager.initializePhase();
     }
   }
@@ -86,7 +86,7 @@ zpp_lib::ZephyrResult BikeSystem::start() {
 }
 
 void BikeSystem::stop() {
-  atomic_set_bit(&_stopFlag, 1);
+  _stopFlag.store(true);
 }
 
 zpp_lib::ZephyrResult BikeSystem::initialize() {
@@ -114,7 +114,7 @@ void BikeSystem::gearTask() {
   _currentGear     = _gearDevice.getCurrentGear();
   _currentGearSize = _gearDevice.getCurrentGearSize();
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::GearTaskType);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::GearTaskType, kAllowSleep);
 }
 
 void BikeSystem::speedDistanceTask() {
@@ -128,7 +128,7 @@ void BikeSystem::speedDistanceTask() {
   _currentSpeed     = _speedometer.getCurrentSpeed();
   _traveledDistance = _speedometer.getDistance();
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::SpeedTaskType);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::SpeedTaskType, kAllowSleep);
 }
 
 void BikeSystem::temperatureTask() {
@@ -137,7 +137,8 @@ void BikeSystem::temperatureTask() {
   // TO DO: read temperature from _sensorDevice
   
   // simulate task computation by waiting for the required task computation time
-  _taskManager.simulateComputationTime(TaskManager::TaskType::TemperatureTaskType);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::TemperatureTaskType,
+                                       kAllowSleep);
 }
 
 void BikeSystem::resetTask() {
@@ -150,7 +151,7 @@ void BikeSystem::resetTask() {
     _speedometer.reset();
   }
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::ResetTaskType);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::ResetTaskType, kAllowSleep);
 }
 
 void BikeSystem::displayTask1() {
@@ -158,7 +159,8 @@ void BikeSystem::displayTask1() {
 
   // TODO: update gear, speed and distance displayed on screen
   
-  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask1Type);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask1Type,
+                                       kAllowSleep);
 }
 
 void BikeSystem::displayTask2() {
@@ -166,7 +168,8 @@ void BikeSystem::displayTask2() {
 
   // TODO: update temperature on screen
   
-  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask2Type);
+  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask2Type,
+                                       kAllowSleep);
 }
 
 }  // namespace static_scheduling
