@@ -66,10 +66,12 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   uint8_t taskIndex = (uint8_t)taskType;
   auto elapsedTime  = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
   if (allowSleep) {
-    zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime -
-                                   kAllowedDelta);
-    elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+    // make sure that we still have to sleep for a while
+    if (getTaskComputationTime(taskType) - elapsedTime > kAllowedDelta) {
+      zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime - kAllowedDelta);
+    }    
     // make sure that we slept long enough
+    elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     while (elapsedTime < getTaskComputationTime(taskType)) {
       elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     }
