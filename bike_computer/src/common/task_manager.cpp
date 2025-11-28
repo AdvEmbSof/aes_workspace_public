@@ -68,8 +68,9 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   if (allowSleep) {
     // make sure that we still have to sleep for a while
     if (getTaskComputationTime(taskType) - elapsedTime > kAllowedDelta) {
-      zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime - kAllowedDelta);
-    }    
+      zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime -
+                                     kAllowedDelta);
+    }
     // make sure that we slept long enough
     elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
     while (elapsedTime < getTaskComputationTime(taskType)) {
@@ -126,6 +127,9 @@ void TaskManager::checkTaskTime(TaskType taskType) {
       kAllowedDelta.count());
 }
 
+// This method is provided for convenience.
+// Suppress the exception if you use it
+// cppcheck-suppress unusedFunction
 bool TaskManager::isWithinExpectedTime(TaskType taskType) {
   uint8_t taskIndex        = (uint8_t)taskType;
   auto expectedTaskEndTime = kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1);
