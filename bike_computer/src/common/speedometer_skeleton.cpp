@@ -71,8 +71,7 @@ float Speedometer::getCurrentSpeed() const { return _currentSpeed; }
 
 float Speedometer::getDistance() {
   // make sure to update the distance traveled
-  computeDistance();
-  return _totalDistance;
+  return computeDistance();
 }
 
 void Speedometer::reset() {
@@ -111,7 +110,7 @@ void Speedometer::computeSpeed() {
   // TODO
 }
 
-void Speedometer::computeDistance() {
+float Speedometer::computeDistance() {
   // For computing the speed given a rear gear (braquet), one must divide the size of
   // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
   // the result by the circumference of the wheel. Example: tray = 50, rear gear = 15.
@@ -121,6 +120,7 @@ void Speedometer::computeDistance() {
   // distance traveled.
 
   // TODO
+  return 0.0f;
 }
 
 }  // namespace bike_computer
