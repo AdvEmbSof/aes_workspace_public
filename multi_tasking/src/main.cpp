@@ -22,9 +22,13 @@
  * @version 1.0.0
  ***************************************************************************/
 
+// std
+#include <ostream>
+
 // zephyr
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/random/random.h>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
@@ -106,7 +110,7 @@ int main(void) {
     zpp_lib::Utils::logThreadsSummary();
 
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
-    // waitOnButton.wait_exit();
+    waitOnButton.wait_exit();
     // or do busy waiting
     while (true) {
     }

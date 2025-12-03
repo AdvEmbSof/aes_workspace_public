@@ -36,10 +36,10 @@ namespace multi_tasking {
 
 Clock::Clock()
     : _displayQueue("CDQueue"),
-      _displayWork(std::bind(&Clock::displayCurrentTime, this)),
+      _displayWork(this, &Clock::displayCurrentTime),
       _updateQueue("TQueue"),
       _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
-      _updateWork(std::bind(&Clock::updateCurrentTime, this)) {}
+      _updateWork(this, &Clock::updateCurrentTime) {}
 
 zpp_lib::ZephyrResult Clock::start() {
   // Start a thread for running the _tickerQueue work queue.
@@ -106,6 +106,7 @@ void Clock::displayCurrentTime() {
 void Clock::updateFromTicker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
   // operations
+  //updateCurrentTime();
   auto res = _updateQueue.call(_updateWork);
   __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }

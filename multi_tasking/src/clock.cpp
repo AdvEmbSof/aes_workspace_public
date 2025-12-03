@@ -34,14 +34,14 @@ LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
-Clock::Clock()
+ClockUnsafe::ClockUnsafe()
     : _displayQueue("CDQueue"),
-      _displayWork(std::bind(&Clock::displayCurrentTime, this)),
+      _displayWork(std::bind(&ClockUnsafe::displayCurrentTime, this)),
       _updateQueue("TQueue"),
       _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
-      _updateWork(std::bind(&Clock::updateCurrentTime, this)) {}
+      _updateWork(std::bind(&ClockUnsafe::updateCurrentTime, this)) {}
 
-zpp_lib::ZephyrResult Clock::start() {
+zpp_lib::ZephyrResult ClockUnsafe::start() {
   // Start a thread for running the _tickerQueue work queue.
   // Events are dispatched to the queue in the tickerUpdate() method called by the ticker.
   auto res = _updateThread.start(std::bind(&zpp_lib::WorkQueue::run, &_updateQueue));
@@ -51,7 +51,7 @@ zpp_lib::ZephyrResult Clock::start() {
   }
 
   // Call the updateFromTicker() method every second (from ISR context)
-  TickerFunction updateFromTickerFunction = std::bind(&Clock::updateFromTicker, this);
+  TickerFunction updateFromTickerFunction = std::bind(&ClockUnsafe::updateFromTicker, this);
   res = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
   if (!res) {
     LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
@@ -59,7 +59,7 @@ zpp_lib::ZephyrResult Clock::start() {
   }
 
   // Call the displayFromTicker() method every second (from ISR context)
-  TickerFunction displayFromTickerFunction = std::bind(&Clock::displayFromTicker, this);
+  TickerFunction displayFromTickerFunction = std::bind(&ClockUnsafe::displayFromTicker, this);
   res = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
   if (!res) {
     LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
@@ -75,33 +75,33 @@ zpp_lib::ZephyrResult Clock::start() {
   return res;
 }
 
-void Clock::displayFromTicker() {
+void ClockUnsafe::displayFromTicker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
   // operations
   auto res = _displayQueue.call(_displayWork);
   __ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
 }
 
-void Clock::displayCurrentTime() {
+void ClockUnsafe::displayCurrentTime() {
   DateTimeType dt = {0};
 
   dt.day  = _currentTime.day;
   dt.hour = _currentTime.hour;
-
+  zpp_lib::ThisThread::busyWait(1s);
   dt.minute = _currentTime.minute;
   dt.second = _currentTime.second;
 
   printk("Day %u Hour %u min %u sec %u\n", dt.day, dt.hour, dt.minute, dt.second);
 }
 
-void Clock::updateFromTicker() {
+void ClockUnsafe::updateFromTicker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
   // operations
   auto res = _updateQueue.call(_updateWork);
   __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }
 
-void Clock::updateCurrentTime() {
+void ClockUnsafe::updateCurrentTime() {
   _currentTime.second +=
       std::chrono::duration_cast<std::chrono::seconds>(clockUpdateTimeout).count();
 

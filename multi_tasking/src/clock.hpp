@@ -37,7 +37,7 @@ namespace multi_tasking {
 
 using namespace std::literals;
 
-class Clock {
+class ClockUnsafe {
  public:
   struct DateTimeType {
     uint32_t day;
@@ -46,7 +46,7 @@ class Clock {
     uint32_t second;
   };
 
-  Clock();
+  ClockUnsafe();
 
   // method called for starting the clock demo
   zpp_lib::ZephyrResult start();
@@ -63,12 +63,12 @@ class Clock {
   // used for display the current time
   zpp_lib::WorkQueue _displayQueue;
   zpp_lib::Ticker<TickerFunction> _displayTicker;
-  zpp_lib::Work<WorkQueueFunction> _displayWork;
+  zpp_lib::Work _displayWork;
   // used for updating _currentTime
   zpp_lib::WorkQueue _updateQueue;
   zpp_lib::Thread _updateThread;
   zpp_lib::Ticker<TickerFunction> _updateTicker;
-  zpp_lib::Work<WorkQueueFunction> _updateWork;
+  zpp_lib::Work _updateWork;
   DateTimeType _currentTime{.day = 0, .hour = 10, .minute = 59, .second = 58};
   static constexpr std::chrono::milliseconds clockUpdateTimeout  = 1000ms;
   static constexpr std::chrono::milliseconds clockDisplayTimeout = 1000ms;
