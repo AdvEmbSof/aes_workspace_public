@@ -106,7 +106,7 @@ void Clock::displayCurrentTime() {
 void Clock::updateFromTicker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
   // operations
-  //updateCurrentTime();
+  // updateCurrentTime();
   auto res = _updateQueue.call(_updateWork);
   __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }

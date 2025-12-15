@@ -51,7 +51,8 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
   }
 
   // Call the updateFromTicker() method every second (from ISR context)
-  TickerFunction updateFromTickerFunction = std::bind(&ClockUnsafe::updateFromTicker, this);
+  TickerFunction updateFromTickerFunction =
+      std::bind(&ClockUnsafe::updateFromTicker, this);
   res = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
   if (!res) {
     LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
@@ -59,7 +60,8 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
   }
 
   // Call the displayFromTicker() method every second (from ISR context)
-  TickerFunction displayFromTickerFunction = std::bind(&ClockUnsafe::displayFromTicker, this);
+  TickerFunction displayFromTickerFunction =
+      std::bind(&ClockUnsafe::displayFromTicker, this);
   res = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
   if (!res) {
     LOG_ERR("Cannot attach display ticker: %d", (int)res.error());

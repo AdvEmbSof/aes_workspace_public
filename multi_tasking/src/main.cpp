@@ -22,13 +22,13 @@
  * @version 1.0.0
  ***************************************************************************/
 
-// std
-#include <ostream>
-
 // zephyr
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/random/random.h>
+
+// std
+#include <ostream>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
