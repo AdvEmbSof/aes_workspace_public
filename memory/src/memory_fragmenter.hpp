@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file memory_leak.hpp
+ * @file memory_fragmenter.hpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
- * @brief Declaration/Implementation of the MemoryLeak class
+ * @brief Declaration/Implementation of the MemoryFragmenter class
  *
  * @date 2025-07-01
  * @version 1.0.0
@@ -65,7 +65,7 @@ class MemoryFragmenter {
              " at address 0x%08" PRIx32 "\n",
              blockIndex,
              blockSize,
-             static_cast<uint32_t>(pBlockArray[blockIndex]));
+             static_cast<uint32_t>(*pBlockArray[blockIndex]));
       // copy to member variable to prevent them from being optimized away
       for (uint32_t index = 0; index < kArraySize; index++) {
         _doubleArray[index] += static_cast<double>(pBlockArray[blockIndex][index]);

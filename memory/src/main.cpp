@@ -34,6 +34,7 @@
 // local
 #include "memory_fragmenter.hpp"
 #include "memory_leak.hpp"
+#include "stack_overflow.hpp"
 
 LOG_MODULE_REGISTER(memory_demo, CONFIG_APP_LOG_LEVEL);
 
@@ -59,8 +60,22 @@ int main(void) {
       zpp_lib::ThisThread::sleep_for(1s);
     }
   } else if (button2.read() == zpp_lib::kPolarityPressed) {
+    LOG_DBG("Starting MemoryFragmenter demo");
+
     memory_demo::MemoryFragmenter memoryFragmenter;
     memoryFragmenter.fragmentMemory();
+  } else if (button3.read() == zpp_lib::kPolarityPressed) {
+    LOG_DBG("Starting StackOverflow demo");
+
+    memory_demo::StackOverflow stackOverflow;
+    static constexpr uint8_t kNbrOfIterations = 20;
+    for (int i = 0; i < kNbrOfIterations; i++) {
+      stackOverflow.allocateOnStack();
+
+      zpp_lib::Utils::logThreadsSummary();
+
+      zpp_lib::ThisThread::sleep_for(1s);
+    }
   }
 
   return 0;
