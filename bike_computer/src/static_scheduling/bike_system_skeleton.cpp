@@ -57,8 +57,6 @@ zpp_lib::ZephyrResult BikeSystem::start() {
   // initialize the task manager phase
   _taskManager.initializePhase();
 
-  uint32_t iteration                                 = 0;
-  static constexpr uint32_t iterationsForFixingDrift = 10;
   while (true) {
     auto startTime = zpp_lib::Time::getUpTime();
 
@@ -71,14 +69,9 @@ zpp_lib::ZephyrResult BikeSystem::start() {
         std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
     LOG_DBG("Repeating cycle time is %" PRIu64 " milliseconds", cycle.count());
 
+    // check whether stop has been requested (call to BikeSystem::stop())
     if (_stopFlag.load()) {
       break;
-    }
-
-    // fix the schedule drift to pass the tests
-    // this demonstrates that static scheduling is very sensitive to overload
-    if (iteration++ % iterationsForFixingDrift == 0) {
-      _taskManager.initializePhase();
     }
   }
 
