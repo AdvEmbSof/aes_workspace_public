@@ -279,8 +279,8 @@ ZTEST(speedometer, test_reset) {
   const auto gearSize           = speedometer.getGearSize();
   const auto pedalRotationTime  = speedometer.getCurrentPedalRotationTime();
 
-  // travel for 1 second
-  const auto travelTime = 1000ms;
+  // travel for 5 seconds
+  const auto travelTime = 5000ms;
   zpp_lib::ThisThread::sleep_for(travelTime);
 
   // check the expected distaance traveled
@@ -305,6 +305,23 @@ ZTEST(speedometer, test_reset) {
          0.0,
          static_cast<double>(traveledDistance));
   zassert_within(0.0f, traveledDistance, kAllowedDistanceDelta);
+
+  // travel again for 5 seconds
+  zpp_lib::ThisThread::sleep_for(travelTime);
+
+  // reset the speedometer without getting the distance
+  speedometer.reset();
+
+  // travel again for 5 seconds
+  zpp_lib::ThisThread::sleep_for(travelTime);
+
+  // get the distance traveled
+  traveledDistance = speedometer.getDistance();
+
+  printk("  Expected distance is %f, current distance is %f\n",
+         static_cast<double>(expectedDistance),
+         static_cast<double>(traveledDistance));
+  zassert_within(traveledDistance, expectedDistance, kAllowedDistanceDelta);
 }
 
 ZTEST_SUITE(speedometer, NULL, NULL, NULL, NULL, NULL);
