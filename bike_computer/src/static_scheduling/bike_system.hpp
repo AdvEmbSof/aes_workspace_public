@@ -67,7 +67,7 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
   void displayTask2();
 
   // flag stating whether sleep is allows when simulating computation times
-  static constexpr bool kAllowSleep = true;
+  static constexpr bool kAllowSleep = false;
   // stop flag, used for stopping the super-loop (set in stop())
   volatile std::atomic<bool> _stopFlag = false;
   // data member that represents the device for manipulating the gear

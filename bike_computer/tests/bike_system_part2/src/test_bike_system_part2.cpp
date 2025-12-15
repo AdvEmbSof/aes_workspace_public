@@ -42,7 +42,12 @@ LOG_MODULE_REGISTER(bike_system, CONFIG_APP_LOG_LEVEL);
 // for ms or s literals
 using namespace std::literals;
 
-static constexpr std::chrono::milliseconds testDuration = 30s;
+// Different modes
+// nrf5340, busy: 48s
+// nrf5340, sleep: 48s
+// qemu_x86, busy: tested up to 120s
+// qemy_x86, sleep: tested up to 120s
+static constexpr std::chrono::milliseconds testDuration = 48s;
 
 // test_bike_system_event_queue handler function
 ZTEST(bike_system_part2, test_bike_system_ttce) {
