@@ -45,7 +45,7 @@ using namespace std::literals;
 // Different modes
 // nrf5340, busy: 22s
 // qemu_x86, busy: tested up to 120s
-static constexpr std::chrono::milliseconds testDuration = 22s;
+static constexpr std::chrono::milliseconds testDuration = 30s;
 
 // test_bike_system_static handler function
 ZTEST(bike_system_part1, test_bike_system_static) {
