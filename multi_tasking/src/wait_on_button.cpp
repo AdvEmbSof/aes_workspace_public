@@ -50,7 +50,7 @@ zpp_lib::ZephyrResult WaitOnButton::start() {
   return res;
 }
 
-void WaitOnButton::wait_started() { _events.wait_any(kStartedEvent); }
+void WaitOnButton::wait_started() { _event.wait_any(kStartedEvent); }
 
 void WaitOnButton::wait_exit() {
   auto res = _thread.join();
@@ -61,10 +61,10 @@ void WaitOnButton::wait_exit() {
 
 void WaitOnButton::waitForButtonEvent() {
   LOG_DBG("Waiting for button press");
-  _events.set(kStartedEvent);
+  _event.set(kStartedEvent);
 
   while (true) {
-    _events.wait_any(kPressedEvent);
+    _event.wait_any(kPressedEvent);
     std::chrono::microseconds time    = zpp_lib::Time::getUpTime();
     std::chrono::microseconds latency = time - _pressedTime;
     LOG_DBG("Button pressed with response time: %lld usecs", latency.count());
@@ -74,7 +74,7 @@ void WaitOnButton::waitForButtonEvent() {
 
 void WaitOnButton::buttonPressed() {
   _pressedTime = zpp_lib::Time::getUpTime();
-  _events.set(kPressedEvent);
+  _event.set(kPressedEvent);
 }
 
 }  // namespace multi_tasking

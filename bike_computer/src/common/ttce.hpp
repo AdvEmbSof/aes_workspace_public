@@ -135,7 +135,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     // cppcheck-suppress dangerousTypeCast
     TTCE* pTTCE = (TTCE*)item;  // NOLINT(readability/casting)
 
-    // if an initial task is set, execute it and result it
+    // if an initial task is set, execute it and reset it
     if (pTTCE->_initialTask != nullptr) {
       pTTCE->_initialTask();
       pTTCE->_initialTask = nullptr;

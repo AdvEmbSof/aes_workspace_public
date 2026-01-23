@@ -28,7 +28,7 @@
 #include <chrono>
 
 // zpp_lib
-#include "zpp_include/events.hpp"
+#include "zpp_include/event.hpp"
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/thread.hpp"
 
@@ -51,7 +51,7 @@ class WaitOnButton {
 
   zpp_lib::Thread _thread;
   std::chrono::microseconds _pressedTime;
-  zpp_lib::Events _events;
+  zpp_lib::Event _event;
   zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> _pushButton;
 };
 
