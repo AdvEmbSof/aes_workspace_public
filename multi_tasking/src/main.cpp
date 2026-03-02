@@ -80,7 +80,7 @@ class RandomRectGenerator {
 };
 
 int main(void) {
-  using namespace std::literals;
+  using std::literals::chrono_literals::operator""ms;
 
   LOG_DBG("Multi-tasking program started");
 

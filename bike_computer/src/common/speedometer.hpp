@@ -42,6 +42,9 @@
 
 namespace bike_computer {
 
+using std::literals::chrono_literals::operator""ms;
+using std::literals::chrono_literals::operator""us;
+
 class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
  public:
   Speedometer();

@@ -40,7 +40,8 @@ static constexpr uint8_t kMinGearSize = kMaxGearSize - kMaxGear;
 // pedal related constants
 // When compiling and linking with gcc, we get a link error when using static
 // constexpr. The error is related to template instantiation.
-using namespace std::literals;
+using std::literals::chrono_literals::operator""ms;
+
 // definition of pedal rotation initial time (corresponds to 80 turn / min)
 static constexpr std::chrono::milliseconds kInitialPedalRotationTime = 750ms;
 // definition of pedal minimal rotation time (corresponds to 160 turn / min)

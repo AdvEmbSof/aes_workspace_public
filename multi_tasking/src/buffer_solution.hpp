@@ -35,7 +35,7 @@
 
 namespace multi_tasking {
 
-using namespace std::literals;
+using std::literals::chrono_literals::operator""ms;
 
 static constexpr uint8_t kLedOff = 0;
 static constexpr uint8_t kLedOn  = 1;

@@ -33,7 +33,8 @@
 
 namespace bike_computer {
 
-using namespace std::literals;
+using std::literals::chrono_literals::operator""ms;
+using std::literals::chrono_literals::operator""us;
 
 class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
  public:

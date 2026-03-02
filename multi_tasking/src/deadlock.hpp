@@ -34,7 +34,7 @@
 
 namespace multi_tasking {
 
-using namespace std::literals;
+using std::literals::chrono_literals::operator""us;
 
 class Deadlock {
  public:
