@@ -34,6 +34,13 @@ namespace bike_computer {
 
 namespace static_scheduling {
 
+GearDevice::GearDevice() :
+_button2(zpp_lib::InterruptIn::PinName::BUTTON2),
+_button3(zpp_lib::InterruptIn::PinName::BUTTON3),
+_button4(zpp_lib::InterruptIn::PinName::BUTTON4) {
+
+}
+
 uint8_t GearDevice::getCurrentGear() {
   std::chrono::microseconds initialTime = zpp_lib::Time::getUpTime();
   std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
