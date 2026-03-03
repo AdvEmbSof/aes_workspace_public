@@ -43,9 +43,6 @@ static constexpr float kAllowedSpeedDelta = 0.1f;
 // allow for 1m difference
 static constexpr float kAllowedDistanceDelta = 1.0f / 1000.0f;
 
-// for ms or s literals
-using namespace std::literals;
-
 // function called by test handler functions for verifying the current speed
 void check_current_speed(const std::chrono::milliseconds& pedalRotationTime,
                          uint8_t traySize,
