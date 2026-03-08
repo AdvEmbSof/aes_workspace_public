@@ -50,16 +50,20 @@ const char* TaskManager::kTaskDescriptors[TaskManager::kNbrOfTaskTypes] = {
     const_cast<char*>("Display(2)")};
 
 void TaskManager::initializePhase() {
+#if CONFIG_TEST == 1
   for (uint8_t taskIndex = 0; taskIndex < kNbrOfTaskTypes; taskIndex++) {
     _nbrOfCalls[taskIndex] = 0;
   }
   _phase = zpp_lib::Time::getUpTime();
+#endif
 }
 
 void TaskManager::registerTaskStart(TaskType taskType) {
-  uint8_t taskIndex                 = (uint8_t)taskType;
-  _taskStartTime[taskIndex]         = zpp_lib::Time::getUpTime();
+  uint8_t taskIndex         = (uint8_t)taskType;
+  _taskStartTime[taskIndex] = zpp_lib::Time::getUpTime();
+#if CONFIG_TEST == 1
   _dephasedTaskStartTime[taskIndex] = _taskStartTime[taskIndex] - _phase;
+#endif
 }
 
 void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
@@ -83,8 +87,8 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   }
 #if CONFIG_TEST == 1
   checkTaskTime(taskType);
-#endif
   _nbrOfCalls[taskIndex]++;
+#endif
 }
 
 #if CONFIG_TEST == 1

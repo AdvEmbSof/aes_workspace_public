@@ -79,10 +79,12 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
       std::chrono::microseconds(100000000 / CONFIG_SYS_CLOCK_TICKS_PER_SEC);
 
   // data members
-  std::chrono::microseconds _taskStartTime[kNbrOfTaskTypes]         = {0ms};
+  std::chrono::microseconds _taskStartTime[kNbrOfTaskTypes] = {0ms};
+#if CONFIG_TEST == 1
   std::chrono::microseconds _dephasedTaskStartTime[kNbrOfTaskTypes] = {0ms};
   uint32_t _nbrOfCalls[kNbrOfTaskTypes]                             = {0};
   std::chrono::microseconds _phase;
+#endif
 };
 
 }  // namespace bike_computer
