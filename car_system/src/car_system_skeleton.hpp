@@ -33,6 +33,9 @@
 #include "zpp_include/thread.hpp"
 #include "zpp_include/semaphore.hpp"
 
+// local
+#include "periodic_task_info.hpp"
+
 namespace car_system {
 
 using std::literals::chrono_literals::operator""ms;
@@ -52,16 +55,8 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   void stop();
 
  private:
-  // private methods
-  // task related structures
-  struct TaskInfo {
-    std::chrono::milliseconds _computationTime;
-    std::chrono::milliseconds _period;
-    zpp_lib::PreemptableThreadPriority _priority;
-    const char* _szTaskName;
-  };
   // task related methods
-  void task_method(const TaskInfo& taskInfo);
+  void task_method(uint8_t taskIndex);
 
   // Task related data members (one thread per task)
   static constexpr uint8_t NBR_OF_TASKS = 3;
@@ -69,12 +64,11 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   static constexpr uint8_t TASK_INDEX_2 = 1;
   static constexpr uint8_t TASK_INDEX_3 = 2;
   zpp_lib::Thread _threads[NBR_OF_TASKS];
-  static constexpr TaskInfo _taskInfos[NBR_OF_TASKS] = { 
+  static constexpr PeriodicTaskInfo _taskInfos[NBR_OF_TASKS] = { 
     // TODO: initialize _taskInfos based on task definitions (WCE, Period, Priority, Name)
-    
+    };
   std::function<void()> _taskMethods[NBR_OF_TASKS] = { 
     // TODO: initialize _taskMethods so that each thread receives the appropriate TaskInfo
-    
   };
   // Semaphore used to synchronize all threads at startup
   zpp_lib::Semaphore _startSemaphore{0, NBR_OF_TASKS};
