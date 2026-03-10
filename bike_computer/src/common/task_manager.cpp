@@ -60,7 +60,7 @@ void TaskManager::initializePhase() {
 
 void TaskManager::registerTaskStart(TaskType taskType) {
   uint8_t taskIndex         = (uint8_t)taskType;
-  _taskStartTime[taskIndex] = zpp_lib::Time::getUpTime();
+  _taskStartTime[taskIndex] = zpp_lib::Time::get_uptime();
 #if CONFIG_TEST == 1
   _dephasedTaskStartTime[taskIndex] = _taskStartTime[taskIndex] - _phase;
 #endif
@@ -68,7 +68,7 @@ void TaskManager::registerTaskStart(TaskType taskType) {
 
 void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   uint8_t taskIndex = (uint8_t)taskType;
-  auto elapsedTime  = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+  auto elapsedTime  = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
   if (allowSleep) {
     // make sure that we still have to sleep for a while
     if (getTaskComputationTime(taskType) - elapsedTime > kAllowedDelta) {
@@ -76,13 +76,13 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
                                      kAllowedDelta);
     }
     // make sure that we slept long enough
-    elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+    elapsedTime = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
     while (elapsedTime < getTaskComputationTime(taskType)) {
-      elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+      elapsedTime = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
     }
   } else {
     while (elapsedTime < getTaskComputationTime(taskType)) {
-      elapsedTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+      elapsedTime = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
     }
   }
 #if CONFIG_TEST == 1

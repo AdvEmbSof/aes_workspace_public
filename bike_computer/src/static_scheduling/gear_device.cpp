@@ -40,7 +40,7 @@ GearDevice::GearDevice()
       _button4(zpp_lib::InterruptIn::PinName::BUTTON4) {}
 
 uint8_t GearDevice::getCurrentGear() {
-  std::chrono::microseconds initialTime = zpp_lib::Time::getUpTime();
+  std::chrono::microseconds initialTime = zpp_lib::Time::get_uptime();
   std::chrono::microseconds elapsedTime = std::chrono::microseconds::zero();
 
   // we bound the change to one decrement/increment per call
@@ -66,7 +66,7 @@ uint8_t GearDevice::getCurrentGear() {
         }
       }
     }
-    elapsedTime = zpp_lib::Time::getUpTime() - initialTime;
+    elapsedTime = zpp_lib::Time::get_uptime() - initialTime;
   }
   return _currentGear;
 }
