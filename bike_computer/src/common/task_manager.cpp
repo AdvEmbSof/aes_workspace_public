@@ -107,7 +107,8 @@ void TaskManager::checkTaskTime(TaskType taskType) {
                kAllowedDelta.count());
 
   // The minimum task start time is the period x nbrOfCalls
-  // The minimum task start time is the period x (nbrOfCalls + 1) - task computation time
+  // The minimum task start time is the period x (nbrOfCalls + 1) - task computation
+  // time
   std::chrono::microseconds minDephasedTaskStartTime =
       kTaskPeriods[taskIndex] * _nbrOfCalls[taskIndex];
   std::chrono::microseconds maxDephasedTaskStartTime =

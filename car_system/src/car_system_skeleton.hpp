@@ -29,9 +29,9 @@
 
 // zpp_lib
 #include "zpp_include/non_copyable.hpp"
-#include "zpp_include/zephyr_result.hpp"
-#include "zpp_include/thread.hpp"
 #include "zpp_include/semaphore.hpp"
+#include "zpp_include/thread.hpp"
+#include "zpp_include/zephyr_result.hpp"
 
 // local
 #include "periodic_task_info.hpp"
@@ -49,6 +49,8 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   ~CarSystem() = default;
 
   // method called in main() for starting the system
+  // the method wait for all threads to end and does not
+  // return before stop() is called
   [[nodiscard]] zpp_lib::ZephyrResult start();
 
   // method called for stopping the system
@@ -64,11 +66,15 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   static constexpr uint8_t TASK_INDEX_2 = 1;
   static constexpr uint8_t TASK_INDEX_3 = 2;
   zpp_lib::Thread _threads[NBR_OF_TASKS];
-  static constexpr PeriodicTaskInfo _taskInfos[NBR_OF_TASKS] = { 
-    // TODO: initialize _taskInfos based on task definitions (WCE, Period, Priority, Name)
-    };
-  std::function<void()> _taskMethods[NBR_OF_TASKS] = { 
-    // TODO: initialize _taskMethods so that each thread receives the appropriate TaskInfo
+  static constexpr PeriodicTaskInfo _taskInfos[NBR_OF_TASKS] = {
+      // TODO(student): initialize _taskInfos based on task definitions (WCE, Period,
+      // Priority,
+      // Name)
+  };
+  std::function<void()> _taskMethods[NBR_OF_TASKS] = {
+      // TODO(student): initialize _taskMethods so that each thread receives the
+      // appropriate
+      // TaskInfo
   };
   // Semaphore used to synchronize all threads at startup
   zpp_lib::Semaphore _startSemaphore{0, NBR_OF_TASKS};

@@ -39,4 +39,4 @@ struct PeriodicTaskInfo {
   const char* _szTaskName;
 };
 
-} // namespace car_system
+}  // namespace car_system

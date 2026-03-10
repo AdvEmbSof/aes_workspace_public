@@ -116,8 +116,8 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     // submit the periodic TTCE task
     if (timer_id != nullptr) {
       // get instance from user data
-      // this cast is ugly but the only way to pass a reference to this instance to the
-      // timer
+      // this cast is ugly but the only way to pass a reference 
+      // to this instance to the timer 
       // cppcheck-suppress cstyleCast
       TTCE* pTTCE = (TTCE*)timer_id->user_data;  // NOLINT(readability/casting)
       auto ret    = k_work_submit_to_queue(&pTTCE->_workQueue, &pTTCE->_work);
