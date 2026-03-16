@@ -30,10 +30,10 @@
 #include <atomic>
 
 // zpp_lib
+#include "zpp_include/barrier.hpp"
+#include "zpp_include/message_queue.hpp"
 #include "zpp_include/non_copyable.hpp"
 #include "zpp_include/zephyr_result.hpp"
-#include "zpp_include/message_queue.hpp"
-#include "zpp_include/barrier.hpp"
 
 namespace car_system {
 
@@ -44,24 +44,33 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
 
   // destructor
   ~SporadicTaskGenerator() = default;
-  
+
   // method called from CarSystem::start() for starting generation of sporadic events
   void start(zpp_lib::Barrier& barrier);
- 
+
   // method called for stopping the generator
   void stop();
 
-  // method called for stopping the generator
-  zpp_lib::ZephyrBoolResult getTask(std::chrono::milliseconds& taskComputationTime, const std::chrono::milliseconds& timeOut);
+  // method called to obtain a task, if existing. If a sporadic task exists, then
+  // the method returns true with the computing time of the sporadic task initialized.
+  // If no sporadic task exists, then the method returns false. In case of error, the
+  // error is returned using ZephyrBoolResult.
+  zpp_lib::ZephyrBoolResult get_sporadic_task(
+      std::chrono::milliseconds& taskComputationTime,
+      const std::chrono::milliseconds& timeOut);
+
+  // method called to resubmit a task that could not be executed
+  zpp_lib::ZephyrBoolResult resubmit_sporadic_task(
+      const std::chrono::milliseconds& taskComputationTime);
 
  private:
   // stop flag, used for stopping each task (set in stop())
   volatile std::atomic<bool> _stopFlag = false;
 
-  static constexpr uint8_t MESSAGE_QUEUE_SIZE = 10;   
+  static constexpr uint8_t MESSAGE_QUEUE_SIZE = 10;
   zpp_lib::MessageQueue<std::chrono::milliseconds, MESSAGE_QUEUE_SIZE> _messageQueue;
 };
 
 }  // namespace car_system
 
-#endif // CONFIG_PHASE_B
+#endif  // CONFIG_PHASE_B

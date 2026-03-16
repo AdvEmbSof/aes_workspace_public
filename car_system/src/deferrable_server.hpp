@@ -30,9 +30,9 @@
 #include <atomic>
 
 // zpp_lib
+#include "zpp_include/barrier.hpp"
 #include "zpp_include/non_copyable.hpp"
 #include "zpp_include/zephyr_result.hpp"
-#include "zpp_include/barrier.hpp"
 
 // local
 #include "periodic_task_info.hpp"
@@ -43,16 +43,17 @@ namespace car_system {
 class DeferrableServer : private zpp_lib::NonCopyable<DeferrableServer> {
  public:
   // method called from CarSystem::start() for starting generation of sporadic events
-  void start(zpp_lib::Barrier& barrier, const PeriodicTaskInfo& taskInfo, SporadicTaskGenerator& taskGenerator);
- 
+  void start(zpp_lib::Barrier& barrier,
+             const PeriodicTaskInfo& taskInfo,
+             SporadicTaskGenerator& taskGenerator);
+
   // method called for stopping the generator
   void stop();
 
  private:
   // stop flag, used for stopping each task (set in stop())
   volatile std::atomic<bool> _stopFlag = false;
-
 };
 
-} // namespace car_system
-#endif // CONFIG_PHASE_B
+}  // namespace car_system
+#endif  // CONFIG_PHASE_B
