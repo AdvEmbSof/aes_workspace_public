@@ -43,7 +43,8 @@ ClockUnsafe::ClockUnsafe()
 
 zpp_lib::ZephyrResult ClockUnsafe::start() {
   // Start a thread for running the _tickerQueue work queue.
-  // Events are dispatched to the queue in the tickerUpdate() method called by the ticker.
+  // Events are dispatched to the queue in the tickerUpdate() method called by the
+  // ticker.
   auto res = _updateThread.start(std::bind(&zpp_lib::WorkQueue::run, &_updateQueue));
   if (!res) {
     LOG_ERR("Cannot start ticker thread: %d", (int)res.error());
@@ -78,8 +79,8 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
 }
 
 void ClockUnsafe::displayFromTicker() {
-  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
-  // operations
+  // this method runs in ISR mode -> we cannot allocate memory or perform other
+  // forbidden operations
   auto res = _displayQueue.call(_displayWork);
   __ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
 }
@@ -97,8 +98,8 @@ void ClockUnsafe::displayCurrentTime() {
 }
 
 void ClockUnsafe::updateFromTicker() {
-  // this method runs in ISR mode -> we cannot allocate memory or perform other forbidden
-  // operations
+  // this method runs in ISR mode -> we cannot allocate memory or perform other
+  // forbidden operations
   auto res = _updateQueue.call(_updateWork);
   __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }
