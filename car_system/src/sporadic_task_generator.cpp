@@ -1,0 +1,100 @@
+// Copyright 2025 Haute école d'ingénierie et d'architecture de Fribourg
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/****************************************************************************
+ * @file car_system.cpp
+ * @author Serge Ayer <serge.ayer@hefr.ch>
+ *
+ * @brief SporadicClassGenerator implementation
+ *
+ * @date 2025-07-01
+ * @version 1.0.0
+ ***************************************************************************/
+
+#if CONFIG_PHASE_B
+
+#include "sporadic_task_generator.hpp"
+
+// stl
+#include <chrono>
+
+// zephyr
+#include <zephyr/logging/log.h>
+#ifdef CONFIG_SEGGER_SYSTEMVIEW
+#include "SEGGER_SYSVIEW.h"
+#endif // CONFIG_SEGGER_SYSTEMVIEW
+
+LOG_MODULE_DECLARE(car_system, CONFIG_APP_LOG_LEVEL);
+
+namespace car_system {
+
+void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
+  // Wait that all threads are ready to start
+  std::chrono::milliseconds startExecutionTime = 
+      std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait());
+  LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms", startExecutionTime.count());
+  
+#ifdef CONFIG_SEGGER_SYSTEMVIEW
+#define SYSVIEW_MARK_TIME_ZERO   255U
+  SEGGER_SYSVIEW_Mark(SYSVIEW_MARK_TIME_ZERO);
+#endif // CONFIG_SEGGER_SYSTEMVIEW
+ 
+  using std::literals::chrono_literals::operator""ms;
+  using std::literals::chrono_literals::operator""s;
+  static const std::chrono::milliseconds SporadicComputingTimes[] = {50ms, 50ms, 50ms, 50ms};
+  static const std::chrono::milliseconds SporadicArrivalTimes[] = {60ms, 300ms, 630ms, 900ms};
+  static const uint32_t NbrOfSporadicRequestsPerMajorCycle =
+      sizeof(SporadicArrivalTimes) / sizeof(SporadicArrivalTimes[0]);
+
+  uint32_t cycleIndex = 0;
+  static constexpr auto majorCycleDuration = 1000ms;
+  while (!_stopFlag) {
+    uint32_t sporadicIndexInMajorCycle = 0;
+    
+    // generate aperiodic requests for this major cycle
+    while (sporadicIndexInMajorCycle < NbrOfSporadicRequestsPerMajorCycle) {
+      // wait for the next request to be generated
+      auto nextTime = SporadicArrivalTimes[sporadicIndexInMajorCycle] + startExecutionTime + (cycleIndex * majorCycleDuration);
+      LOG_DBG("SporadicTaskGenerator thread sleeping until %lld ms", nextTime.count());
+
+      zpp_lib::ThisThread::sleep_until(nextTime);
+
+      static constexpr auto timeOut = 1s; 
+      zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_put_for(timeOut, SporadicComputingTimes[sporadicIndexInMajorCycle]);
+      __ASSERT(! boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
+      if (! boolRes) {
+        LOG_ERR("Could not put event to messageQueue");
+      }
+      
+      sporadicIndexInMajorCycle++;
+    }
+    
+    // move to next major cycle
+    cycleIndex++;
+  }
+}
+
+void SporadicTaskGenerator::stop() {
+  _stopFlag = true;
+}
+
+zpp_lib::ZephyrBoolResult SporadicTaskGenerator::getTask(std::chrono::milliseconds& taskComputationTime, const std::chrono::milliseconds& timeOut) {
+  zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_get_for(timeOut, taskComputationTime);
+  __ASSERT(! boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
+  return boolRes;
+}
+
+}  // namespace car_system
+
+#endif // CONFIG_PHASE_B
