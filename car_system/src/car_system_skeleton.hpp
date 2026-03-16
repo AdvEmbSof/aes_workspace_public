@@ -29,7 +29,7 @@
 
 // zpp_lib
 #include "zpp_include/non_copyable.hpp"
-#include "zpp_include/semaphore.hpp"
+#include "zpp_include/barrier.hpp"
 #include "zpp_include/thread.hpp"
 #include "zpp_include/zephyr_result.hpp"
 
@@ -76,8 +76,9 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
       // appropriate
       // TaskInfo
   };
-  // Semaphore used to synchronize all threads at startup
-  zpp_lib::Semaphore _startSemaphore{0, NBR_OF_TASKS};
+  // Barrier used to synchronize all threads at startup
+  static constexpr uint8_t NBR_OF_SEMAPHORE_ACQUIRES = NBR_OF_TASKS;
+  zpp_lib::Barrier _barrier{NBR_OF_SEMAPHORE_ACQUIRES};
   // stop flag, used for stopping each task (set in stop())
   volatile std::atomic<bool> _stopFlag = false;
 };
