@@ -28,8 +28,8 @@
 #include <atomic>
 
 // zpp_lib
-#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/barrier.hpp"
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/thread.hpp"
 #include "zpp_include/zephyr_result.hpp"
 
