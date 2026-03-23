@@ -28,9 +28,17 @@
 
 // zephyr
 #include <zephyr/logging/log.h>
-#ifdef CONFIG_SEGGER_SYSTEMVIEW
+#if CONFIG_USERSPACE
+#include <zephyr/app_memory/app_memdomain.h>
+#endif  // CONFIG_USERSPACE
+#if CONFIG_SEGGER_SYSTEMVIEW
 #include "SEGGER_SYSVIEW.h"
 #endif  // CONFIG_SEGGER_SYSTEMVIEW
+
+#if CONFIG_USERSPACE
+extern struct k_mem_partition app_partition;
+#define APP_DATA K_APP_DMEM(app_partition)
+#endif  // CONFIG_USERSPACE
 
 // stl
 #include <chrono>
@@ -39,6 +47,15 @@ LOG_MODULE_DECLARE(car_system, CONFIG_APP_LOG_LEVEL);
 
 namespace car_system {
 
+#if CONFIG_USERSPACE
+APP_DATA char gMsgqBuffer[sizeof(std::chrono::milliseconds) * SporadicTaskGenerator::MESSAGE_QUEUE_SIZE] = {0};
+
+SporadicTaskGenerator::SporadicTaskGenerator() :
+  _messageQueue(gMsgqBuffer) {
+
+}
+#endif // CONFIG_USERSSPACE
+
 void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   // Wait that all threads are ready to start
   std::chrono::milliseconds startExecutionTime =
@@ -46,7 +63,7 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms",
           startExecutionTime.count());
 
-#ifdef CONFIG_SEGGER_SYSTEMVIEW
+#if CONFIG_SEGGER_SYSTEMVIEW
 #define SYSVIEW_MARK_TIME_ZERO 255U
   SEGGER_SYSVIEW_Mark(SYSVIEW_MARK_TIME_ZERO);
 #endif  // CONFIG_SEGGER_SYSTEMVIEW
@@ -119,6 +136,13 @@ zpp_lib::ZephyrBoolResult SporadicTaskGenerator::resubmit_sporadic_task(
   }
   return boolRes;
 }
+
+#if CONFIG_USERSPACE
+void SporadicTaskGenerator::grant_access(k_tid_t tid) {
+  _messageQueue.grant_access(tid);
+}
+
+#endif // CONFIG_USERSPACE
 
 }  // namespace car_system
 

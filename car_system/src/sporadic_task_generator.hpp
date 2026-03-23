@@ -40,7 +40,11 @@ namespace car_system {
 class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator> {
  public:
   // constructor
+#if CONFIG_USERSPACE
+  SporadicTaskGenerator();
+#else // CONFIG_USERSPACE
   SporadicTaskGenerator() = default;
+#endif  // CONFIG_USERSPACE
 
   // destructor
   ~SporadicTaskGenerator() = default;
@@ -63,11 +67,17 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
   zpp_lib::ZephyrBoolResult resubmit_sporadic_task(
       const std::chrono::milliseconds& taskComputationTime);
 
+#if CONFIG_USERSPACE
+  void grant_access(k_tid_t tid);
+#endif // CONFIG_USERSPACE
+  
+  // constant to instantiate the templated zpp_lib::MessageQueue attribute
+  static constexpr uint8_t MESSAGE_QUEUE_SIZE = 10;
+
  private:
   // stop flag, used for stopping each task (set in stop())
   volatile std::atomic<bool> _stopFlag = false;
 
-  static constexpr uint8_t MESSAGE_QUEUE_SIZE = 10;
   zpp_lib::MessageQueue<std::chrono::milliseconds, MESSAGE_QUEUE_SIZE> _messageQueue;
 };
 
