@@ -48,13 +48,11 @@ LOG_MODULE_DECLARE(car_system, CONFIG_APP_LOG_LEVEL);
 namespace car_system {
 
 #if CONFIG_USERSPACE
-APP_DATA char gMsgqBuffer[sizeof(std::chrono::milliseconds) * SporadicTaskGenerator::MESSAGE_QUEUE_SIZE] = {0};
+APP_DATA char gMsgqBuffer[sizeof(std::chrono::milliseconds) *
+                          SporadicTaskGenerator::MESSAGE_QUEUE_SIZE] = {0};
 
-SporadicTaskGenerator::SporadicTaskGenerator() :
-  _messageQueue(gMsgqBuffer) {
-
-}
-#endif // CONFIG_USERSSPACE
+SporadicTaskGenerator::SporadicTaskGenerator() : _messageQueue(gMsgqBuffer) {}
+#endif  // CONFIG_USERSSPACE
 
 void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   // Wait that all threads are ready to start
@@ -138,11 +136,9 @@ zpp_lib::ZephyrBoolResult SporadicTaskGenerator::resubmit_sporadic_task(
 }
 
 #if CONFIG_USERSPACE
-void SporadicTaskGenerator::grant_access(k_tid_t tid) {
-  _messageQueue.grant_access(tid);
-}
+void SporadicTaskGenerator::grant_access(k_tid_t tid) { _messageQueue.grant_access(tid); }
 
-#endif // CONFIG_USERSPACE
+#endif  // CONFIG_USERSPACE
 
 }  // namespace car_system
 

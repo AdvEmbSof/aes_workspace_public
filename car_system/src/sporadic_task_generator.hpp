@@ -42,7 +42,7 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
   // constructor
 #if CONFIG_USERSPACE
   SporadicTaskGenerator();
-#else // CONFIG_USERSPACE
+#else   // CONFIG_USERSPACE
   SporadicTaskGenerator() = default;
 #endif  // CONFIG_USERSPACE
 
@@ -69,8 +69,8 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
 
 #if CONFIG_USERSPACE
   void grant_access(k_tid_t tid);
-#endif // CONFIG_USERSPACE
-  
+#endif  // CONFIG_USERSPACE
+
   // constant to instantiate the templated zpp_lib::MessageQueue attribute
   static constexpr uint8_t MESSAGE_QUEUE_SIZE = 10;
 
