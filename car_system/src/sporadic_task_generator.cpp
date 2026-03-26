@@ -61,11 +61,6 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms",
           startExecutionTime.count());
 
-#if CONFIG_SEGGER_SYSTEMVIEW
-#define SYSVIEW_MARK_TIME_ZERO 255U
-  SEGGER_SYSVIEW_Mark(SYSVIEW_MARK_TIME_ZERO);
-#endif  // CONFIG_SEGGER_SYSTEMVIEW
-
   using std::literals::chrono_literals::operator""ms;
   using std::literals::chrono_literals::operator""s;
   static const std::chrono::milliseconds SporadicComputingTimes[] = {
