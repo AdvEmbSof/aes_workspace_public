@@ -28,22 +28,23 @@
 #include <chrono>
 
 // zpp_lib
+#include "zpp_include/mutex.hpp"
 #include "zpp_include/types.hpp"
 
 namespace car_system {
 
 #if CONFIG_PHASE_C
 struct SubtaskComputationInfo {
-	std::chrono::milliseconds _computationTime;
-	zpp_lib::Mutex* _pMutex;
+  std::chrono::milliseconds _computationTime;
+  zpp_lib::Mutex* _pMutex;
 };
 static constexpr uint8_t NbrOfSubTasks = 3;
-#endif // CONFIG_PHASE_C
+#endif  // CONFIG_PHASE_C
 
 struct PeriodicTaskInfo {
 #if CONFIG_PHASE_C
   SubtaskComputationInfo _subTasks[NbrOfSubTasks];
-#else  // CONFIG_PHASE_C
+#else   // CONFIG_PHASE_C
   std::chrono::milliseconds _computationTime;
 #endif  // CONFIG_PHASE_C
   std::chrono::milliseconds _period;
