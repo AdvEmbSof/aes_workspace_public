@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-sysview_csv_marker_parser.py
+sysview_csv_marker_parser.py (version 1.3)
 =============================
 Parse a SEGGER SystemView CSV export and validate that each task executes
 exactly once within each period slot, measured from a TIME_ZERO marker.
