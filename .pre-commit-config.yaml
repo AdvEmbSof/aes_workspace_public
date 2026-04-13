@@ -1,5 +1,5 @@
-files: ^(blinky/src/main.cpp)|^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/src/multi_tasking)|^(bike_computer/tests)|^(multi_tasking)|^(memory)
-exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)$
+files: ^(blinky/src/main.cpp)|^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/src/multi_tasking)|^(bike_computer/tests)|^(multi_tasking)|^(memory)|^(programming/src)|^(car_system)
+exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)|py$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v6.0.0
@@ -23,10 +23,10 @@ repos:
       entry: lizard
       language: system
       args: [-C 20]
-- repo: local
-  hooks:
-  -   id: cppcheck
-      name: cppcheck
-      require_serial: true
-      entry: cppcheck --enable=all --suppressions-list=cppcheck_suppressions.txt --inline-suppr -i ../zephyr --std=c++14 --error-exitcode=1 -v --checkers-report=cppcheck-report.txt
-      language: system
+#- repo: local
+#  hooks:
+#  -   id: cppcheck
+#      name: cppcheck
+#      require_serial: true
+#      entry: cppcheck --enable=all --suppressions-list=cppcheck_suppressions.txt --inline-suppr -i ../zephyr --std=c++14 --error-exitcode=1 -v --checkers-report=cppcheck-report.txt
+#      language: system

@@ -24,7 +24,7 @@
 
 #pragma once
 
-#if CONFIG_PHASE_B
+#if CONFIG_APERIODIC_TASKS
 
 // stl
 #include <atomic>
@@ -83,4 +83,4 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
 
 }  // namespace car_system
 
-#endif  // CONFIG_PHASE_B
+#endif  // CONFIG_APERIODIC_TASKS

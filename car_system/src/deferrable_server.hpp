@@ -24,7 +24,7 @@
 
 #pragma once
 
-#if CONFIG_PHASE_B
+#if CONFIG_APERIODIC_TASKS
 
 // stl
 #include <atomic>
@@ -52,8 +52,8 @@ class DeferrableServer : private zpp_lib::NonCopyable<DeferrableServer> {
 
  private:
   // stop flag, used for stopping each task (set in stop())
-  volatile std::atomic<bool> _stopFlag = false;
+  std::atomic<bool> _stopFlag = false;
 };
 
 }  // namespace car_system
-#endif  // CONFIG_PHASE_B
+#endif  // CONFIG_APERIODIC_TASKS

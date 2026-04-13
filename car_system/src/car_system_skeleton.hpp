@@ -61,26 +61,26 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   void task_method(uint8_t taskIndex);
 
   // Task related data members (one thread per task)
-  static constexpr uint8_t NBR_OF_TASKS = 3;
-  static constexpr uint8_t TASK_INDEX_1 = 0;
-  static constexpr uint8_t TASK_INDEX_2 = 1;
-  static constexpr uint8_t TASK_INDEX_3 = 2;
-  zpp_lib::Thread _threads[NBR_OF_TASKS];
-  static constexpr PeriodicTaskInfo _taskInfos[NBR_OF_TASKS] = {
+  static constexpr uint8_t kNbrOfPeriodicTasks = 3;
+  static constexpr uint8_t kTaskIndex1         = 0;
+  static constexpr uint8_t kTaskIndex2         = 1;
+  static constexpr uint8_t kTaskIndex3         = 2;
+  zpp_lib::Thread _threads[kNbrOfPeriodicTasks];
+  static constexpr PeriodicTaskInfo _taskInfos[kNbrOfPeriodicTasks] = {
       // TODO(student): initialize _taskInfos based on task definitions (WCE, Period,
       // Priority,
       // Name)
   };
-  std::function<void()> _taskMethods[NBR_OF_TASKS] = {
+  std::function<void()> _taskMethods[kNbrOfPeriodicTasks] = {
       // TODO(student): initialize _taskMethods so that each thread receives the
       // appropriate
       // TaskInfo
   };
   // Barrier used to synchronize all threads at startup
-  static constexpr uint8_t NBR_OF_SEMAPHORE_ACQUIRES = NBR_OF_TASKS;
-  zpp_lib::Barrier _barrier{NBR_OF_SEMAPHORE_ACQUIRES};
+  static constexpr uint8_t kNbrOfSemaphoreAcquires = kNbrOfPeriodicTasks;
+  zpp_lib::Barrier _barrier{kNbrOfSemaphoreAcquires};
   // stop flag, used for stopping each task (set in stop())
-  volatile std::atomic<bool> _stopFlag = false;
+  std::atomic<bool> _stopFlag = false;
 };
 
 }  // namespace car_system

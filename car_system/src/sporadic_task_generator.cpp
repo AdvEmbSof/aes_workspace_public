@@ -22,7 +22,7 @@
  * @version 1.0.0
  ***************************************************************************/
 
-#if CONFIG_PHASE_B
+#if CONFIG_APERIODIC_TASKS
 
 #include "sporadic_task_generator.hpp"
 
@@ -43,6 +43,11 @@ extern struct k_mem_partition app_partition;
 // stl
 #include <chrono>
 
+// local
+#if CONFIG_TEST
+#include "task_recorder.hpp"
+#endif
+
 LOG_MODULE_DECLARE(car_system, CONFIG_APP_LOG_LEVEL);
 
 namespace car_system {
@@ -57,7 +62,12 @@ SporadicTaskGenerator::SporadicTaskGenerator() : _messageQueue(gMsgqBuffer) {}
 void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   // Wait that all threads are ready to start
   std::chrono::milliseconds startExecutionTime =
+#if CONFIG_TEST
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          barrier.wait(&TaskRecorder::set_zero_time));
+#else
       std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait());
+#endif
   LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms",
           startExecutionTime.count());
 
@@ -137,4 +147,4 @@ void SporadicTaskGenerator::grant_access(k_tid_t tid) { _messageQueue.grant_acce
 
 }  // namespace car_system
 
-#endif  // CONFIG_PHASE_B
+#endif  // CONFIG_APERIODIC_TASKS

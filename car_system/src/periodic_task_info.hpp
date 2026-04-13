@@ -33,20 +33,20 @@
 
 namespace car_system {
 
-#if CONFIG_PHASE_C
+#if CONFIG_TASK_DEPENDENCIES
 struct SubtaskComputationInfo {
   std::chrono::milliseconds _computationTime;
   zpp_lib::Mutex* _pMutex;
 };
 static constexpr uint8_t NbrOfSubTasks = 3;
-#endif  // CONFIG_PHASE_C
+#endif  // CONFIG_TASK_DEPENDENCIES
 
 struct PeriodicTaskInfo {
-#if CONFIG_PHASE_C
+#if CONFIG_TASK_DEPENDENCIES
   SubtaskComputationInfo _subTasks[NbrOfSubTasks];
-#else   // CONFIG_PHASE_C
+#else   // CONFIG_TASK_DEPENDENCIES
   std::chrono::milliseconds _computationTime;
-#endif  // CONFIG_PHASE_C
+#endif  // CONFIG_TASK_DEPENDENCIES
   std::chrono::milliseconds _period;
   zpp_lib::PreemptableThreadPriority _priority;
   const char* _szTaskName;
