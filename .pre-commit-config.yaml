@@ -16,13 +16,11 @@ repos:
   rev: '2.0.2'
   hooks:
   -   id: cpplint
-- repo: local
+- repo: https://github.com/terryyin/lizard
+  rev: '1.17.10'  # check latest tag on GitHub
   hooks:
-  -   id: lizard
-      name: lizard
-      entry: lizard
-      language: system
-      args: [-C 20]
+  - id: lizard
+    args: [-C 20]
 #- repo: local
 #  hooks:
 #  -   id: cppcheck
