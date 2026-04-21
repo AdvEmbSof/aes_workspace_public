@@ -37,8 +37,8 @@
 
 #if CONFIG_USERSPACE
 extern struct k_mem_partition app_partition;
-#define APP_DATA K_APP_DMEM(app_partition)
-#endif  // CONFIG_USERSPACE
+#define APP_DATA K_APP_DMEM(app_partition)  // MISRA-suppress: 19.0.2 Zephyr partition-tagging macro, cannot use constexpr
+#endif                                      // CONFIG_USERSPACE
 
 // stl
 #include <chrono>
@@ -53,8 +53,7 @@ LOG_MODULE_DECLARE(car_system, CONFIG_APP_LOG_LEVEL);
 namespace car_system {
 
 #if CONFIG_USERSPACE
-APP_DATA char gMsgqBuffer[sizeof(std::chrono::milliseconds) *
-                          SporadicTaskGenerator::MESSAGE_QUEUE_SIZE] = {0};
+APP_DATA char gMsgqBuffer[sizeof(std::chrono::milliseconds) * SporadicTaskGenerator::MESSAGE_QUEUE_SIZE] = {0};
 
 SporadicTaskGenerator::SporadicTaskGenerator() : _messageQueue(gMsgqBuffer) {}
 #endif  // CONFIG_USERSSPACE
@@ -63,22 +62,17 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   // Wait that all threads are ready to start
   std::chrono::milliseconds startExecutionTime =
 #if CONFIG_TEST
-      std::chrono::duration_cast<std::chrono::milliseconds>(
-          barrier.wait(&TaskRecorder::set_zero_time));
+      std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait(&TaskRecorder::set_zero_time));
 #else
       std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait());
 #endif
-  LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms",
-          startExecutionTime.count());
+  LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms", startExecutionTime.count());
 
   using std::literals::chrono_literals::operator""ms;
   using std::literals::chrono_literals::operator""s;
-  static const std::chrono::milliseconds SporadicComputingTimes[] = {
-      50ms, 50ms, 50ms, 50ms};
-  static const std::chrono::milliseconds SporadicArrivalTimes[] = {
-      60ms, 300ms, 630ms, 900ms};
-  static const uint32_t NbrOfSporadicRequestsPerMajorCycle =
-      sizeof(SporadicArrivalTimes) / sizeof(SporadicArrivalTimes[0]);
+  static const std::chrono::milliseconds SporadicComputingTimes[] = {50ms, 50ms, 50ms, 50ms};
+  static const std::chrono::milliseconds SporadicArrivalTimes[]   = {60ms, 300ms, 630ms, 900ms};
+  static const uint32_t NbrOfSporadicRequestsPerMajorCycle        = sizeof(SporadicArrivalTimes) / sizeof(SporadicArrivalTimes[0]);
 
   uint32_t cycleIndex                      = 0;
   static constexpr auto majorCycleDuration = 1000ms;
@@ -88,18 +82,14 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
     // generate aperiodic requests for this major cycle
     while (sporadicIndexInMajorCycle < NbrOfSporadicRequestsPerMajorCycle) {
       // wait for the next request to be generated
-      auto nextTime = SporadicArrivalTimes[sporadicIndexInMajorCycle] +
-                      startExecutionTime + (cycleIndex * majorCycleDuration);
+      auto nextTime = SporadicArrivalTimes[sporadicIndexInMajorCycle] + startExecutionTime + (cycleIndex * majorCycleDuration);
       LOG_DBG("SporadicTaskGenerator thread sleeping until %lld ms", nextTime.count());
 
       zpp_lib::ThisThread::sleep_until(nextTime);
 
       static constexpr auto timeOut     = 1s;
-      zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_put_for(
-          timeOut, SporadicComputingTimes[sporadicIndexInMajorCycle]);
-      __ASSERT(!boolRes.has_error(),
-               "Got an error from try_put_for: %d",
-               static_cast<int>(boolRes.error()));
+      zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_put_for(timeOut, SporadicComputingTimes[sporadicIndexInMajorCycle]);
+      __ASSERT(!boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
       if (!boolRes) {
         LOG_ERR("Could not put event to messageQueue");
       }
@@ -114,26 +104,18 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
 
 void SporadicTaskGenerator::stop() { _stopFlag = true; }
 
-zpp_lib::ZephyrBoolResult SporadicTaskGenerator::get_sporadic_task(
-    std::chrono::milliseconds& taskComputationTime,
-    const std::chrono::milliseconds& timeOut) {
-  zpp_lib::ZephyrBoolResult boolRes =
-      _messageQueue.try_get_for(timeOut, taskComputationTime);
-  __ASSERT(!boolRes.has_error(),
-           "Got an error from try_put_for: %d",
-           static_cast<int>(boolRes.error()));
+zpp_lib::ZephyrBoolResult SporadicTaskGenerator::get_sporadic_task(std::chrono::milliseconds& taskComputationTime,
+                                                                   const std::chrono::milliseconds& timeOut) {
+  zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_get_for(timeOut, taskComputationTime);
+  __ASSERT(!boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
   return boolRes;
 }
 
-zpp_lib::ZephyrBoolResult SporadicTaskGenerator::resubmit_sporadic_task(
-    const std::chrono::milliseconds& taskComputationTime) {
+zpp_lib::ZephyrBoolResult SporadicTaskGenerator::resubmit_sporadic_task(const std::chrono::milliseconds& taskComputationTime) {
   using std::literals::chrono_literals::operator""s;
-  static constexpr auto timeOut = 1s;
-  zpp_lib::ZephyrBoolResult boolRes =
-      _messageQueue.try_put_for(timeOut, taskComputationTime);
-  __ASSERT(!boolRes.has_error(),
-           "Got an error from try_put_for: %d",
-           static_cast<int>(boolRes.error()));
+  static constexpr auto timeOut     = 1s;
+  zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_put_for(timeOut, taskComputationTime);
+  __ASSERT(!boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
   if (!boolRes) {
     LOG_ERR("Could not put event to messageQueue");
   }
