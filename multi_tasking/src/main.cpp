@@ -54,10 +54,7 @@ class RandomIntGenerator {
 class RandomDoubleGenerator {
  public:
   static constexpr double randomValues[] = {1.1, 2.2, 3.3, 4.4, 5.5};
-  static double produceNextValue() {
-    return randomValues[sys_rand32_get() %
-                        (sizeof(randomValues) / sizeof(randomValues[0]))];
-  }
+  static double produceNextValue() { return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))]; }
 };
 
 struct Rect {
@@ -73,10 +70,7 @@ std::ostream& operator<<(std::ostream& os, const Rect& rect) {
 class RandomRectGenerator {
  public:
   static constexpr Rect randomValues[] = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
-  static Rect produceNextValue() {
-    return randomValues[sys_rand32_get() %
-                        (sizeof(randomValues) / sizeof(randomValues[0]))];
-  }
+  static Rect produceNextValue() { return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))]; }
 };
 
 int main(void) {

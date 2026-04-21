@@ -78,18 +78,10 @@ struct Logos {
 
   static constexpr uint8_t kNbrOfImages               = 4;
   static constexpr ImageInfo _imageInfo[kNbrOfImages] = {
-      {.pImageData  = speedometer_icon,
-       .imageWidth  = kSpeedometerIconWidth,
-       .imageHeight = kSpeedometerIconHeight},
-      {.pImageData  = gear_icon,
-       .imageWidth  = kGearIconWidth,
-       .imageHeight = kGearIconHeight},
-      {.pImageData  = thermometer_icon,
-       .imageWidth  = kThermometerIconWidth,
-       .imageHeight = kThermometerIconHeight},
-      {.pImageData  = distance_icon,
-       .imageWidth  = kDistanceIconWidth,
-       .imageHeight = kDistanceIconHeight}};
+      {.pImageData = speedometer_icon, .imageWidth = kSpeedometerIconWidth, .imageHeight = kSpeedometerIconHeight},
+      {.pImageData = gear_icon, .imageWidth = kGearIconWidth, .imageHeight = kGearIconHeight},
+      {.pImageData = thermometer_icon, .imageWidth = kThermometerIconWidth, .imageHeight = kThermometerIconHeight},
+      {.pImageData = distance_icon, .imageWidth = kDistanceIconWidth, .imageHeight = kDistanceIconHeight}};
 };
 static const Logos gLogos;
 
@@ -125,31 +117,26 @@ void BikeDisplay::computePositions() {
   _infoBoxHeight = (gDisplay.getHeight() - kTitleHeight);
   _horLineYPos   = kTitleHeight + _infoBoxHeight / 2;
   // speed (top left)
-  _speedometerIconXPos = kIconXMargin;
-  _speedometerIconYPos = _horLineYPos - _infoBoxHeight / 4 -
-                         gLogos._imageInfo[kSpeedometerIndex].imageHeight / 2;
+  _speedometerIconXPos              = kIconXMargin;
+  _speedometerIconYPos              = _horLineYPos - _infoBoxHeight / 4 - gLogos._imageInfo[kSpeedometerIndex].imageHeight / 2;
   const uint32_t speedoTextBoxWidth = _vertLineXPos - _speedometerIconXPos;
-  _speedometerTextMidXPos = _speedometerIconXPos + speedoTextBoxWidth / 2 + kTextXMargin;
-  _speedometerTextYPos    = _horLineYPos - _infoBoxHeight / 4;
+  _speedometerTextMidXPos           = _speedometerIconXPos + speedoTextBoxWidth / 2 + kTextXMargin;
+  _speedometerTextYPos              = _horLineYPos - _infoBoxHeight / 4;
   // distance (bottom left)
-  _distanceIconXPos = kIconXMargin;
-  _distanceIconYPos = _horLineYPos + _infoBoxHeight / 4 -
-                      gLogos._imageInfo[kDistanceIndex].imageHeight / 2;
+  _distanceIconXPos               = kIconXMargin;
+  _distanceIconYPos               = _horLineYPos + _infoBoxHeight / 4 - gLogos._imageInfo[kDistanceIndex].imageHeight / 2;
   const uint32_t distTextBoxWidth = _vertLineXPos - _distanceIconXPos;
-  _distanceTextMidXPos = _distanceIconXPos + distTextBoxWidth / 2 + kTextXMargin;
-  _distanceTextYPos    = _horLineYPos + _infoBoxHeight / 4;
+  _distanceTextMidXPos            = _distanceIconXPos + distTextBoxWidth / 2 + kTextXMargin;
+  _distanceTextYPos               = _horLineYPos + _infoBoxHeight / 4;
   // temperature (top right)
-  _temperatureIconXPos = _vertLineXPos + kIconXMargin;
-  _temperatureIconYPos = _horLineYPos - _infoBoxHeight / 4 -
-                         gLogos._imageInfo[kTemperatureIndex].imageHeight / 2;
+  _temperatureIconXPos            = _vertLineXPos + kIconXMargin;
+  _temperatureIconYPos            = _horLineYPos - _infoBoxHeight / 4 - gLogos._imageInfo[kTemperatureIndex].imageHeight / 2;
   const uint32_t tempTextBoxWidth = gDisplay.getWidth() - _temperatureIconXPos;
-  _temperatureTextMidXPos =
-      _temperatureIconXPos - kCelsiusIconWidth + tempTextBoxWidth / 2 + kTextXMargin;
-  _temperatureTextYPos = _horLineYPos - _infoBoxHeight / 4;
+  _temperatureTextMidXPos         = _temperatureIconXPos - kCelsiusIconWidth + tempTextBoxWidth / 2 + kTextXMargin;
+  _temperatureTextYPos            = _horLineYPos - _infoBoxHeight / 4;
   // gear (bottom right)
-  _gearIconXPos = _vertLineXPos + kIconXMargin;
-  _gearIconYPos =
-      _horLineYPos + _infoBoxHeight / 4 - gLogos._imageInfo[kGearIndex].imageHeight / 2;
+  _gearIconXPos                   = _vertLineXPos + kIconXMargin;
+  _gearIconYPos                   = _horLineYPos + _infoBoxHeight / 4 - gLogos._imageInfo[kGearIndex].imageHeight / 2;
   const uint32_t gearTextBoxWidth = gDisplay.getWidth() - _gearIconXPos;
   _gearTextMidXPos                = _gearIconXPos + gearTextBoxWidth / 2 + kTextXMargin;
   _gearTextYPos                   = _horLineYPos + _infoBoxHeight / 4;
@@ -171,28 +158,25 @@ void BikeDisplay::displayIcons() {
   drawHorizontalLine(DISPLAY_COLOR_BLUE, _horLineYPos, kLineWidth);
 
   // draw the speedometer icon
-  gDisplay.drawPicture(
-      _speedometerIconXPos,
-      _speedometerIconYPos,
-      const_cast<uint32_t*>(gLogos._imageInfo[kSpeedometerIndex].pImageData),
-      gLogos._imageInfo[kSpeedometerIndex].imageWidth,
-      gLogos._imageInfo[kSpeedometerIndex].imageHeight);
+  gDisplay.drawPicture(_speedometerIconXPos,
+                       _speedometerIconYPos,
+                       const_cast<uint32_t*>(gLogos._imageInfo[kSpeedometerIndex].pImageData),
+                       gLogos._imageInfo[kSpeedometerIndex].imageWidth,
+                       gLogos._imageInfo[kSpeedometerIndex].imageHeight);
 
   // draw the distance icon
-  gDisplay.drawPicture(
-      _distanceIconXPos,
-      _distanceIconYPos,
-      const_cast<uint32_t*>(gLogos._imageInfo[kDistanceIndex].pImageData),
-      gLogos._imageInfo[kDistanceIndex].imageWidth,
-      gLogos._imageInfo[kDistanceIndex].imageHeight);
+  gDisplay.drawPicture(_distanceIconXPos,
+                       _distanceIconYPos,
+                       const_cast<uint32_t*>(gLogos._imageInfo[kDistanceIndex].pImageData),
+                       gLogos._imageInfo[kDistanceIndex].imageWidth,
+                       gLogos._imageInfo[kDistanceIndex].imageHeight);
 
   // draw the temperature icon
-  gDisplay.drawPicture(
-      _temperatureIconXPos,
-      _temperatureIconYPos,
-      const_cast<uint32_t*>(gLogos._imageInfo[kTemperatureIndex].pImageData),
-      gLogos._imageInfo[kTemperatureIndex].imageWidth,
-      gLogos._imageInfo[kTemperatureIndex].imageHeight);
+  gDisplay.drawPicture(_temperatureIconXPos,
+                       _temperatureIconYPos,
+                       const_cast<uint32_t*>(gLogos._imageInfo[kTemperatureIndex].pImageData),
+                       gLogos._imageInfo[kTemperatureIndex].imageWidth,
+                       gLogos._imageInfo[kTemperatureIndex].imageHeight);
 
   // draw the gear icon
   gDisplay.drawPicture(_gearIconXPos,
@@ -258,11 +242,7 @@ void BikeDisplay::displayTemperature(float temperature) {
   gDisplay.drawStringAt(textXPos, textYPos, msg, zpp_lib::Display::AlignMode::LEFT_MODE);
   const uint32_t celsiusIconXPos = textXPos + msgLen;
   const uint32_t celsiusIconYPos = textYPos - kCelsiusIconHeight / 5;
-  gDisplay.drawPicture(celsiusIconXPos,
-                       celsiusIconYPos,
-                       const_cast<uint32_t*>(celsius_icon),
-                       kCelsiusIconWidth,
-                       kCelsiusIconHeight);
+  gDisplay.drawPicture(celsiusIconXPos, celsiusIconYPos, const_cast<uint32_t*>(celsius_icon), kCelsiusIconWidth, kCelsiusIconHeight);
 }
 
 void BikeDisplay::drawVerticalLine(uint32_t color, uint32_t xPos, uint32_t width) {

@@ -57,12 +57,8 @@ class MemoryFragmenter {
     char* pBlockArray[kNbrOfBlocks] = {NULL};
     for (uint32_t blockIndex = 0; blockIndex < kNbrOfBlocks; blockIndex++) {
       pBlockArray[blockIndex] = new char[blockSize];
-      __ASSERT(pBlockArray[blockIndex] != nullptr,
-               "Allocation of block %d of size %d failed",
-               blockIndex,
-               blockSize);
-      printk("Allocated block index  %" PRIu32 " of size  %" PRIu32
-             " at address 0x%08" PRIx32 "\n",
+      __ASSERT(pBlockArray[blockIndex] != nullptr, "Allocation of block %d of size %d failed", blockIndex, blockSize);
+      printk("Allocated block index  %" PRIu32 " of size  %" PRIu32 " at address 0x%08" PRIx32 "\n",
              blockIndex,
              blockSize,
              static_cast<uint32_t>(*pBlockArray[blockIndex]));
@@ -89,8 +85,7 @@ class MemoryFragmenter {
     // it will succeed
     printk("Allocating 1 block of size %" PRIu32 " succeeds !\n", blockSize);
     pBlockArray[0] = new char[blockSize];
-    __ASSERT(
-        pBlockArray[0] != nullptr, "Allocation of block of size %d failed", blockSize);
+    __ASSERT(pBlockArray[0] != nullptr, "Allocation of block of size %d failed", blockSize);
 
     printk("Heap statistics after allocating one more block of size %d:\n", blockSize);
     zpp_lib::Utils::logHeapSummary();
@@ -101,13 +96,11 @@ class MemoryFragmenter {
     // this allocation will fail
     printk("Allocating 1 block of size %" PRIu32 " should succeed !\n", blockSize);
     pBlockArray[1] = new char[blockSize];
-    __ASSERT(
-        pBlockArray[1] != nullptr, "Allocation of block of size %d failed", blockSize);
+    __ASSERT(pBlockArray[1] != nullptr, "Allocation of block of size %d failed", blockSize);
 
     // copy to member variable to prevent them from being optimized away
     for (uint32_t index = 0; index < kArraySize; index++) {
-      _doubleArray[index] +=
-          static_cast<double>(pBlockArray[0][index] + pBlockArray[1][index]);
+      _doubleArray[index] += static_cast<double>(pBlockArray[0][index] + pBlockArray[1][index]);
     }
   }
 

@@ -35,8 +35,7 @@ namespace multi_tasking {
 zpp_lib::Mutex Deadlock::_mutex[kNbrOfMutexes];
 
 Deadlock::Deadlock(int index, const char* threadName)
-    : _index(index),
-      _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName) {}
+    : _index(index), _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName) {}
 
 void Deadlock::start() {
   auto res = _thread.start(std::bind(&Deadlock::execute, this));

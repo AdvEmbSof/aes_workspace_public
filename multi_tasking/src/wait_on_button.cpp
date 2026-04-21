@@ -34,8 +34,7 @@ LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 namespace multi_tasking {
 
 WaitOnButton::WaitOnButton(const char* threadName)
-    : _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName),
-      _pressedTime(std::chrono::microseconds::zero()) {
+    : _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName), _pressedTime(std::chrono::microseconds::zero()) {
   _pushButton.fall(std::bind(&WaitOnButton::buttonPressed, this));
   LOG_DBG("WaitOnButton initialized");
 }

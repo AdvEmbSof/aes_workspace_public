@@ -37,8 +37,10 @@
 
 #if CONFIG_USERSPACE
 extern struct k_mem_partition app_partition;
-#define APP_DATA K_APP_DMEM(app_partition)  // MISRA-suppress: 19.0.2 Zephyr partition-tagging macro, cannot use constexpr
-#endif                                      // CONFIG_USERSPACE
+#define APP_DATA \
+  K_APP_DMEM(app_partition)  // MISRA-suppress: 19.0.2 Zephyr partition-tagging macro,
+                             // cannot use constexpr
+#endif                       // CONFIG_USERSPACE
 
 // stl
 #include <chrono>

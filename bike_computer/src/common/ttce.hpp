@@ -97,10 +97,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
       return res;
     }
     if (_nbrOfTasksInMinorCycle[minorCycleIndex] >= MaxMinorCycleSize) {
-      __ASSERT(false,
-               "Too many tasks in minor cycle %d: %d",
-               minorCycleIndex,
-               _nbrOfTasksInMinorCycle[minorCycleIndex] + 1);
+      __ASSERT(false, "Too many tasks in minor cycle %d: %d", minorCycleIndex, _nbrOfTasksInMinorCycle[minorCycleIndex] + 1);
       res.assign_error(zpp_lib::ZephyrErrorCode::k_inval);
       return res;
     }

@@ -47,11 +47,7 @@ ZTEST(sensor_device, test_sensor_device) {
   }
   static constexpr float kTemperatureRange = 20.0f;
   static constexpr float kMeanTemperature  = 15.0f;
-  zassert_within(temperature,
-                 kMeanTemperature,
-                 kTemperatureRange,
-                 "Temperature outside range: %f",
-                 static_cast<double>(temperature));
+  zassert_within(temperature, kMeanTemperature, kTemperatureRange, "Temperature outside range: %f", static_cast<double>(temperature));
 
   float humidity = 0.0f;
   res            = sensorDevice.readTemperature(humidity);
@@ -60,11 +56,7 @@ ZTEST(sensor_device, test_sensor_device) {
   }
   static constexpr float kHumidityRange = 45.0f;
   static constexpr float kMeanHumidity  = 50.0f;
-  zassert_within(humidity,
-                 kMeanHumidity,
-                 kHumidityRange,
-                 "Humidity outside range: %f",
-                 static_cast<double>(humidity));
+  zassert_within(humidity, kMeanHumidity, kHumidityRange, "Humidity outside range: %f", static_cast<double>(humidity));
 }
 
 ZTEST_SUITE(sensor_device, NULL, NULL, NULL, NULL, NULL);

@@ -41,9 +41,7 @@ template <typename T, class DataGenerator>
 class Producer {
  public:
   explicit Producer(Buffer<T>& buffer)
-      : _buffer(buffer),
-        _producerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal,
-                        "ProducerThread") {}
+      : _buffer(buffer), _producerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ProducerThread") {}
 
   void start() {
     auto res = _producerThread.start(std::bind(&Producer::producerMethod, this));
@@ -60,8 +58,7 @@ class Producer {
     while (true) {
       T producerData = DataGenerator::produceNextValue();
       uint32_t index = _buffer.append(producerData);
-      std::cout << "Producer data is " << producerData << " (index in buffer " << index
-                << ")" << std::endl;
+      std::cout << "Producer data is " << producerData << " (index in buffer " << index << ")" << std::endl;
     }
   }
 

@@ -39,7 +39,7 @@
 LOG_MODULE_REGISTER(memory_demo, CONFIG_APP_LOG_LEVEL);
 
 int main(void) {
-  using namespace std::literals;
+  using std::literals::chrono_literals::operator""s;
 
   LOG_DBG("Memory demo program started");
 

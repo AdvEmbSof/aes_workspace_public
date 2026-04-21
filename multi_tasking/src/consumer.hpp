@@ -38,9 +38,7 @@ template <typename T>
 class Consumer {
  public:
   explicit Consumer(Buffer<T>& buffer)
-      : _buffer(buffer),
-        _consumerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal,
-                        "ConsumerThread") {}
+      : _buffer(buffer), _consumerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ConsumerThread") {}
   void start() {
     auto res = _consumerThread.start(std::bind(&Consumer::consumerMethod, this));
     __ASSERT(res, "Cannot start consumer thread: %d", (int)res.error());
@@ -59,8 +57,7 @@ class Consumer {
       T consumerData;
       uint32_t index = _buffer.extract(consumerData);
       consume(consumerData);
-      std::cout << "Consumer data is " << consumerData << " (index in buffer " << index
-                << ")" << std::endl;
+      std::cout << "Consumer data is " << consumerData << " (index in buffer " << index << ")" << std::endl;
     }
   }
 

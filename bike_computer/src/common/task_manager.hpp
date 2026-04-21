@@ -76,8 +76,7 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
 
   // set the allowed delta to be 100 ticks (100'000'000 over the number of ticks per
   // sec)
-  static constexpr std::chrono::microseconds kAllowedDelta =
-      std::chrono::microseconds(100000000 / CONFIG_SYS_CLOCK_TICKS_PER_SEC);
+  static constexpr std::chrono::microseconds kAllowedDelta = std::chrono::microseconds(100000000 / CONFIG_SYS_CLOCK_TICKS_PER_SEC);
 
   // data members
   std::chrono::microseconds _taskStartTime[kNbrOfTaskTypes] = {0ms};

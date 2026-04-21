@@ -47,8 +47,7 @@ uint8_t GearDevice::getCurrentGear() {
   // we increment/decrement rotation speed when button3/button4 is pressed
   // while button2 is pressed
   bool hasChanged = false;
-  while (elapsedTime <
-         TaskManager::getTaskComputationTime(TaskManager::TaskType::GearTaskType)) {
+  while (elapsedTime < TaskManager::getTaskComputationTime(TaskManager::TaskType::GearTaskType)) {
     if (!hasChanged) {
       if (_button2.read() == zpp_lib::kPolarityPressed) {
         if (_button3.read() == zpp_lib::kPolarityPressed) {

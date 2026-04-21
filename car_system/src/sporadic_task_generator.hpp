@@ -59,13 +59,10 @@ class SporadicTaskGenerator : private zpp_lib::NonCopyable<SporadicTaskGenerator
   // the method returns true with the computing time of the sporadic task initialized.
   // If no sporadic task exists, then the method returns false. In case of error, the
   // error is returned using ZephyrBoolResult.
-  zpp_lib::ZephyrBoolResult get_sporadic_task(
-      std::chrono::milliseconds& taskComputationTime,
-      const std::chrono::milliseconds& timeOut);
+  zpp_lib::ZephyrBoolResult get_sporadic_task(std::chrono::milliseconds& taskComputationTime, const std::chrono::milliseconds& timeOut);
 
   // method called to resubmit a task that could not be executed
-  zpp_lib::ZephyrBoolResult resubmit_sporadic_task(
-      const std::chrono::milliseconds& taskComputationTime);
+  zpp_lib::ZephyrBoolResult resubmit_sporadic_task(const std::chrono::milliseconds& taskComputationTime);
 
 #if CONFIG_USERSPACE
   void grant_access(k_tid_t tid);

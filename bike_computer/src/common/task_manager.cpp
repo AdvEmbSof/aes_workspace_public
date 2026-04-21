@@ -41,13 +41,12 @@ LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 namespace bike_computer {
 
-const char* TaskManager::kTaskDescriptors[TaskManager::kNbrOfTaskTypes] = {
-    const_cast<char*>("Gear"),
-    const_cast<char*>("Speed"),
-    const_cast<char*>("Temperature"),
-    const_cast<char*>("Reset"),
-    const_cast<char*>("Display(1)"),
-    const_cast<char*>("Display(2)")};
+const char* TaskManager::kTaskDescriptors[TaskManager::kNbrOfTaskTypes] = {const_cast<char*>("Gear"),
+                                                                           const_cast<char*>("Speed"),
+                                                                           const_cast<char*>("Temperature"),
+                                                                           const_cast<char*>("Reset"),
+                                                                           const_cast<char*>("Display(1)"),
+                                                                           const_cast<char*>("Display(2)")};
 
 void TaskManager::initializePhase() {
 #if CONFIG_TEST == 1
@@ -72,8 +71,7 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
   if (allowSleep) {
     // make sure that we still have to sleep for a while
     if (getTaskComputationTime(taskType) - elapsedTime > kAllowedDelta) {
-      zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime -
-                                     kAllowedDelta);
+      zpp_lib::ThisThread::sleep_for(getTaskComputationTime(taskType) - elapsedTime - kAllowedDelta);
     }
     // make sure that we slept long enough
     elapsedTime = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
@@ -95,8 +93,7 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
 void TaskManager::checkTaskTime(TaskType taskType) {
   uint8_t taskIndex = (uint8_t)taskType;
   __ASSERT(taskIndex < kNbrOfTaskTypes, "Invalid task index %d", taskIndex);
-  std::chrono::microseconds taskComputationTime =
-      zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+  std::chrono::microseconds taskComputationTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
   zassert_true(taskComputationTime <= kTaskComputationTimes[taskIndex] + kAllowedDelta,
                "Task %d computation time is too large at call #%d (%lld vs %lld us, "
                "allowed delta %lld us)",
@@ -109,27 +106,23 @@ void TaskManager::checkTaskTime(TaskType taskType) {
   // The minimum task start time is the period x nbrOfCalls
   // The minimum task start time is the period x (nbrOfCalls + 1) - task computation
   // time
-  std::chrono::microseconds minDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * _nbrOfCalls[taskIndex];
+  std::chrono::microseconds minDephasedTaskStartTime = kTaskPeriods[taskIndex] * _nbrOfCalls[taskIndex];
   std::chrono::microseconds maxDephasedTaskStartTime =
-      kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1) -
-      kTaskComputationTimes[taskIndex];
-  zassert_true(
-      _dephasedTaskStartTime[taskIndex] >= minDephasedTaskStartTime - kAllowedDelta,
-      "Task %s started too early at call #%d (%lld vs %lld us, allowedDelta %lld us)",
-      kTaskDescriptors[taskIndex],
-      _nbrOfCalls[taskIndex],
-      _dephasedTaskStartTime[taskIndex].count(),
-      minDephasedTaskStartTime.count(),
-      kAllowedDelta.count());
-  zassert_true(
-      _dephasedTaskStartTime[taskIndex] <= maxDephasedTaskStartTime + kAllowedDelta,
-      "Task %s started too late at call #%d (%lld vs %lld us, allowedDelta %lld us)",
-      kTaskDescriptors[taskIndex],
-      _nbrOfCalls[taskIndex],
-      _dephasedTaskStartTime[taskIndex].count(),
-      maxDephasedTaskStartTime.count(),
-      kAllowedDelta.count());
+      kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1) - kTaskComputationTimes[taskIndex];
+  zassert_true(_dephasedTaskStartTime[taskIndex] >= minDephasedTaskStartTime - kAllowedDelta,
+               "Task %s started too early at call #%d (%lld vs %lld us, allowedDelta %lld us)",
+               kTaskDescriptors[taskIndex],
+               _nbrOfCalls[taskIndex],
+               _dephasedTaskStartTime[taskIndex].count(),
+               minDephasedTaskStartTime.count(),
+               kAllowedDelta.count());
+  zassert_true(_dephasedTaskStartTime[taskIndex] <= maxDephasedTaskStartTime + kAllowedDelta,
+               "Task %s started too late at call #%d (%lld vs %lld us, allowedDelta %lld us)",
+               kTaskDescriptors[taskIndex],
+               _nbrOfCalls[taskIndex],
+               _dephasedTaskStartTime[taskIndex].count(),
+               maxDephasedTaskStartTime.count(),
+               kAllowedDelta.count());
 }
 
 // This method is provided for convenience.
@@ -138,8 +131,7 @@ void TaskManager::checkTaskTime(TaskType taskType) {
 bool TaskManager::isWithinExpectedTime(TaskType taskType) {
   uint8_t taskIndex        = (uint8_t)taskType;
   auto expectedTaskEndTime = kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1);
-  return (_dephasedTaskStartTime[taskIndex] + kTaskComputationTimes[taskIndex]) <
-         expectedTaskEndTime;
+  return (_dephasedTaskStartTime[taskIndex] + kTaskComputationTimes[taskIndex]) < expectedTaskEndTime;
 }
 #endif  // CONFIG_TEST == 1
 

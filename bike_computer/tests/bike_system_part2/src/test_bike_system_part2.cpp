@@ -55,10 +55,8 @@ ZTEST(bike_system_part2, test_bike_system_ttce) {
   static bike_computer::static_scheduling_with_event::BikeSystem bikeSystem;
 
   // run the bike system in a separate thread
-  zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal,
-                         "Test BS TTCE");
-  auto res = thread.start(std::bind(
-      &bike_computer::static_scheduling_with_event::BikeSystem::start, &bikeSystem));
+  zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "Test BS TTCE");
+  auto res = thread.start(std::bind(&bike_computer::static_scheduling_with_event::BikeSystem::start, &bikeSystem));
   zassert_true(res, "Could not start thread");
 
   // let the bike system run for the test duration

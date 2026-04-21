@@ -52,18 +52,16 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
   }
 
   // Call the updateFromTicker() method every second (from ISR context)
-  TickerFunction updateFromTickerFunction =
-      std::bind(&ClockUnsafe::updateFromTicker, this);
-  res = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
+  TickerFunction updateFromTickerFunction = std::bind(&ClockUnsafe::updateFromTicker, this);
+  res                                     = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
   if (!res) {
     LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
     return res;
   }
 
   // Call the displayFromTicker() method every second (from ISR context)
-  TickerFunction displayFromTickerFunction =
-      std::bind(&ClockUnsafe::displayFromTicker, this);
-  res = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
+  TickerFunction displayFromTickerFunction = std::bind(&ClockUnsafe::displayFromTicker, this);
+  res                                      = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
   if (!res) {
     LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
     return res;
@@ -105,8 +103,7 @@ void ClockUnsafe::updateFromTicker() {
 }
 
 void ClockUnsafe::updateCurrentTime() {
-  _currentTime.second +=
-      std::chrono::duration_cast<std::chrono::seconds>(clockUpdateTimeout).count();
+  _currentTime.second += std::chrono::duration_cast<std::chrono::seconds>(clockUpdateTimeout).count();
 
   if (_currentTime.second > 59) {
     _currentTime.second = 0;
