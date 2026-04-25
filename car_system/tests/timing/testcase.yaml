@@ -1,0 +1,34 @@
+tests:
+  car_system.timing.phase_a:
+    timeout: 300
+    tags:
+      - car_system
+      - phase_a
+    extra_configs:
+      - CONFIG_PERIODIC_TASKS=y
+  car_system.timing.phase_b:
+    timeout: 300
+    tags:
+      - car_system
+      - phase_b
+    extra_configs:
+      - CONFIG_PERIODIC_TASKS=y
+      - CONFIG_APERIODIC_TASKS=y
+      - CONFIG_COMPUTATION_TIME_OFFSET_TOLERANCE=800
+  car_system.timing.phase_c:
+    timeout: 300
+    tags:
+      - car_system
+      - phase_c
+    extra_configs:      
+      - CONFIG_PERIODIC_TASKS=y
+      - CONFIG_TASK_DEPENDENCIES=y
+      - CONFIG_COMPUTATION_TIME_OFFSET_TOLERANCE=500
+  car_system.timing.phase_a_user_mode:
+    timeout: 300
+    tags:
+      - car_system
+    extra_configs:
+      - CONFIG_PERIODIC_TASKS=y
+      - CONFIG_USERSPACE=y
+      - CONFIG_LOG_MODE_MINIMAL=y      

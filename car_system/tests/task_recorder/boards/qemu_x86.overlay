@@ -1,0 +1,78 @@
+#include <zephyr/dt-bindings/gpio/gpio.h>
+
+/ {  
+	gpio0: gpio_emul_0 {
+		status = "okay";
+		compatible = "zephyr,gpio-emul";
+		rising-edge;
+		falling-edge;
+		high-level;
+		low-level;
+		gpio-controller;
+		ngpios=<2>;
+		#gpio-cells = <2>;
+	};
+
+	resources {
+		compatible = "test-gpio-basic-api";
+		out-gpios = <&gpio0 0 0>; /* Pin 0 */
+		in-gpios = <&gpio0 1 0>; /* Pin 1 */
+	};
+
+  leds {
+		compatible = "gpio-leds";
+		led0: led_0 {
+			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
+			label = "Green LED";
+		};
+    led1: led_1 {
+			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+			label = "Yellow LED";
+		};
+	};
+
+	buttons {
+		compatible = "gpio-keys";
+
+		button0: button_0 {
+			gpios = <&gpio0 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 1";
+		};
+
+		button1: button_1 {
+			gpios = <&gpio0 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 2";
+		};
+
+		button2: button_2 {
+			gpios = <&gpio0 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 3";
+		};
+
+		button3: button_3 {
+			gpios = <&gpio0 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+			label = "Push button 4";
+		};
+	};
+
+  aliases {
+    led0 = &led0;
+		led1 = &led1;
+		sw0 = &button0;
+		sw1 = &button1;
+		sw2 = &button2;
+		sw3 = &button3;
+	};
+
+	chosen {
+		zephyr,display = &dummy_dc;
+	};
+
+	dummy_dc: dummy_dc {
+		compatible = "zephyr,dummy-dc";
+		height = <240>;
+		width = <320>;
+	};
+};
+
+
