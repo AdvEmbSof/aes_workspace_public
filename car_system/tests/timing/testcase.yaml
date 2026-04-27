@@ -22,7 +22,7 @@ tests:
       - phase_c
     extra_configs:      
       - CONFIG_PERIODIC_TASKS=y
-      - CONFIG_TASK_DEPENDENCIES=y
+      - CONFIG_PRIORITY_INVERSION=y
       - CONFIG_COMPUTATION_TIME_OFFSET_TOLERANCE=500
   car_system.timing.phase_a_user_mode:
     timeout: 300

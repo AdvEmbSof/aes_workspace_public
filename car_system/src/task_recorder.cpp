@@ -200,15 +200,15 @@ void TaskRecorder::print_all_violations() const {
 }
 
 std::chrono::microseconds TaskRecorder::get_expected_computation_time() const {
-#if CONFIG_TASK_DEPENDENCIES
+#if CONFIG_PRIORITY_INVERSION
   using std::literals::chrono_literals::operator""us;
   std::chrono::microseconds computationTime = 0us;
   for (uint8_t subtaskIndex = 0; subtaskIndex < NbrOfSubTasks; subtaskIndex++) {
     computationTime += std::chrono::duration_cast<std::chrono::microseconds>(_taskInfo._subTasks[subtaskIndex]._computationTime);
   }
-#else   // CONFIG_TASK_DEPENDENCIES
+#else   // CONFIG_PRIORITY_INVERSION
   std::chrono::microseconds computationTime = std::chrono::duration_cast<std::chrono::microseconds>(_taskInfo._computationTime);
-#endif  // CONFIG_TASK_DEPENDENCIES
+#endif  // CONFIG_PRIORITY_INVERSION
   return computationTime;
 }
 
