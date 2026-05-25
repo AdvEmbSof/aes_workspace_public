@@ -25,6 +25,9 @@
 #pragma once
 
 #if CONFIG_TEST
+// zephyr 
+#include <zephyr/kernel.h>
+
 // std
 #include <chrono>
 #include <map>
