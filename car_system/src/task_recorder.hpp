@@ -25,7 +25,7 @@
 #pragma once
 
 #if CONFIG_TEST
-// zephyr 
+// zephyr
 #include <zephyr/kernel.h>
 
 // std
