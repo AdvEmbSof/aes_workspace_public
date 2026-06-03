@@ -53,7 +53,7 @@ void TaskManager::initializePhase() {
   for (uint8_t taskIndex = 0; taskIndex < kNbrOfTaskTypes; taskIndex++) {
     _nbrOfCalls[taskIndex] = 0;
   }
-  _phase = zpp_lib::Time::getUpTime();
+  _phase = zpp_lib::Time::get_uptime();
 #endif
 }
 
@@ -93,7 +93,7 @@ void TaskManager::simulateComputationTime(TaskType taskType, bool allowSleep) {
 void TaskManager::checkTaskTime(TaskType taskType) {
   uint8_t taskIndex = (uint8_t)taskType;
   __ASSERT(taskIndex < kNbrOfTaskTypes, "Invalid task index %d", taskIndex);
-  std::chrono::microseconds taskComputationTime = zpp_lib::Time::getUpTime() - _taskStartTime[taskIndex];
+  std::chrono::microseconds taskComputationTime = zpp_lib::Time::get_uptime() - _taskStartTime[taskIndex];
   zassert_true(taskComputationTime <= kTaskComputationTimes[taskIndex] + kAllowedDelta,
                "Task %d computation time is too large at call #%d (%lld vs %lld us, "
                "allowed delta %lld us)",

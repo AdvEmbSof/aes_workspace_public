@@ -40,7 +40,7 @@
 LOG_MODULE_REGISTER(bike_system, CONFIG_APP_LOG_LEVEL);
 
 // for ms or s literals
-using std::literals::chrono_literals::operator""ms;
+using std::literals::chrono_literals::operator""s;
 
 // Different modes
 // nrf5340, busy: 48s

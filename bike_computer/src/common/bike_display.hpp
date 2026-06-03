@@ -25,6 +25,7 @@
 #pragma once
 
 // zpp_lib
+#include "zpp_include/display.hpp"
 #include "zpp_include/zephyr_result.hpp"
 
 namespace bike_computer {
@@ -52,39 +53,36 @@ class BikeDisplay {
   void displayIcons();
   void drawLines();
   void computePositions();
-  void drawVerticalLine(uint32_t color, uint32_t xPos, uint32_t width);
-  void drawHorizontalLine(uint32_t color, uint32_t yPos, uint32_t width);
 
-  static constexpr uint32_t kLineWidth   = 2;
-  static constexpr uint32_t kIconXMargin = 20;
-#if CONFIG_SHIELD_ADAFRUIT_2_8_TFT_TOUCH_V2 == 1
-  static constexpr uint32_t kTextXMargin = 30;
-#else
-  static constexpr uint32_t kTextXMargin = 40;
-#endif
+  zpp_lib::Display _display;
+  zpp_lib::Display::Color _color = zpp_lib::Display::Color::Blue;
+
+  static constexpr uint32_t kLineThickness   = 2;
+  static constexpr uint32_t kIconXMargin     = 20;
+  static constexpr uint32_t kTextXMargin     = 30;
   static constexpr uint8_t kSpeedometerIndex = 0;
   static constexpr uint8_t kGearIndex        = 1;
   static constexpr uint8_t kTemperatureIndex = 2;
   static constexpr uint8_t kDistanceIndex    = 3;
-  uint32_t _horLineYPos                      = 0;
-  uint32_t _vertLineXPos                     = 0;
-  uint32_t _infoBoxHeight                    = 0;
-  uint32_t _speedometerIconXPos              = 0;
-  uint32_t _speedometerIconYPos              = 0;
-  uint32_t _speedometerTextMidXPos           = 0;
-  uint32_t _speedometerTextYPos              = 0;
-  uint32_t _gearIconXPos                     = 0;
-  uint32_t _gearIconYPos                     = 0;
-  uint32_t _gearTextMidXPos                  = 0;
-  uint32_t _gearTextYPos                     = 0;
-  uint32_t _temperatureIconXPos              = 0;
-  uint32_t _temperatureIconYPos              = 0;
-  uint32_t _temperatureTextMidXPos           = 0;
-  uint32_t _temperatureTextYPos              = 0;
-  uint32_t _distanceIconXPos                 = 0;
-  uint32_t _distanceIconYPos                 = 0;
-  uint32_t _distanceTextMidXPos              = 0;
-  uint32_t _distanceTextYPos                 = 0;
+  uint32_t _hor_line_ypos                    = 0;
+  uint32_t _vert_line_xpos                   = 0;
+  uint32_t _info_box_height                  = 0;
+  uint32_t _speedometer_icon_xpos            = 0;
+  uint32_t _speedometer_icon_ypos            = 0;
+  uint32_t _speedometer_text_mid_xpos        = 0;
+  uint32_t _speedometer_text_ypos            = 0;
+  uint32_t _gear_icon_xpos                   = 0;
+  uint32_t _gear_icon_ypos                   = 0;
+  uint32_t _gear_text_mid_xpos               = 0;
+  uint32_t _gear_text_ypos                   = 0;
+  uint32_t _temperature_icon_xpos            = 0;
+  uint32_t _temperature_icon_ypos            = 0;
+  uint32_t _temperature_text_mid_xpos        = 0;
+  uint32_t _temperature_text_ypos            = 0;
+  uint32_t _distance_icon_xpos               = 0;
+  uint32_t _distance_icon_ypos               = 0;
+  uint32_t _distance_text_mid_xpos           = 0;
+  uint32_t _distance_text_ypos               = 0;
 };
 
 #else

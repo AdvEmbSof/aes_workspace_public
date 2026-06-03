@@ -31,12 +31,8 @@
 
 namespace bike_computer {
 
-extern zpp_lib::Display::Font* getFont12();
-extern zpp_lib::Display::Font* getFont14();
-extern zpp_lib::Display::Font* getFont16();
-extern zpp_lib::Display::Font* getFont18();
-extern zpp_lib::Display::Font* getFont26b();
-extern zpp_lib::Display::Font* getFont36b();
+extern const zpp_lib::Display::Font* get_font16();
+extern const zpp_lib::Display::Font* get_font18();
 
 }  // namespace bike_computer
 

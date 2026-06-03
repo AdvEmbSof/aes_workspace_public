@@ -37,13 +37,13 @@ ZTEST(sensor_device, test_sensor_device) {
 
   auto res = sensorDevice.initialize();
   if (!res) {
-    zassert_true(res, "Cannot initialize sensor device: %d", res.error());
+    zassert_true(res, "Cannot initialize sensor device: %d", static_cast<int>(res.error()));
   }
 
   float temperature = 0.0f;
   res               = sensorDevice.readTemperature(temperature);
   if (!res) {
-    zassert_true(res, "Cannot initialize sensor device: %d", res.error());
+    zassert_true(res, "Cannot initialize sensor device: %d", static_cast<int>(res.error()));
   }
   static constexpr float kTemperatureRange = 20.0f;
   static constexpr float kMeanTemperature  = 15.0f;
@@ -52,7 +52,7 @@ ZTEST(sensor_device, test_sensor_device) {
   float humidity = 0.0f;
   res            = sensorDevice.readTemperature(humidity);
   if (!res) {
-    zassert_true(res, "Cannot initialize sensor device: %d", res.error());
+    zassert_true(res, "Cannot initialize sensor device: %d", static_cast<int>(res.error()));
   }
   static constexpr float kHumidityRange = 45.0f;
   static constexpr float kMeanHumidity  = 50.0f;

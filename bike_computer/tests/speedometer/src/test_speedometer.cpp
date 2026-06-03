@@ -171,6 +171,8 @@ ZTEST(speedometer, test_distance) {
   auto pedalRotationTime        = speedometer.getCurrentPedalRotationTime();
 
   // test different travel times
+  using std::literals::chrono_literals::operator""s;
+  using std::literals::chrono_literals::operator""ms;
   const std::chrono::milliseconds travelTimes[] = {500ms, 1000ms, 5s, 10s};
   const uint8_t nbrOfTravelTimes                = sizeof(travelTimes) / sizeof(travelTimes[0]);
 
@@ -252,6 +254,7 @@ ZTEST(speedometer, test_reset) {
   const auto pedalRotationTime  = speedometer.getCurrentPedalRotationTime();
 
   // travel for 5 seconds
+  using std::literals::chrono_literals::operator""ms;
   const auto travelTime = 5000ms;
   zpp_lib::ThisThread::sleep_for(travelTime);
 
