@@ -33,7 +33,7 @@ namespace bike_computer {
 #if CONFIG_DISPLAY == 1
 
 class BikeDisplay {
- public:
+public:
   // constructor
   BikeDisplay() = default;
 
@@ -46,7 +46,7 @@ class BikeDisplay {
   void display_temperature(float temperature);
   void reset();
 
- private:
+private:
   // private methods
   void display_title();
   void display_info();
@@ -88,16 +88,18 @@ class BikeDisplay {
 #else
 // default dummy BikeDisplay
 class BikeDisplay {
- public:
+public:
   // constructor
   BikeDisplay() = default;
-  zpp_lib::ZephyrResult initialize() { return zpp_lib::ZephyrResult(); }
+  zpp_lib::ZephyrResult initialize() {
+    return zpp_lib::ZephyrResult();
+  }
   void display_gear(uint8_t gear) {}
   void display_speed(float speed) {}
   void display_distance(float distance) {}
   void display_temperature(float temperature) {}
 };
 
-#endif  // CONFIG_DISPLAY == 1
+#endif // CONFIG_DISPLAY == 1
 
-}  // namespace bike_computer
+} // namespace bike_computer

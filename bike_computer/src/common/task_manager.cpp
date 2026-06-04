@@ -27,16 +27,16 @@
 // zephyr
 #if CONFIG_TEST
 #include <zephyr/ztest.h>
-#endif  // CONFIG_TEST
-//#include <zephyr/tracing/tracing.h>
+#endif // CONFIG_TEST
+// #include <zephyr/tracing/tracing.h>
 
 // std
 #include <chrono>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
-#include "zpp_include/zpp_log.hpp"
 #include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 ZPP_LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
@@ -48,11 +48,11 @@ void TaskManager::initialize_phase() {
     _nbr_of_calls[task_index] = 0;
   }
   _phase = zpp_lib::Time::get_uptime();
-#endif  // CONFIG_TEST
+#endif // CONFIG_TEST
 }
 
 void TaskManager::register_task_start(TaskType taskType) {
-  auto task_index         = static_cast<uint8_t>(taskType);
+  auto task_index = static_cast<uint8_t>(taskType);
   ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
   // we assert that task_index is valid in the beginning of the method
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
@@ -60,7 +60,7 @@ void TaskManager::register_task_start(TaskType taskType) {
 #if CONFIG_TEST
   // we assert that task_index is valid in the beginning of the method
   _dephased_task_start_time[task_index] = _task_start_time[task_index] - _phase;
-#endif  // CONFIG_TEST
+#endif // CONFIG_TEST
 }
 
 void TaskManager::simulate_computation_time(TaskType taskType, bool allowSleep) {
@@ -69,7 +69,7 @@ void TaskManager::simulate_computation_time(TaskType taskType, bool allowSleep) 
   // we assert that task_index is valid in the beginning of the method
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   auto task_start_time = _task_start_time[task_index];
-  auto elapsed_time  = zpp_lib::Time::get_uptime() - task_start_time;
+  auto elapsed_time    = zpp_lib::Time::get_uptime() - task_start_time;
   if (allowSleep) {
     // make sure that we still have to sleep for a while
     if (get_task_computation_time(taskType) - elapsed_time > kAllowedDelta) {
@@ -137,6 +137,6 @@ bool TaskManager::isWithinExpectedTime(TaskType taskType) {
   auto expectedTaskEndTime = kTaskPeriods[taskIndex] * (_nbrOfCalls[taskIndex] + 1);
   return (_dephasedTaskStartTime[taskIndex] + kTaskComputationTimes[taskIndex]) < expectedTaskEndTime;
 }
-#endif  // CONFIG_TEST == 1
+#endif // CONFIG_TEST == 1
 
-}  // namespace bike_computer
+} // namespace bike_computer

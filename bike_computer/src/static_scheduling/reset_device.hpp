@@ -33,8 +33,8 @@
 
 namespace bike_computer::static_scheduling {
 
-  class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
- public:
+class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
+public:
   ResetDevice();
 
   // method called for checking the reset status
@@ -43,14 +43,13 @@ namespace bike_computer::static_scheduling {
   // for computing the response time
   std::chrono::microseconds get_press_time();
 
- private:
+private:
   // called when one of the buttons is pressed
   void on_fall_button1();
 
   // data members
   zpp_lib::InterruptIn _button1;
-  std::chrono::microseconds _press_time {std::chrono::microseconds::zero()};
+  std::chrono::microseconds _press_time{std::chrono::microseconds::zero()};
 };
 
-}  // namespace bike_computer::static_scheduling
-
+} // namespace bike_computer::static_scheduling

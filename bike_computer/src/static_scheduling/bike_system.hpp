@@ -43,9 +43,8 @@
 
 namespace bike_computer::static_scheduling {
 
-
 class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
- public:
+public:
   // constructor
   BikeSystem() = default;
 
@@ -55,7 +54,7 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
   // method called for stopping the system
   void stop();
 
- private:
+private:
   // private methods
   [[nodiscard]] zpp_lib::ZephyrResult initialize();
   void gear_task();
@@ -71,7 +70,7 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
   volatile std::atomic<bool> _stop_flag = false;
   // data member that represents the device for manipulating the gear
   GearDevice _gear_device;
-  uint8_t _current_gear     = bike_computer::kMinGear;
+  uint8_t _current_gear      = bike_computer::kMinGear;
   uint8_t _current_gear_size = bike_computer::kMinGearSize;
   // data member that represents the device for manipulating the pedal rotation
   // speed/time
@@ -92,4 +91,4 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
   TaskManager _task_manager;
 };
 
-}  // namespace bike_computer::static_scheduling
+} // namespace bike_computer::static_scheduling

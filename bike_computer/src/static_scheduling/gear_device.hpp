@@ -34,14 +34,14 @@
 namespace bike_computer::static_scheduling {
 
 class GearDevice : private zpp_lib::NonCopyable<GearDevice> {
- public:
+public:
   GearDevice();
 
   // method called for updating the bike system
   uint8_t get_current_gear();
   uint8_t get_current_gear_size() const;
 
- private:
+private:
   // data members
   uint8_t _current_gear = bike_computer::kMinGear;
 
@@ -51,4 +51,4 @@ class GearDevice : private zpp_lib::NonCopyable<GearDevice> {
   zpp_lib::InterruptIn _button4;
 };
 
-}  // namespace bike_computer::static_scheduling
+} // namespace bike_computer::static_scheduling

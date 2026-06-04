@@ -32,9 +32,8 @@
 
 namespace bike_computer::static_scheduling {
 
-  GearDevice::GearDevice()
-    : _button2(zpp_lib::InterruptIn::PinName::BUTTON2),
-      _button3(zpp_lib::InterruptIn::PinName::BUTTON3),
+GearDevice::GearDevice()
+    : _button2(zpp_lib::InterruptIn::PinName::BUTTON2), _button3(zpp_lib::InterruptIn::PinName::BUTTON3),
       _button4(zpp_lib::InterruptIn::PinName::BUTTON4) {}
 
 uint8_t GearDevice::get_current_gear() {
@@ -74,5 +73,4 @@ uint8_t GearDevice::get_current_gear_size() const {
   return bike_computer::kMaxGearSize - _current_gear;
 }
 
-}  // namespace bike_computer::static_scheduling
-
+} // namespace bike_computer::static_scheduling

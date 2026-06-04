@@ -38,7 +38,7 @@
 // stl
 #if CONFIG_TEST
 #include <functional>
-#endif  // CONFIG_TEST
+#endif // CONFIG_TEST
 
 namespace bike_computer {
 
@@ -46,7 +46,7 @@ using std::literals::chrono_literals::operator""ms;
 using std::literals::chrono_literals::operator""us;
 
 class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
- public:
+public:
   Speedometer();
 
   // method used for setting the current pedal rotation time
@@ -72,9 +72,9 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   std::chrono::milliseconds get_current_pedal_rotation_time() const;
   using CallbackFunction = std::function<void()>;
   void set_on_reset_callback(CallbackFunction cb);
-#endif  // CONFIG_TEST == 1
+#endif // CONFIG_TEST == 1
 
- private:
+private:
   // private methods
   void compute_speed();
   float compute_traveled_distance();
@@ -85,9 +85,9 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
   // constants related to speed computation
-  static constexpr float kWheelCircumference   = 2.1f;
-  static constexpr uint8_t kTraySize           = 50;
-  std::chrono::microseconds _last_time          = std::chrono::microseconds::zero();
+  static constexpr float kWheelCircumference     = 2.1f;
+  static constexpr uint8_t kTraySize             = 50;
+  std::chrono::microseconds _last_time           = std::chrono::microseconds::zero();
   std::chrono::milliseconds _pedal_rotation_time = kInitialPedalRotationTime;
 
   // data members
@@ -99,7 +99,7 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
 
 #if CONFIG_TEST == 1
   std::function<void()> _cb;
-#endif  // CONFIG_TEST == 1
+#endif // CONFIG_TEST == 1
 };
 
-}  // namespace bike_computer
+} // namespace bike_computer

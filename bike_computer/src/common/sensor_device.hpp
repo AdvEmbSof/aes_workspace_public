@@ -34,7 +34,7 @@
 namespace bike_computer {
 
 class SensorDevice : private zpp_lib::NonCopyable<SensorDevice> {
- public:
+public:
   // constructor
   SensorDevice() = default;
 
@@ -45,9 +45,9 @@ class SensorDevice : private zpp_lib::NonCopyable<SensorDevice> {
   [[nodiscard]] zpp_lib::ZephyrResult read_temperature(float& temperature);
   [[nodiscard]] zpp_lib::ZephyrResult read_humidity(float& humidity);
 
- private:
+private:
   // data members
   const struct device* _sensor_device = nullptr;
 };
 
-}  // namespace bike_computer
+} // namespace bike_computer

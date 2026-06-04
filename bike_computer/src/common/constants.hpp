@@ -51,4 +51,4 @@ static constexpr std::chrono::milliseconds kMaxPedalRotationTime = 1500ms;
 // definition of pedal rotation time change upon acceleration/deceleration
 static constexpr std::chrono::milliseconds kDeltaPedalRotationTime = 25ms;
 
-}  // namespace bike_computer
+} // namespace bike_computer

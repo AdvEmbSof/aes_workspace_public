@@ -26,6 +26,7 @@
 
 // std
 #include <chrono>
+#include <string>
 
 // zpp_lib
 #include "zpp_include/non_copyable.hpp"
@@ -37,7 +38,7 @@ using std::literals::chrono_literals::operator""ms;
 using std::literals::chrono_literals::operator""us;
 
 class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
- public:
+public:
   // TaskType definitions (YOU MUST UPDATE kNbrOfTasksTypes if you modify it)
   enum class TaskType {
     GearTaskType        = 0,
@@ -58,12 +59,12 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
     return kTaskComputationTimes[task_index] - kTaskOverheadTime;
   }
 
- private:
+private:
   // private
 #if CONFIG_TEST
   void check_task_time(TaskType taskType);
   bool is_within_expected_time(TaskType taskType);
-#endif  // CONFIG_TEST
+#endif // CONFIG_TEST
 
   // constants
   static constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {"Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
@@ -82,9 +83,9 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
   std::chrono::microseconds _task_start_time[kNbrOfTaskTypes] = {0ms};
 #if CONFIG_TEST
   std::chrono::microseconds _dephased_task_start_time[kNbrOfTaskTypes] = {0ms};
-  uint32_t _nbr_of_calls[kNbrOfTaskTypes]                             = {0};
+  uint32_t _nbr_of_calls[kNbrOfTaskTypes]                              = {0};
   std::chrono::microseconds _phase;
-#endif  // CONFIG_TEST
+#endif // CONFIG_TEST
 };
 
-}  // namespace bike_computer
+} // namespace bike_computer

@@ -32,8 +32,8 @@
 #include <string>
 
 // zpp_lib
-#include "zpp_include/zpp_log.hpp"
 #include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 // icons and fonts
 #include "resources/distance_icon_50.hpp"
@@ -58,18 +58,17 @@ struct ImageInfo {
   uint8_t image_height;
 };
 
-static constexpr uint8_t kNbrOfIcons              = 4;
+static constexpr uint8_t kNbrOfIcons = 4;
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays) -- static data known at compile time
 static constexpr ImageInfo kImageInfo[kNbrOfIcons] = {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-  {.p_image_data = speedometer_icon, .image_width = kSpeedometerIconWidth, .image_height = kSpeedometerIconHeight},
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-  {.p_image_data = gear_icon, .image_width = kGearIconWidth, .image_height = kGearIconHeight},
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-  {.p_image_data = thermometer_icon, .image_width = kThermometerIconWidth, .image_height = kThermometerIconHeight},
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-  {.p_image_data = distance_icon, .image_width = kDistanceIconWidth, .image_height = kDistanceIconHeight}
-};
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
+    {.p_image_data = speedometer_icon, .image_width = kSpeedometerIconWidth, .image_height = kSpeedometerIconHeight},
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
+    {.p_image_data = gear_icon, .image_width = kGearIconWidth, .image_height = kGearIconHeight},
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
+    {.p_image_data = thermometer_icon, .image_width = kThermometerIconWidth, .image_height = kThermometerIconHeight},
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
+    {.p_image_data = distance_icon, .image_width = kDistanceIconWidth, .image_height = kDistanceIconHeight}};
 
 zpp_lib::ZephyrResult BikeDisplay::initialize() {
   // initialize the display
@@ -80,7 +79,7 @@ zpp_lib::ZephyrResult BikeDisplay::initialize() {
   }
 
   ZPP_LOG_DBG("Display initialized");
-  
+
   // compute positions
   compute_positions();
 
@@ -102,29 +101,29 @@ void BikeDisplay::compute_positions() {
   _info_box_height = (_display.get_height() - kTitleHeight);
   _hor_line_ypos   = kTitleHeight + (_info_box_height / 2);
   // speed (top left)
-  _speedometer_icon_xpos            = kIconXMargin;
-  _speedometer_icon_ypos            = _hor_line_ypos - (_info_box_height / 4) - (kImageInfo[kSpeedometerIndex].image_height / 2);
+  _speedometer_icon_xpos         = kIconXMargin;
+  _speedometer_icon_ypos         = _hor_line_ypos - (_info_box_height / 4) - (kImageInfo[kSpeedometerIndex].image_height / 2);
   uint32_t speedo_text_box_width = _vert_line_xpos - _speedometer_icon_xpos;
-  _speedometer_text_mid_xpos        = _speedometer_icon_xpos + (speedo_text_box_width / 2) + kTextXMargin;
-  _speedometer_text_ypos            = _hor_line_ypos - (_info_box_height / 4);
+  _speedometer_text_mid_xpos     = _speedometer_icon_xpos + (speedo_text_box_width / 2) + kTextXMargin;
+  _speedometer_text_ypos         = _hor_line_ypos - (_info_box_height / 4);
   // distance (bottom left)
-  _distance_icon_xpos             = kIconXMargin;
-  _distance_icon_ypos             = _hor_line_ypos + (_info_box_height / 4) - (kImageInfo[kDistanceIndex].image_height / 2);
+  _distance_icon_xpos          = kIconXMargin;
+  _distance_icon_ypos          = _hor_line_ypos + (_info_box_height / 4) - (kImageInfo[kDistanceIndex].image_height / 2);
   uint32_t dist_text_box_width = _vert_line_xpos - _distance_icon_xpos;
-  _distance_text_mid_xpos         = _distance_icon_xpos + (dist_text_box_width / 2) + kTextXMargin;
-  _distance_text_ypos             = _hor_line_ypos + (_info_box_height / 4);
+  _distance_text_mid_xpos      = _distance_icon_xpos + (dist_text_box_width / 2) + kTextXMargin;
+  _distance_text_ypos          = _hor_line_ypos + (_info_box_height / 4);
   // temperature (top right)
-  _temperature_icon_xpos          = _vert_line_xpos + kIconXMargin;
-  _temperature_icon_ypos          = _hor_line_ypos - (_info_box_height / 4) - (kImageInfo[kTemperatureIndex].image_height / 2);
+  _temperature_icon_xpos       = _vert_line_xpos + kIconXMargin;
+  _temperature_icon_ypos       = _hor_line_ypos - (_info_box_height / 4) - (kImageInfo[kTemperatureIndex].image_height / 2);
   uint32_t temp_text_box_width = _display.get_width() - _temperature_icon_xpos;
-  _temperature_text_mid_xpos      = _temperature_icon_xpos + (temp_text_box_width / 2) + kTextXMargin;
-  _temperature_text_ypos          = _hor_line_ypos - (_info_box_height / 4);
+  _temperature_text_mid_xpos   = _temperature_icon_xpos + (temp_text_box_width / 2) + kTextXMargin;
+  _temperature_text_ypos       = _hor_line_ypos - (_info_box_height / 4);
   // gear (bottom right)
-  _gear_icon_xpos                 = _vert_line_xpos + kIconXMargin;
-  _gear_icon_ypos                 = _hor_line_ypos + (_info_box_height / 4) - (kImageInfo[kGearIndex].image_height / 2);
+  _gear_icon_xpos              = _vert_line_xpos + kIconXMargin;
+  _gear_icon_ypos              = _hor_line_ypos + (_info_box_height / 4) - (kImageInfo[kGearIndex].image_height / 2);
   uint32_t gear_text_box_width = _display.get_width() - _gear_icon_xpos;
-  _gear_text_mid_xpos             = _gear_icon_xpos + (gear_text_box_width / 2) + kTextXMargin;
-  _gear_text_ypos                 = _hor_line_ypos + (_info_box_height / 4);
+  _gear_text_mid_xpos          = _gear_icon_xpos + (gear_text_box_width / 2) + kTextXMargin;
+  _gear_text_ypos              = _hor_line_ypos + (_info_box_height / 4);
 }
 
 void BikeDisplay::display_title() {
@@ -198,7 +197,7 @@ inline std::string print_msg(double value, const char* unit) {
 void BikeDisplay::display_speed(float speed) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str = print_msg(speed, "km/h");
+  std::string str    = print_msg(speed, "km/h");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _speedometer_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _speedometer_text_ypos - (_display.get_font()->height / 2);
@@ -208,7 +207,7 @@ void BikeDisplay::display_speed(float speed) {
 void BikeDisplay::display_distance(float distance) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str = print_msg(distance, "km");
+  std::string str    = print_msg(distance, "km");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _distance_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _distance_text_ypos - (_display.get_font()->height / 2);
@@ -218,13 +217,13 @@ void BikeDisplay::display_distance(float distance) {
 void BikeDisplay::display_temperature(float temperature) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str = print_msg(temperature, "°C");
+  std::string str    = print_msg(temperature, "°C");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _temperature_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _temperature_text_ypos - (_display.get_font()->height / 2);
   _display.draw_string_at(_color, text_xpos, text_ypos, str);
 }
 
-#endif  // CONFIG_DISPLAY
+#endif // CONFIG_DISPLAY
 
-}  // namespace bike_computer
+} // namespace bike_computer

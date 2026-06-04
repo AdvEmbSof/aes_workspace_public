@@ -33,14 +33,14 @@
 
 namespace bike_computer::static_scheduling {
 
-  class PedalDevice : private zpp_lib::NonCopyable<PedalDevice> {
- public:
+class PedalDevice : private zpp_lib::NonCopyable<PedalDevice> {
+public:
   PedalDevice();
 
   // method called for updating the bike system
   std::chrono::milliseconds get_current_rotation_time();
 
- private:
+private:
   // private methods
   void increase_rotation_speed();
   void decrease_rotation_speed();
@@ -54,4 +54,4 @@ namespace bike_computer::static_scheduling {
   zpp_lib::InterruptIn _button4;
 };
 
-}  // namespace bike_computer::static_scheduling
+} // namespace bike_computer::static_scheduling

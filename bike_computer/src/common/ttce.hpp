@@ -40,14 +40,14 @@ namespace bike_computer {
 
 template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize>
 class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycleSize>> {
- public:
+public:
   explicit TTCE(std::chrono::milliseconds minorCycle) : _minorCycle(minorCycle) {
     k_timer_init(&_timer, &TTCE::_thunk, nullptr);
     // specify this instance as user data
     // this cast is ugly but the only way to pass a reference to this instance to the
     // timer
     // cppcheck-suppress cstyleCast
-    _timer.user_data = (void*)this;  // NOLINT(readability/casting)
+    _timer.user_data = (void*)this; // NOLINT(readability/casting)
     k_work_init(&_work, &TTCE::_workHandler);
     // initialize the work queue
     k_work_queue_init(&_workQueue);
@@ -85,9 +85,13 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     _isStarted = false;
   }
 
-  bool isStarted() { return _isStarted; }
+  bool isStarted() {
+    return _isStarted;
+  }
 
-  void addInitialTask(F f) { _initialTask = f; }
+  void addInitialTask(F f) {
+    _initialTask = f;
+  }
 
   [[nodiscard]] zpp_lib::ZephyrResult addTask(uint16_t minorCycleIndex, F f) {
     zpp_lib::ZephyrResult res;
@@ -108,7 +112,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     return res;
   }
 
- private:
+private:
   static void _thunk(struct k_timer* timer_id) {
     // submit the periodic TTCE task
     if (timer_id != nullptr) {
@@ -116,7 +120,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
       // this cast is ugly but the only way to pass a reference
       // to this instance to the timer
       // cppcheck-suppress cstyleCast
-      TTCE* pTTCE = (TTCE*)timer_id->user_data;  // NOLINT(readability/casting)
+      TTCE* pTTCE = (TTCE*)timer_id->user_data; // NOLINT(readability/casting)
       auto ret    = k_work_submit_to_queue(&pTTCE->_workQueue, &pTTCE->_work);
       if (ret != 0 && ret != 1 && ret != 2) {
         __ASSERT(false, "Failed to submit work: %d", ret);
@@ -130,7 +134,7 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
     // we need in the _workHandler method
     // CASTING IS POSSIBLE ONLY WHEN k_work IS THE FIRST ATTRIBUTE IN THE CLASS
     // cppcheck-suppress dangerousTypeCast
-    TTCE* pTTCE = (TTCE*)item;  // NOLINT(readability/casting)
+    TTCE* pTTCE = (TTCE*)item; // NOLINT(readability/casting)
 
     // if an initial task is set, execute it and reset it
     if (pTTCE->_initialTask != nullptr) {
@@ -159,4 +163,4 @@ class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycl
   F _initialTask                                     = nullptr;
 };
 
-}  // namespace bike_computer
+} // namespace bike_computer
