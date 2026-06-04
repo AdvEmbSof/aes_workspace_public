@@ -40,19 +40,19 @@ class BikeDisplay {
   // to be called prior to any other method
   zpp_lib::ZephyrResult initialize();
 
-  void displayGear(uint8_t gear);
-  void displaySpeed(float speed);
-  void displayDistance(float distance);
-  void displayTemperature(float temperature);
+  void display_gear(uint8_t gear);
+  void display_speed(float speed);
+  void display_distance(float distance);
+  void display_temperature(float temperature);
   void reset();
 
  private:
   // private methods
-  void displayTitle();
-  void displayInfo();
-  void displayIcons();
-  void drawLines();
-  void computePositions();
+  void display_title();
+  void display_info();
+  void display_icons();
+  void draw_lines();
+  void compute_positions();
 
   zpp_lib::Display _display;
   zpp_lib::Display::Color _color = zpp_lib::Display::Color::Blue;
@@ -92,10 +92,10 @@ class BikeDisplay {
   // constructor
   BikeDisplay() = default;
   zpp_lib::ZephyrResult initialize() { return zpp_lib::ZephyrResult(); }
-  void displayGear(uint8_t gear) {}
-  void displaySpeed(float speed) {}
-  void displayDistance(float distance) {}
-  void displayTemperature(float temperature) {}
+  void display_gear(uint8_t gear) {}
+  void display_speed(float speed) {}
+  void display_distance(float distance) {}
+  void display_temperature(float temperature) {}
 };
 
 #endif  // CONFIG_DISPLAY == 1

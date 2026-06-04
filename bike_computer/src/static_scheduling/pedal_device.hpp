@@ -31,24 +31,22 @@
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/non_copyable.hpp"
 
-namespace bike_computer {
+namespace bike_computer::static_scheduling {
 
-namespace static_scheduling {
-
-class PedalDevice : private zpp_lib::NonCopyable<PedalDevice> {
+  class PedalDevice : private zpp_lib::NonCopyable<PedalDevice> {
  public:
   PedalDevice();
 
   // method called for updating the bike system
-  std::chrono::milliseconds getCurrentRotationTime();
+  std::chrono::milliseconds get_current_rotation_time();
 
  private:
   // private methods
-  void increaseRotationSpeed();
-  void decreaseRotationSpeed();
+  void increase_rotation_speed();
+  void decrease_rotation_speed();
 
   // data members
-  std::chrono::milliseconds _pedalRotationTime = bike_computer::kInitialPedalRotationTime;
+  std::chrono::milliseconds _pedal_rotation_time = bike_computer::kInitialPedalRotationTime;
 
   // buttons
   zpp_lib::InterruptIn _button2;
@@ -56,6 +54,4 @@ class PedalDevice : private zpp_lib::NonCopyable<PedalDevice> {
   zpp_lib::InterruptIn _button4;
 };
 
-}  // namespace static_scheduling
-
-}  // namespace bike_computer
+}  // namespace bike_computer::static_scheduling

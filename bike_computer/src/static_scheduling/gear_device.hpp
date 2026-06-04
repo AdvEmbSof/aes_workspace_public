@@ -31,21 +31,19 @@
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/non_copyable.hpp"
 
-namespace bike_computer {
-
-namespace static_scheduling {
+namespace bike_computer::static_scheduling {
 
 class GearDevice : private zpp_lib::NonCopyable<GearDevice> {
  public:
   GearDevice();
 
   // method called for updating the bike system
-  uint8_t getCurrentGear();
-  uint8_t getCurrentGearSize() const;
+  uint8_t get_current_gear();
+  uint8_t get_current_gear_size() const;
 
  private:
   // data members
-  uint8_t _currentGear = bike_computer::kMinGear;
+  uint8_t _current_gear = bike_computer::kMinGear;
 
   // buttons
   zpp_lib::InterruptIn _button2;
@@ -53,6 +51,4 @@ class GearDevice : private zpp_lib::NonCopyable<GearDevice> {
   zpp_lib::InterruptIn _button4;
 };
 
-}  // namespace static_scheduling
-
-}  // namespace bike_computer
+}  // namespace bike_computer::static_scheduling

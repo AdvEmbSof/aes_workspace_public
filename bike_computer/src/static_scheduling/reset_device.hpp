@@ -31,29 +31,26 @@
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/non_copyable.hpp"
 
-namespace bike_computer {
+namespace bike_computer::static_scheduling {
 
-namespace static_scheduling {
-
-class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
+  class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
  public:
   ResetDevice();
 
   // method called for checking the reset status
-  bool checkReset();
+  bool check_reset();
 
   // for computing the response time
-  std::chrono::microseconds getPressTime();
+  std::chrono::microseconds get_press_time();
 
  private:
   // called when one of the buttons is pressed
-  void onFallButton1();
+  void on_fall_button1();
 
   // data members
   zpp_lib::InterruptIn _button1;
-  std::chrono::microseconds _pressTime;
+  std::chrono::microseconds _press_time {std::chrono::microseconds::zero()};
 };
 
-}  // namespace static_scheduling
+}  // namespace bike_computer::static_scheduling
 
-}  // namespace bike_computer

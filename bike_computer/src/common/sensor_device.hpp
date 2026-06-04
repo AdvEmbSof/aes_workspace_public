@@ -42,12 +42,12 @@ class SensorDevice : private zpp_lib::NonCopyable<SensorDevice> {
   [[nodiscard]] zpp_lib::ZephyrResult initialize();
 
   // methods used for reading sensor measurements
-  [[nodiscard]] zpp_lib::ZephyrResult readTemperature(float& temperature);
-  [[nodiscard]] zpp_lib::ZephyrResult readHumidity(float& humidity);
+  [[nodiscard]] zpp_lib::ZephyrResult read_temperature(float& temperature);
+  [[nodiscard]] zpp_lib::ZephyrResult read_humidity(float& humidity);
 
  private:
   // data members
-  const struct device* _sensorDevice = nullptr;
+  const struct device* _sensor_device = nullptr;
 };
 
 }  // namespace bike_computer

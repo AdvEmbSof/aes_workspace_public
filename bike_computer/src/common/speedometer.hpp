@@ -36,9 +36,9 @@
 #include "zpp_include/thread.hpp"
 
 // stl
-#if CONFIG_TEST == 1
+#if CONFIG_TEST
 #include <functional>
-#endif  // CONFIG_TEST == 1
+#endif  // CONFIG_TEST
 
 namespace bike_computer {
 
@@ -50,34 +50,34 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   Speedometer();
 
   // method used for setting the current pedal rotation time
-  void setCurrentRotationTime(const std::chrono::milliseconds& currentRotationTime);
+  void set_current_rotation_time(const std::chrono::milliseconds& current_rotation_time);
 
   // method used for setting/getting the current gear
-  void setGearSize(uint8_t gearSize);
+  void set_gear_size(uint8_t gear_size);
 
   // method called for getting the current speed (expressed in km / h)
-  float getCurrentSpeed() const;
+  float get_current_speed() const;
 
   // method called for getting the current traveled distance (expressed in km)
-  float getDistance();
+  float get_traveled_distance();
 
   // method called for resetting the traveled distance
   void reset();
 
   // methods used for tests only
 #if CONFIG_TEST == 1
-  uint8_t getGearSize() const;
-  float getWheelCircumference() const;
-  float getTraySize() const;
-  std::chrono::milliseconds getCurrentPedalRotationTime() const;
+  uint8_t get_gear_size() const;
+  float get_wheel_circumference() const;
+  float get_tray_size() const;
+  std::chrono::milliseconds get_current_pedal_rotation_time() const;
   using CallbackFunction = std::function<void()>;
-  void setOnResetCallback(CallbackFunction cb);
+  void set_on_reset_callback(CallbackFunction cb);
 #endif  // CONFIG_TEST == 1
 
  private:
   // private methods
-  void computeSpeed();
-  float computeDistance();
+  void compute_speed();
+  float compute_traveled_distance();
 
   // definition of task period time
   static constexpr std::chrono::milliseconds kTaskPeriod = 400ms;
@@ -87,15 +87,15 @@ class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
   // constants related to speed computation
   static constexpr float kWheelCircumference   = 2.1f;
   static constexpr uint8_t kTraySize           = 50;
-  std::chrono::microseconds _lastTime          = std::chrono::microseconds::zero();
-  std::chrono::milliseconds _pedalRotationTime = kInitialPedalRotationTime;
+  std::chrono::microseconds _last_time          = std::chrono::microseconds::zero();
+  std::chrono::milliseconds _pedal_rotation_time = kInitialPedalRotationTime;
 
   // data members
   // LowPowerTicker _ticker;
-  float _currentSpeed = 0.0f;
-  zpp_lib::Mutex _totalDistanceMutex;
-  float _totalDistance = 0.0f;
-  uint8_t _gearSize    = 1;
+  float _current_speed = 0.0f;
+  zpp_lib::Mutex _total_distance_mutex;
+  float _total_distance = 0.0f;
+  uint8_t _gear_size    = 1;
 
 #if CONFIG_TEST == 1
   std::function<void()> _cb;

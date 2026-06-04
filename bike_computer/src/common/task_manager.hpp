@@ -50,23 +50,23 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
   static constexpr uint8_t kNbrOfTaskTypes = 6;
 
   TaskManager() = default;
-  void initializePhase();
-  void registerTaskStart(TaskType taskType);
-  void simulateComputationTime(TaskType taskType, bool allowSleep);
-  static inline std::chrono::microseconds getTaskComputationTime(TaskType taskType) {
-    uint8_t taskIndex = (uint8_t)taskType;
-    return kTaskComputationTimes[taskIndex] - kTaskOverheadTime;
+  void initialize_phase();
+  void register_task_start(TaskType taskType);
+  void simulate_computation_time(TaskType taskType, bool allowSleep);
+  static inline std::chrono::microseconds get_task_computation_time(TaskType task_type) {
+    uint8_t task_index = static_cast<uint8_t>(task_type);
+    return kTaskComputationTimes[task_index] - kTaskOverheadTime;
   }
 
  private:
   // private
-#if CONFIG_TEST == 1
-  void checkTaskTime(TaskType taskType);
-  bool isWithinExpectedTime(TaskType taskType);
-#endif
+#if CONFIG_TEST
+  void check_task_time(TaskType taskType);
+  bool is_within_expected_time(TaskType taskType);
+#endif  // CONFIG_TEST
 
   // constants
-  static const char* kTaskDescriptors[kNbrOfTaskTypes];
+  static constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {"Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
   // kTaskOverheadTime accounts for additional time needed for switching between tasks
   static constexpr std::chrono::microseconds kTaskOverheadTime                      = 1us;
   static constexpr std::chrono::microseconds kTaskComputationTimes[kNbrOfTaskTypes] = {
@@ -79,12 +79,12 @@ class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
   static constexpr std::chrono::microseconds kAllowedDelta = std::chrono::microseconds(100000000 / CONFIG_SYS_CLOCK_TICKS_PER_SEC);
 
   // data members
-  std::chrono::microseconds _taskStartTime[kNbrOfTaskTypes] = {0ms};
-#if CONFIG_TEST == 1
-  std::chrono::microseconds _dephasedTaskStartTime[kNbrOfTaskTypes] = {0ms};
-  uint32_t _nbrOfCalls[kNbrOfTaskTypes]                             = {0};
+  std::chrono::microseconds _task_start_time[kNbrOfTaskTypes] = {0ms};
+#if CONFIG_TEST
+  std::chrono::microseconds _dephased_task_start_time[kNbrOfTaskTypes] = {0ms};
+  uint32_t _nbr_of_calls[kNbrOfTaskTypes]                             = {0};
   std::chrono::microseconds _phase;
-#endif
+#endif  // CONFIG_TEST
 };
 
 }  // namespace bike_computer

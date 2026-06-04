@@ -41,9 +41,8 @@
 #include "common/speedometer.hpp"
 #include "common/task_manager.hpp"
 
-namespace bike_computer {
+namespace bike_computer::static_scheduling {
 
-namespace static_scheduling {
 
 class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
  public:
@@ -59,40 +58,38 @@ class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
  private:
   // private methods
   [[nodiscard]] zpp_lib::ZephyrResult initialize();
-  void gearTask();
-  void speedDistanceTask();
-  void temperatureTask();
-  void resetTask();
-  void displayTask1();
-  void displayTask2();
+  void gear_task();
+  void speed_distance_task();
+  void temperature_task();
+  void reset_task();
+  void display_task1();
+  void display_task2();
 
   // flag stating whether sleep is allows when simulating computation times
   static constexpr bool kAllowSleep = false;
   // stop flag, used for stopping the super-loop (set in stop())
-  volatile std::atomic<bool> _stopFlag = false;
+  volatile std::atomic<bool> _stop_flag = false;
   // data member that represents the device for manipulating the gear
-  GearDevice _gearDevice;
-  uint8_t _currentGear     = bike_computer::kMinGear;
-  uint8_t _currentGearSize = bike_computer::kMinGearSize;
+  GearDevice _gear_device;
+  uint8_t _current_gear     = bike_computer::kMinGear;
+  uint8_t _current_gear_size = bike_computer::kMinGearSize;
   // data member that represents the device for manipulating the pedal rotation
   // speed/time
-  PedalDevice _pedalDevice;
-  float _currentSpeed     = 0.0f;
-  float _traveledDistance = 0.0f;
+  PedalDevice _pedal_device;
+  float _current_speed     = 0.0F;
+  float _traveled_distance = 0.0F;
   // data member that represents the device used for resetting
-  ResetDevice _resetDevice;
+  ResetDevice _reset_device;
   // data member that represents the display
-  BikeDisplay _bikeDisplay;
+  BikeDisplay _bike_display;
   // data member that represents the device for counting wheel rotations
   Speedometer _speedometer;
   // data member that represents the sensor device
-  SensorDevice _sensorDevice;
-  float _currentTemperature = 0.0f;
+  SensorDevice _sensor_device;
+  float _current_temperature = 0.0F;
 
   // used for managing tasks info
-  TaskManager _taskManager;
+  TaskManager _task_manager;
 };
 
-}  // namespace static_scheduling
-
-}  // namespace bike_computer
+}  // namespace bike_computer::static_scheduling
