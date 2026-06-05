@@ -55,8 +55,6 @@ ZTEST(bike_system_part1, test_bike_system_static) {
 
   // run the bike system in a separate thread
   zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "Test BS static");
-  return;
-
   ZPP_LOG_DBG("Starting thread");
   auto res = thread.start([&bike_system]() {
     auto res = bike_system.start();
