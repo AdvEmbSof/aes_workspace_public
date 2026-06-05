@@ -52,8 +52,8 @@ public:
 
   TaskManager() = default;
   void initialize_phase();
-  void register_task_start(TaskType taskType);
-  void simulate_computation_time(TaskType taskType, bool allowSleep);
+  void register_task_start(TaskType task_type);
+  void simulate_computation_time(TaskType task_type, bool allow_sleep);
   static inline std::chrono::microseconds get_task_computation_time(TaskType task_type) {
     uint8_t task_index = static_cast<uint8_t>(task_type);
     return kTaskComputationTimes[task_index] - kTaskOverheadTime;

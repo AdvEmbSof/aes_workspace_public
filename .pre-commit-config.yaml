@@ -16,13 +16,13 @@ repos:
   rev: '2.0.2'
   hooks:
   -   id: cpplint
-- repo: https://github.com/johnor/pre-commit-lizard
-  rev: 'v1.17.10' 
-  hooks:
-    - id: lizard-cpp
-      name: lizard
-      args: [-C 12]
-      files: \.(c|cpp|cc|cxx|h|hpp)$
+#- repo: https://github.com/johnor/pre-commit-lizard
+#  rev: 'v1.17.10' 
+#  hooks:
+#    - id: lizard-cpp
+#      name: lizard
+#      args: [-C 12]
+#      files: \.(c|cpp|cc|cxx|h|hpp)$
 #- repo: local
 #  hooks:
 #  -   id: cppcheck

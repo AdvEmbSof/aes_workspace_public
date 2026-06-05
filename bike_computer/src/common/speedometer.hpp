@@ -50,7 +50,7 @@ public:
   Speedometer();
 
   // method used for setting the current pedal rotation time
-  void set_current_rotation_time(const std::chrono::milliseconds& current_rotation_time);
+  void set_current_pedal_rotation_time(const std::chrono::milliseconds& current_rotation_time);
 
   // method used for setting/getting the current gear
   void set_gear_size(uint8_t gear_size);
@@ -68,7 +68,7 @@ public:
 #if CONFIG_TEST == 1
   uint8_t get_gear_size() const;
   float get_wheel_circumference() const;
-  float get_tray_size() const;
+  uint8_t get_tray_size() const;
   std::chrono::milliseconds get_current_pedal_rotation_time() const;
   using CallbackFunction = std::function<void()>;
   void set_on_reset_callback(CallbackFunction cb);

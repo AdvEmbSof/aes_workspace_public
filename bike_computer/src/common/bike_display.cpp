@@ -217,7 +217,7 @@ void BikeDisplay::display_distance(float distance) {
 void BikeDisplay::display_temperature(float temperature) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str    = print_msg(temperature, "°C");
+  std::string str    = print_msg(temperature, "\260C");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _temperature_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _temperature_text_ypos - (_display.get_font()->height / 2);

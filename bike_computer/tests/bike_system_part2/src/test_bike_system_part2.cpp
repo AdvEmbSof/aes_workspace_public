@@ -23,7 +23,6 @@
  ***************************************************************************/
 
 // zephyr
-#include <zephyr/logging/log.h>
 #include <zephyr/ztest.h>
 
 // std
@@ -33,11 +32,13 @@
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 // bike computer
 #include "static_scheduling_with_event/bike_system.hpp"
 
-LOG_MODULE_REGISTER(bike_system, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_REGISTER(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 // for ms or s literals
 using std::literals::chrono_literals::operator""s;
@@ -46,27 +47,30 @@ using std::literals::chrono_literals::operator""s;
 // nrf5340, busy: 48s
 // nrf5340, sleep: 48s
 // qemu_x86, busy: tested up to 120s
-// qemy_x86, sleep: tested up to 120s
-static constexpr std::chrono::milliseconds testDuration = 48s;
+// qemu_x86, sleep: tested up to 120s
+static constexpr std::chrono::milliseconds kTestDuration = 48s;
 
 // test_bike_system_event_queue handler function
 ZTEST(bike_system_part2, test_bike_system_ttce) {
   // create the BikeSystem instance
-  static bike_computer::static_scheduling_with_event::BikeSystem bikeSystem;
+  bike_computer::static_scheduling_with_event::BikeSystem bike_system;
 
   // run the bike system in a separate thread
   zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "Test BS TTCE");
-  auto res = thread.start(std::bind(&bike_computer::static_scheduling_with_event::BikeSystem::start, &bikeSystem));
-  zassert_true(res, "Could not start thread");
+  auto res = thread.start([&]() {
+    auto res = bike_system.start();
+    zpp_zassert_true(res, "BikeSystem start failed");
+  });
+  zpp_zassert_true(res, "Could not start thread");
 
   // let the bike system run for the test duration
-  zpp_lib::ThisThread::sleep_for(testDuration);
+  zpp_lib::ThisThread::sleep_for(kTestDuration);
 
   // stop the bike system
-  bikeSystem.stop();
+  bike_system.stop();
 
   res = thread.join();
-  zassert_true(res, "Could not join thread");
+  zpp_zassert_true(res, "Could not join thread");
 }
 
-ZTEST_SUITE(bike_system_part2, NULL, NULL, NULL, NULL, NULL);
+ZTEST_SUITE(bike_system_part2, nullptr, nullptr, nullptr, nullptr, nullptr);

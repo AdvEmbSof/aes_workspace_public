@@ -23,7 +23,6 @@
  ***************************************************************************/
 
 // zephyr
-#include <zephyr/logging/log.h>
 #include <zephyr/ztest.h>
 
 // std
@@ -32,63 +31,70 @@
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 // bike_computer
 #include "common/speedometer.hpp"
 
-LOG_MODULE_REGISTER(test_speedometer, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_REGISTER(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 // allow for 0.1 km/h difference
-static constexpr float kAllowedSpeedDelta = 0.1f;
+static constexpr float kAllowedSpeedDelta = 0.1F;
 // allow for 1m difference
-static constexpr float kAllowedDistanceDelta = 1.0f / 1000.0f;
+static constexpr float kAllowedDistanceDelta = 1.0F / 1000.0F;
 
 // function called by test handler functions for verifying the current speed
-void check_current_speed(
-    const std::chrono::milliseconds& pedalRotationTime, uint8_t traySize, uint8_t gearSize, float wheelCircumference, float currentSpeed) {
+// Internal function
+void check_current_speed(const std::chrono::milliseconds& pedal_rotation_time,
+                         uint8_t tray_size,
+                         uint8_t gear_size, // NOLINT(bugprone-easily-swappable-parameters)
+                         float wheel_circumference, // NOLINT(bugprone-easily-swappable-parameters)
+                         float current_speed) {
   // compute the number of pedal rotation per hour
-  uint32_t milliSecondsPerHour = 1000 * 3600;
-  float pedalRotationsPerHour  = static_cast<float>(milliSecondsPerHour) / static_cast<float>(pedalRotationTime.count());
+  uint32_t milliseconds_per_hour = 1000 * 3600;
+  float pedal_rotations_per_hour = static_cast<float>(milliseconds_per_hour) / static_cast<float>(pedal_rotation_time.count());
 
   // compute the expected speed in km / h
   // first compute the distance in meter for each pedal turn
-  float trayGearRatio        = static_cast<float>(traySize) / static_cast<float>(gearSize);
-  float distancePerPedalTurn = trayGearRatio * wheelCircumference;
-  float expectedSpeed        = (distancePerPedalTurn / 1000.0f) * pedalRotationsPerHour;
+  float tray_gear_ratio         = static_cast<float>(tray_size) / static_cast<float>(gear_size);
+  float distance_per_pedal_turn = tray_gear_ratio * wheel_circumference;
+  float expected_speed          = (distance_per_pedal_turn / 1000.0F) * pedal_rotations_per_hour;
 
-  printk("  Expected speed is %f, current speed is %f\n", static_cast<double>(expectedSpeed), static_cast<double>(currentSpeed));
-  zassert_within(currentSpeed, expectedSpeed, kAllowedSpeedDelta, "Current speed is not within bounds");
+  ZPP_LOG_INF("  Expected speed is %f, current speed is %f\n", static_cast<double>(expected_speed), static_cast<double>(current_speed));
+  zpp_zassert_within(current_speed, expected_speed, kAllowedSpeedDelta, "Current speed is not within bounds");
 }
 
 // compute the traveled distance for a time interval
-float compute_distance(const std::chrono::milliseconds& pedalRotationTime,
-                       uint8_t traySize,
-                       uint8_t gearSize,
-                       float wheelCircumference,
-                       const std::chrono::milliseconds& travelTime) {
+// Internal function
+float compute_distance(const std::chrono::milliseconds& pedal_rotation_time,
+                       uint8_t tray_size,
+                       uint8_t gear_size, // NOLINT(bugprone-easily-swappable-parameters)
+                       float wheel_circumference,
+                       const std::chrono::milliseconds& travel_time) {
   // compute the number of pedal rotation during travel time
   // both times are expressed in ms
-  float pedalRotations = static_cast<float>(travelTime.count()) / static_cast<float>(pedalRotationTime.count());
+  float pedal_rotations = static_cast<float>(travel_time.count()) / static_cast<float>(pedal_rotation_time.count());
 
   // compute the distance in meter for each pedal turn
-  float trayGearRatio        = static_cast<float>(traySize) / static_cast<float>(gearSize);
-  float distancePerPedalTurn = trayGearRatio * wheelCircumference;
+  float tray_gear_ratio         = static_cast<float>(tray_size) / static_cast<float>(gear_size);
+  float distance_per_pedal_turn = tray_gear_ratio * wheel_circumference;
 
   // distancePerPedalTurn is expressed in m, divide per 1000 for a distance in km
-  return (distancePerPedalTurn * pedalRotations) / 1000.0f;
+  return (distance_per_pedal_turn * pedal_rotations) / 1000.0F;
 }
 
 // function called by test handler functions for verifying the distance traveled
-void check_distance(const std::chrono::milliseconds& pedalRotationTime,
-                    uint8_t traySize,
-                    uint8_t gearSize,
-                    float wheelCircumference,
-                    const std::chrono::milliseconds& travelTime,
+void check_distance(const std::chrono::milliseconds& pedal_rotation_time,
+                    uint8_t tray_size,
+                    uint8_t gear_size,
+                    float wheel_circumference,
+                    const std::chrono::milliseconds& travel_time,
                     float distance) {
   // distancePerPedalTurn is expressed in m, divide per 1000 for a distance in km
-  float expectedDistance = compute_distance(pedalRotationTime, traySize, gearSize, wheelCircumference, travelTime);
-  printf("  Expected distance is %f, current distance is %f\n", static_cast<double>(expectedDistance), static_cast<double>(distance));
-  zassert_within(distance, expectedDistance, kAllowedDistanceDelta);
+  float expected_distance = compute_distance(pedal_rotation_time, tray_size, gear_size, wheel_circumference, travel_time);
+  ZPP_LOG_INF("  Expected distance is %f, current distance is %f\n", static_cast<double>(expected_distance), static_cast<double>(distance));
+  zpp_zassert_within(distance, expected_distance, kAllowedDistanceDelta, "Current distance is not within bounds");
 }
 
 // test the speedometer by modifying the gear
@@ -97,20 +103,20 @@ ZTEST(speedometer, test_gear_size) {
   bike_computer::Speedometer speedometer;
 
   // get speedometer constant values (for this test)
-  const auto traySize           = speedometer.getTraySize();
-  const auto wheelCircumference = speedometer.getWheelCircumference();
-  const auto pedalRotationTime  = speedometer.getCurrentPedalRotationTime();
+  auto tray_size           = speedometer.get_tray_size();
+  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 
-  for (uint8_t gearSize = bike_computer::kMinGearSize; gearSize <= bike_computer::kMaxGearSize; gearSize++) {
+  for (uint8_t gear_size = bike_computer::kMinGearSize; gear_size <= bike_computer::kMaxGearSize; gear_size++) {
     // set the gear
-    printf("Testing gear size %d\n", gearSize);
-    speedometer.setGearSize(gearSize);
+    ZPP_LOG_INF("Testing gear size %d\n", gear_size);
+    speedometer.set_gear_size(gear_size);
 
     // get the current speed
-    auto currentSpeed = speedometer.getCurrentSpeed();
+    auto current_speed = speedometer.get_current_speed();
 
     // check the speed against the expected one
-    check_current_speed(pedalRotationTime, traySize, gearSize, wheelCircumference, currentSpeed);
+    check_current_speed(pedal_rotation_time, tray_size, gear_size, wheel_circumference, current_speed);
   }
 }
 
@@ -120,39 +126,39 @@ ZTEST(speedometer, test_rotation_speed) {
   bike_computer::Speedometer speedometer;
 
   // set the gear size
-  speedometer.setGearSize(bike_computer::kMaxGearSize);
+  speedometer.set_gear_size(bike_computer::kMaxGearSize);
 
   // get speedometer constant values
-  const auto traySize           = speedometer.getTraySize();
-  const auto wheelCircumference = speedometer.getWheelCircumference();
-  const auto gearSize           = speedometer.getGearSize();
+  auto tray_size           = speedometer.get_tray_size();
+  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto gear_size           = speedometer.get_gear_size();
 
   // first test increasing rotation speed (decreasing rotation time)
-  auto pedalRotationTime = speedometer.getCurrentPedalRotationTime();
-  while (pedalRotationTime > bike_computer::kMinPedalRotationTime) {
+  auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
+  while (pedal_rotation_time > bike_computer::kMinPedalRotationTime) {
     // decrease the pedal rotation time
-    pedalRotationTime -= bike_computer::kDeltaPedalRotationTime;
-    speedometer.setCurrentRotationTime(pedalRotationTime);
+    pedal_rotation_time -= bike_computer::kDeltaPedalRotationTime;
+    speedometer.set_current_pedal_rotation_time(pedal_rotation_time);
 
     // get the current speed
-    const auto currentSpeed = speedometer.getCurrentSpeed();
+    auto current_speed = speedometer.get_current_speed();
 
     // check the speed against the expected one
-    check_current_speed(pedalRotationTime, traySize, gearSize, wheelCircumference, currentSpeed);
+    check_current_speed(pedal_rotation_time, tray_size, gear_size, wheel_circumference, current_speed);
   }
 
   // second test decreasing rotation speed (increasing rotation time)
-  pedalRotationTime = speedometer.getCurrentPedalRotationTime();
-  while (pedalRotationTime < bike_computer::kMaxPedalRotationTime) {
+  pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
+  while (pedal_rotation_time < bike_computer::kMaxPedalRotationTime) {
     // increase the pedal rotation time
-    pedalRotationTime += bike_computer::kDeltaPedalRotationTime;
-    speedometer.setCurrentRotationTime(pedalRotationTime);
+    pedal_rotation_time += bike_computer::kDeltaPedalRotationTime;
+    speedometer.set_current_pedal_rotation_time(pedal_rotation_time);
 
     // get the current speed
-    const auto currentSpeed = speedometer.getCurrentSpeed();
+    auto current_speed = speedometer.get_current_speed();
 
     // check the speed against the expected one
-    check_current_speed(pedalRotationTime, traySize, gearSize, wheelCircumference, currentSpeed);
+    check_current_speed(pedal_rotation_time, tray_size, gear_size, wheel_circumference, current_speed);
   }
 }
 
@@ -162,80 +168,79 @@ ZTEST(speedometer, test_distance) {
   bike_computer::Speedometer speedometer;
 
   // set the gear size
-  speedometer.setGearSize(bike_computer::kMaxGearSize);
+  speedometer.set_gear_size(bike_computer::kMaxGearSize);
 
   // get speedometer constant values
-  const auto traySize           = speedometer.getTraySize();
-  const auto wheelCircumference = speedometer.getWheelCircumference();
-  auto gearSize                 = speedometer.getGearSize();
-  auto pedalRotationTime        = speedometer.getCurrentPedalRotationTime();
+  auto tray_size           = speedometer.get_tray_size();
+  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto gear_size           = speedometer.get_gear_size();
+  auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 
   // test different travel times
   using std::literals::chrono_literals::operator""s;
   using std::literals::chrono_literals::operator""ms;
-  const std::chrono::milliseconds travelTimes[] = {500ms, 1000ms, 5s, 10s};
-  const uint8_t nbrOfTravelTimes                = sizeof(travelTimes) / sizeof(travelTimes[0]);
+  static constexpr std::array<std::chrono::milliseconds, 4> kTravelTimes = {500ms, 1000ms, 5s, 10s};
 
   // first check travel distance without changing gear and rotation speed
-  std::chrono::milliseconds totalTravelTime = std::chrono::milliseconds::zero();
-  for (uint8_t index = 0; index < nbrOfTravelTimes; index++) {
+  auto total_travel_time = std::chrono::milliseconds::zero();
+  for (auto travel_time : kTravelTimes) {
     // run for the travel time and get the distance
-    zpp_lib::ThisThread::sleep_for(travelTimes[index]);
+    zpp_lib::ThisThread::sleep_for(travel_time);
 
-    // get the distance traveled
-    const auto distance = speedometer.getDistance();
+    // get the traveled distance
+    auto traveled_distance = speedometer.get_traveled_distance();
 
     // accumulate travel time
-    totalTravelTime += travelTimes[index];
+    total_travel_time += travel_time;
 
     // check the distance vs the expected one
-    check_distance(pedalRotationTime, traySize, gearSize, wheelCircumference, totalTravelTime, distance);
+    check_distance(pedal_rotation_time, tray_size, gear_size, wheel_circumference, total_travel_time, traveled_distance);
   }
 
   // now change gear at each time interval
-  auto expectedDistance = speedometer.getDistance();
-  for (uint8_t index = 0; index < nbrOfTravelTimes; index++) {
+  auto expected_distance = speedometer.get_traveled_distance();
+  for (auto travel_time : kTravelTimes) {
     // update the gear size
-    gearSize++;
-    speedometer.setGearSize(gearSize);
+    gear_size++;
+    speedometer.set_gear_size(gear_size);
 
     // run for the travel time and get the distance
-    zpp_lib::ThisThread::sleep_for(travelTimes[index]);
+    zpp_lib::ThisThread::sleep_for(travel_time);
 
     // compute the expected distance for this time segment
-    float distance = compute_distance(pedalRotationTime, traySize, gearSize, wheelCircumference, travelTimes[index]);
-    expectedDistance += distance;
+    float distance = compute_distance(pedal_rotation_time, tray_size, gear_size, wheel_circumference, travel_time);
+    expected_distance += distance;
 
     // get the distance traveled
-    const auto traveledDistance = speedometer.getDistance();
+    auto traveled_distance = speedometer.get_traveled_distance();
 
-    printf("  Expected distance is %f, current distance is %f\n",
-           static_cast<double>(expectedDistance),
-           static_cast<double>(traveledDistance));
-    zassert_within(traveledDistance, expectedDistance, kAllowedDistanceDelta);
+    printk("  Expected distance is %f, current distance is %f\n",
+           static_cast<double>(expected_distance),
+           static_cast<double>(traveled_distance));
+    zpp_zassert_within(traveled_distance, expected_distance, kAllowedDistanceDelta);
   }
 
   // now change rotation speed at each time interval
-  expectedDistance = speedometer.getDistance();
-  for (uint8_t index = 0; index < nbrOfTravelTimes; index++) {
+  expected_distance = speedometer.get_traveled_distance();
+  for (auto travel_time : kTravelTimes) {
     // update the rotation speed
-    pedalRotationTime += bike_computer::kDeltaPedalRotationTime;
-    speedometer.setCurrentRotationTime(pedalRotationTime);
+    pedal_rotation_time += bike_computer::kDeltaPedalRotationTime;
+    speedometer.set_current_pedal_rotation_time(pedal_rotation_time);
 
     // run for the travel time and get the distance
-    zpp_lib::ThisThread::sleep_for(travelTimes[index]);
+    zpp_lib::ThisThread::sleep_for(travel_time);
 
     // compute the expected distance for this time segment
-    float distance = compute_distance(pedalRotationTime, traySize, gearSize, wheelCircumference, travelTimes[index]);
-    expectedDistance += distance;
+    float distance = compute_distance(pedal_rotation_time, tray_size, gear_size, wheel_circumference, travel_time);
+    expected_distance += distance;
 
     // get the distance traveled
-    const auto traveledDistance = speedometer.getDistance();
+    auto traveled_distance = speedometer.get_traveled_distance();
 
-    printf("  Expected distance is %f, current distance is %f\n",
-           static_cast<double>(expectedDistance),
-           static_cast<double>(traveledDistance));
-    zassert_within(traveledDistance, expectedDistance, kAllowedDistanceDelta);
+    printk("  Expected distance is %f, current distance is %f\n",
+           static_cast<double>(expected_distance),
+           static_cast<double>(traveled_distance));
+    zpp_zassert_within(traveled_distance, expected_distance, kAllowedDistanceDelta);
   }
 }
 
@@ -245,53 +250,55 @@ ZTEST(speedometer, test_reset) {
   bike_computer::Speedometer speedometer;
 
   // set the gear size
-  speedometer.setGearSize(bike_computer::kMinGearSize);
+  speedometer.set_gear_size(bike_computer::kMinGearSize);
 
   // get speedometer constant values
-  const auto traySize           = speedometer.getTraySize();
-  const auto wheelCircumference = speedometer.getWheelCircumference();
-  const auto gearSize           = speedometer.getGearSize();
-  const auto pedalRotationTime  = speedometer.getCurrentPedalRotationTime();
+  auto tray_size           = speedometer.get_tray_size();
+  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto gear_size           = speedometer.get_gear_size();
+  auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 
   // travel for 5 seconds
   using std::literals::chrono_literals::operator""ms;
-  const auto travelTime = 5000ms;
-  zpp_lib::ThisThread::sleep_for(travelTime);
+  const auto kTravelTime = 5000ms;
+  zpp_lib::ThisThread::sleep_for(kTravelTime);
 
   // check the expected distaance traveled
-  const auto expectedDistance = compute_distance(pedalRotationTime, traySize, gearSize, wheelCircumference, travelTime);
+  auto expected_distance = compute_distance(pedal_rotation_time, tray_size, gear_size, wheel_circumference, kTravelTime);
 
   // get the distance traveled
-  auto traveledDistance = speedometer.getDistance();
+  auto traveled_distance = speedometer.get_traveled_distance();
 
-  printk(
-      "  Expected distance is %f, current distance is %f\n", static_cast<double>(expectedDistance), static_cast<double>(traveledDistance));
-  zassert_within(traveledDistance, expectedDistance, kAllowedDistanceDelta);
+  ZPP_LOG_INF("  Expected distance is %f, current distance is %f\n",
+              static_cast<double>(expected_distance),
+              static_cast<double>(traveled_distance));
+  zpp_zassert_within(traveled_distance, expected_distance, kAllowedDistanceDelta);
 
   // reset the speedometer
   speedometer.reset();
 
   // traveled distance should now be zero
-  traveledDistance = speedometer.getDistance();
+  traveled_distance = speedometer.get_traveled_distance();
 
-  printk("  Expected distance is %f, current distance is %f\n", 0.0, static_cast<double>(traveledDistance));
-  zassert_within(0.0f, traveledDistance, kAllowedDistanceDelta);
+  ZPP_LOG_INF("  Expected distance is %f, current distance is %f\n", 0.0, static_cast<double>(traveled_distance));
+  zpp_zassert_within(0.0F, traveled_distance, kAllowedDistanceDelta);
 
   // travel again for 5 seconds
-  zpp_lib::ThisThread::sleep_for(travelTime);
+  zpp_lib::ThisThread::sleep_for(kTravelTime);
 
   // reset the speedometer without getting the distance
   speedometer.reset();
 
   // travel again for 5 seconds
-  zpp_lib::ThisThread::sleep_for(travelTime);
+  zpp_lib::ThisThread::sleep_for(kTravelTime);
 
   // get the distance traveled
-  traveledDistance = speedometer.getDistance();
+  traveled_distance = speedometer.get_traveled_distance();
 
-  printk(
-      "  Expected distance is %f, current distance is %f\n", static_cast<double>(expectedDistance), static_cast<double>(traveledDistance));
-  zassert_within(traveledDistance, expectedDistance, kAllowedDistanceDelta);
+  ZPP_LOG_INF("  Expected distance is %f, current distance is %f\n",
+              static_cast<double>(expected_distance),
+              static_cast<double>(traveled_distance));
+  zpp_zassert_within(traveled_distance, expected_distance, kAllowedDistanceDelta);
 }
 
 ZTEST_SUITE(speedometer, NULL, NULL, NULL, NULL, NULL);
