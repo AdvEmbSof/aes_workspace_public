@@ -58,7 +58,7 @@ private:
   zpp_lib::Display::Color _color = zpp_lib::Display::Color::Blue;
 
   static constexpr uint32_t kLineThickness   = 2;
-  static constexpr uint32_t kIconXMargin     = 20;
+  static constexpr uint32_t kIconXMargin     = 15;
   static constexpr uint32_t kTextXMargin     = 30;
   static constexpr uint8_t kSpeedometerIndex = 0;
   static constexpr uint8_t kGearIndex        = 1;

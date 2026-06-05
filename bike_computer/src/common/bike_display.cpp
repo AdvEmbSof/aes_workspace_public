@@ -184,12 +184,12 @@ void BikeDisplay::display_gear(uint8_t gear) {
   _display.draw_string_at(_color, text_xpos, text_ypos, str);
 }
 
-inline std::string print_msg(double value, const char* unit) {
+inline std::string print_msg(double value, const char* format) {
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
   char buf[32] = {};
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
-  snprintf(buf, sizeof(buf), "%.2f %s", value, unit);
+  snprintf(buf, sizeof(buf), format, value);
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
   return {buf};
 }
@@ -197,7 +197,7 @@ inline std::string print_msg(double value, const char* unit) {
 void BikeDisplay::display_speed(float speed) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str    = print_msg(speed, "km/h");
+  std::string str    = print_msg(speed, "%.1f km/h");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _speedometer_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _speedometer_text_ypos - (_display.get_font()->height / 2);
@@ -207,7 +207,7 @@ void BikeDisplay::display_speed(float speed) {
 void BikeDisplay::display_distance(float distance) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str    = print_msg(distance, "km");
+  std::string str    = print_msg(distance, "%.2f km");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _distance_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _distance_text_ypos - (_display.get_font()->height / 2);
@@ -217,7 +217,9 @@ void BikeDisplay::display_distance(float distance) {
 void BikeDisplay::display_temperature(float temperature) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
-  std::string str    = print_msg(temperature, "\260C");
+  std::string str    = print_msg(temperature,
+                              "%.1f \xB0"
+                                 "C");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _temperature_text_mid_xpos - (str_width / 2);
   uint32_t text_ypos = _temperature_text_ypos - (_display.get_font()->height / 2);
