@@ -19,7 +19,8 @@ jobs:
     secrets:
       personal_access_token: ${{ secrets.ADVEMBSOF_2025_2026 }}
     with:
-      test-on: '["bike_computer"]' # JSON array of applications to run twister tests
+      application: 'bike_computer'
+      tags: "phase_a"
     permissions:
       checks: write
       pull-requests: write
