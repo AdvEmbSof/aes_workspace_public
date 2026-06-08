@@ -37,9 +37,8 @@
 
 namespace multi_tasking {
 
-template <typename T, class DataGenerator>
-class Producer {
- public:
+template <typename T, class DataGenerator> class Producer {
+public:
   explicit Producer(Buffer<T>& buffer)
       : _buffer(buffer), _producerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ProducerThread") {}
 
@@ -53,7 +52,7 @@ class Producer {
     __ASSERT(res, "Cannot join producer thread: %d", (int)res.error());
   }
 
- private:
+private:
   void producerMethod() {
     while (true) {
       T producerData = DataGenerator::produceNextValue();
@@ -62,7 +61,7 @@ class Producer {
     }
   }
 
- private:
+private:
   static constexpr std::chrono::milliseconds kProduceWaitTime = 500ms;
   Buffer<T>& _buffer;
   zpp_lib::Thread _producerThread;

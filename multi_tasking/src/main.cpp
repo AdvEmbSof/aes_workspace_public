@@ -45,16 +45,20 @@
 LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 class RandomIntGenerator {
- public:
+public:
   static constexpr uint8_t kMaxRandomValue = 20;
 
-  static uint32_t produceNextValue() { return sys_rand32_get() % kMaxRandomValue; }
+  static uint32_t produceNextValue() {
+    return sys_rand32_get() % kMaxRandomValue;
+  }
 };
 
 class RandomDoubleGenerator {
- public:
+public:
   static constexpr double randomValues[] = {1.1, 2.2, 3.3, 4.4, 5.5};
-  static double produceNextValue() { return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))]; }
+  static double produceNextValue() {
+    return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))];
+  }
 };
 
 struct Rect {
@@ -68,9 +72,11 @@ std::ostream& operator<<(std::ostream& os, const Rect& rect) {
 }
 
 class RandomRectGenerator {
- public:
+public:
   static constexpr Rect randomValues[] = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
-  static Rect produceNextValue() { return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))]; }
+  static Rect produceNextValue() {
+    return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))];
+  }
 };
 
 int main(void) {

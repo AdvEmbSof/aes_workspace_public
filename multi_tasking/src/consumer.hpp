@@ -34,9 +34,8 @@
 
 namespace multi_tasking {
 
-template <typename T>
-class Consumer {
- public:
+template <typename T> class Consumer {
+public:
   explicit Consumer(Buffer<T>& buffer)
       : _buffer(buffer), _consumerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ConsumerThread") {}
   void start() {
@@ -48,7 +47,7 @@ class Consumer {
     __ASSERT(res, "Cannot join consumer thread: %d", (int)res.error());
   }
 
- private:
+private:
   void consume(T data) {
     // does nothing
   }
@@ -61,7 +60,7 @@ class Consumer {
     }
   }
 
- private:
+private:
   Buffer<T>& _buffer;
   zpp_lib::Thread _consumerThread;
 };

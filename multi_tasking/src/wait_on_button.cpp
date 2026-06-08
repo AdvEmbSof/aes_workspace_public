@@ -49,7 +49,9 @@ zpp_lib::ZephyrResult WaitOnButton::start() {
   return res;
 }
 
-void WaitOnButton::wait_started() { _event.wait_any(kStartedEvent); }
+void WaitOnButton::wait_started() {
+  _event.wait_any(kStartedEvent);
+}
 
 void WaitOnButton::wait_exit() {
   auto res = _thread.join();

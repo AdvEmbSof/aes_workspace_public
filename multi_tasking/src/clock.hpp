@@ -38,7 +38,7 @@ namespace multi_tasking {
 using std::literals::chrono_literals::operator""ms;
 
 class ClockUnsafe {
- public:
+public:
   struct DateTimeType {
     uint32_t day;
     uint32_t hour;
@@ -51,7 +51,7 @@ class ClockUnsafe {
   // method called for starting the clock demo
   zpp_lib::ZephyrResult start();
 
- private:
+private:
   void displayFromTicker();
   void displayCurrentTime();
   void updateFromTicker();

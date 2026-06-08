@@ -35,14 +35,14 @@
 namespace multi_tasking {
 
 class WaitOnButton {
- public:
+public:
   explicit WaitOnButton(const char* threadName);
 
   [[nodiscard]] zpp_lib::ZephyrResult start();
   void wait_started();
   void wait_exit();
 
- private:
+private:
   void waitForButtonEvent();
   void buttonPressed();
 

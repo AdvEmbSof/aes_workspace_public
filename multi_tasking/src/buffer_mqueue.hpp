@@ -39,7 +39,7 @@ static constexpr uint8_t kLedOff = 0;
 static constexpr uint8_t kLedOn  = 1;
 
 class Buffer {
- public:
+public:
   Buffer() : _producerLed(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumerLed(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
 
   uint32_t append(uint32_t data) {
@@ -86,7 +86,7 @@ class Buffer {
     return std::chrono::milliseconds((sys_rand32_get() % waitTime.count()) + waitTime.count());
   }
 
- private:
+private:
   static constexpr std::chrono::milliseconds kApppendWaitTime = 500ms;
   static constexpr std::chrono::milliseconds kExtractWaitTime = 500ms;
   static constexpr uint8_t kBufferSize                        = 10;

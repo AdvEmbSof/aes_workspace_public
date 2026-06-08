@@ -35,9 +35,7 @@ LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 namespace multi_tasking {
 
 ClockUnsafe::ClockUnsafe()
-    : _displayQueue("CDQueue"),
-      _displayWork(std::bind(&ClockUnsafe::displayCurrentTime, this)),
-      _updateQueue("TQueue"),
+    : _displayQueue("CDQueue"), _displayWork(std::bind(&ClockUnsafe::displayCurrentTime, this)), _updateQueue("TQueue"),
       _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
       _updateWork(std::bind(&ClockUnsafe::updateCurrentTime, this)) {}
 

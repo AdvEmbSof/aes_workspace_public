@@ -35,11 +35,8 @@ LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 namespace multi_tasking {
 
 Clock::Clock()
-    : _displayQueue("CDQueue"),
-      _displayWork(this, &Clock::displayCurrentTime),
-      _updateQueue("TQueue"),
-      _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
-      _updateWork(this, &Clock::updateCurrentTime) {}
+    : _displayQueue("CDQueue"), _displayWork(this, &Clock::displayCurrentTime), _updateQueue("TQueue"),
+      _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"), _updateWork(this, &Clock::updateCurrentTime) {}
 
 zpp_lib::ZephyrResult Clock::start() {
   // Start a thread for running the _tickerQueue work queue.

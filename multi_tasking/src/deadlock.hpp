@@ -37,13 +37,13 @@ namespace multi_tasking {
 using std::literals::chrono_literals::operator""us;
 
 class Deadlock {
- public:
+public:
   Deadlock(int index, const char* threadName);
 
   void start();
   void wait();
 
- private:
+private:
   void execute();
 
   // time that the threads should spend processing (e.g. wait in our case)
