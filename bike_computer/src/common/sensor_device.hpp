@@ -50,4 +50,4 @@ private:
   const struct device* _sensor_device = nullptr;
 };
 
-} // namespace bike_computer
+}  // namespace bike_computer

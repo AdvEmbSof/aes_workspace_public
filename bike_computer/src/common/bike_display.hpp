@@ -100,6 +100,6 @@ public:
   void display_temperature(float temperature) {}
 };
 
-#endif // CONFIG_DISPLAY == 1
+#endif  // CONFIG_DISPLAY == 1
 
-} // namespace bike_computer
+}  // namespace bike_computer

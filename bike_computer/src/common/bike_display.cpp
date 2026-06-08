@@ -226,6 +226,6 @@ void BikeDisplay::display_temperature(float temperature) {
   _display.draw_string_at(_color, text_xpos, text_ypos, str);
 }
 
-#endif // CONFIG_DISPLAY
+#endif  // CONFIG_DISPLAY
 
-} // namespace bike_computer
+}  // namespace bike_computer

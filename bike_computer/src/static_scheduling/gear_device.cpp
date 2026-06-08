@@ -73,4 +73,4 @@ uint8_t GearDevice::get_current_gear_size() const {
   return bike_computer::kMaxGearSize - _current_gear;
 }
 
-} // namespace bike_computer::static_scheduling
+}  // namespace bike_computer::static_scheduling

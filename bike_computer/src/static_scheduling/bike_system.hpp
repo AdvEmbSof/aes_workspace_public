@@ -91,4 +91,4 @@ private:
   TaskManager _task_manager;
 };
 
-} // namespace bike_computer::static_scheduling
+}  // namespace bike_computer::static_scheduling

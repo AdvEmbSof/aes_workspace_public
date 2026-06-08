@@ -48,8 +48,8 @@ static constexpr float kAllowedDistanceDelta = 1.0F / 1000.0F;
 // Internal function
 void check_current_speed(const std::chrono::milliseconds& pedal_rotation_time,
                          uint8_t tray_size,
-                         uint8_t gear_size,         // NOLINT(bugprone-easily-swappable-parameters)
-                         float wheel_circumference, // NOLINT(bugprone-easily-swappable-parameters)
+                         uint8_t gear_size,          // NOLINT(bugprone-easily-swappable-parameters)
+                         float wheel_circumference,  // NOLINT(bugprone-easily-swappable-parameters)
                          float current_speed) {
   // compute the number of pedal rotation per hour
   uint32_t milliseconds_per_hour = 1000 * 3600;
@@ -69,7 +69,7 @@ void check_current_speed(const std::chrono::milliseconds& pedal_rotation_time,
 // Internal function
 float compute_distance(const std::chrono::milliseconds& pedal_rotation_time,
                        uint8_t tray_size,
-                       uint8_t gear_size, // NOLINT(bugprone-easily-swappable-parameters)
+                       uint8_t gear_size,  // NOLINT(bugprone-easily-swappable-parameters)
                        float wheel_circumference,
                        const std::chrono::milliseconds& travel_time) {
   // compute the number of pedal rotation during travel time

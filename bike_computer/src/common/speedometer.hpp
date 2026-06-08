@@ -38,7 +38,7 @@
 // stl
 #if CONFIG_TEST
 #include <functional>
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 
 namespace bike_computer {
 
@@ -72,7 +72,7 @@ public:
   std::chrono::milliseconds get_current_pedal_rotation_time() const;
   using CallbackFunction = std::function<void()>;
   void set_on_reset_callback(CallbackFunction cb);
-#endif // CONFIG_TEST == 1
+#endif  // CONFIG_TEST == 1
 
 private:
   // private methods
@@ -99,7 +99,7 @@ private:
 
 #if CONFIG_TEST == 1
   std::function<void()> _cb;
-#endif // CONFIG_TEST == 1
+#endif  // CONFIG_TEST == 1
 };
 
-} // namespace bike_computer
+}  // namespace bike_computer

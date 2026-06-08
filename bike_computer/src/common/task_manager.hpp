@@ -64,7 +64,7 @@ private:
 #if CONFIG_TEST
   void check_task_time(TaskType taskType);
   bool is_within_expected_time(TaskType taskType);
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 
   // constants
   static constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {"Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
@@ -85,7 +85,7 @@ private:
   std::chrono::microseconds _dephased_task_start_time[kNbrOfTaskTypes] = {0ms};
   uint32_t _nbr_of_calls[kNbrOfTaskTypes]                              = {0};
   std::chrono::microseconds _phase;
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 };
 
-} // namespace bike_computer
+}  // namespace bike_computer

@@ -27,7 +27,7 @@
 // zephyr
 #if CONFIG_TEST
 #include <zephyr/ztest.h>
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 // #include <zephyr/tracing/tracing.h>
 
 // std
@@ -48,7 +48,7 @@ void TaskManager::initialize_phase() {
     _nbr_of_calls[task_index] = 0;
   }
   _phase = zpp_lib::Time::get_uptime();
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 }
 
 void TaskManager::register_task_start(TaskType task_type) {
@@ -60,7 +60,7 @@ void TaskManager::register_task_start(TaskType task_type) {
 #if CONFIG_TEST
   // we assert that task_index is valid in the beginning of the method
   _dephased_task_start_time[task_index] = _task_start_time[task_index] - _phase;
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 }
 
 void TaskManager::simulate_computation_time(TaskType task_type, bool allow_sleep) {
@@ -138,6 +138,6 @@ bool TaskManager::is_within_expected_time(TaskType task_type) {
   auto expected_task_end_time = kTaskPeriods[task_index] * (_nbr_of_calls[task_index] + 1);
   return (_dephased_task_start_time[task_index] + kTaskComputationTimes[task_index]) < expected_task_end_time;
 }
-#endif // CONFIG_TEST
+#endif  // CONFIG_TEST
 
-} // namespace bike_computer
+}  // namespace bike_computer

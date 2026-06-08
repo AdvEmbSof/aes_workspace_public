@@ -47,7 +47,7 @@ public:
     // this cast is ugly but the only way to pass a reference to this instance to the
     // timer
     // cppcheck-suppress cstyleCast
-    _timer.user_data = (void*)this; // NOLINT(readability/casting)
+    _timer.user_data = (void*)this;  // NOLINT(readability/casting)
     k_work_init(&_work, &TTCE::_workHandler);
     // initialize the work queue
     k_work_queue_init(&_workQueue);
@@ -120,7 +120,7 @@ private:
       // this cast is ugly but the only way to pass a reference
       // to this instance to the timer
       // cppcheck-suppress cstyleCast
-      TTCE* pTTCE = (TTCE*)timer_id->user_data; // NOLINT(readability/casting)
+      TTCE* pTTCE = (TTCE*)timer_id->user_data;  // NOLINT(readability/casting)
       auto ret    = k_work_submit_to_queue(&pTTCE->_workQueue, &pTTCE->_work);
       if (ret != 0 && ret != 1 && ret != 2) {
         __ASSERT(false, "Failed to submit work: %d", ret);
@@ -134,7 +134,7 @@ private:
     // we need in the _workHandler method
     // CASTING IS POSSIBLE ONLY WHEN k_work IS THE FIRST ATTRIBUTE IN THE CLASS
     // cppcheck-suppress dangerousTypeCast
-    TTCE* pTTCE = (TTCE*)item; // NOLINT(readability/casting)
+    TTCE* pTTCE = (TTCE*)item;  // NOLINT(readability/casting)
 
     // if an initial task is set, execute it and reset it
     if (pTTCE->_initialTask != nullptr) {
@@ -163,4 +163,4 @@ private:
   F _initialTask                                     = nullptr;
 };
 
-} // namespace bike_computer
+}  // namespace bike_computer

@@ -52,4 +52,4 @@ private:
   std::chrono::microseconds _press_time{std::chrono::microseconds::zero()};
 };
 
-} // namespace bike_computer::static_scheduling
+}  // namespace bike_computer::static_scheduling

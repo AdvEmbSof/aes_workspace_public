@@ -51,4 +51,4 @@ private:
   zpp_lib::InterruptIn _button4;
 };
 
-} // namespace bike_computer::static_scheduling
+}  // namespace bike_computer::static_scheduling

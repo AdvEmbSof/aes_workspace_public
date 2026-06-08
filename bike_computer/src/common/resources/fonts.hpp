@@ -34,6 +34,6 @@ namespace bike_computer {
 extern const zpp_lib::Display::Font* get_font16();
 extern const zpp_lib::Display::Font* get_font18();
 
-} // namespace bike_computer
+}  // namespace bike_computer
 
-#endif // CONFIG_DISPLAY == 1
+#endif  // CONFIG_DISPLAY == 1
