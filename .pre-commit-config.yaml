@@ -16,6 +16,13 @@ repos:
   rev: '2.0.2'
   hooks:
   -   id: cpplint
+- repo: local
+  hooks:
+    - id: clang-tidy
+      name: clang-tidy
+      language: system
+      entry: scripts/run-clang-tidy.sh
+      pass_filenames: false
 #- repo: https://github.com/johnor/pre-commit-lizard
 #  rev: 'v1.17.10' 
 #  hooks:
