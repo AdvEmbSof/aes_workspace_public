@@ -7,6 +7,7 @@ Checks: >
   readability-*,
   performance-*,
   bugprone-*,
+  clang-analyzer-core.*,
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -modernize-use-trailing-return-type,
