@@ -27,14 +27,21 @@ build-qemu app spec="" clean="yes":
     west "${build_args[@]}" "${extra_confs[@]}"
     
 # TESTS WITH TWISTER
-test test-pattern="":
-    west twister -T bike_computer/tests \
-      {{ if test-pattern != "" { "--test-pattern " + test-pattern } else { "" } }} \
-      --device-testing --hardware-map nrf5340_map_mint.yaml
+test app="bike_computer" tags="":
+    #!/usr/bin/env bash
+    echo {{app}} {{tags}}
+    IFS='+,' read -r -a tag_names <<< "{{tags}}"
+    for tag_name in "${tag_names[@]}"; do [[ -n "$tag_name" ]] || continue; extra_tags+=(--tag "${tag_name}"); done
+    printf '%q ' west twister -T {{app}}/tests "${extra_tags[@]}" "--device-testing" "--hardware-map" "nrf5340_map_mint.yaml"; printf '\n'
+    west twister -T {{app}}/tests "${extra_tags[@]}" --device-testing --hardware-map nrf5340_map_mint.yaml
 
-test-qemu test-pattern="":
-    west twister -p qemu_x86 -T bike_computer/tests \
-      {{ if test-pattern != "" { "--test-pattern " + test-pattern } else { "" } }}
+test-qemu app="bike_computer" tags="":
+    #!/usr/bin/env bash
+    echo {{app}} {{tags}}
+    IFS='+,' read -r -a tag_names <<< "{{tags}}"
+    for tag_name in "${tag_names[@]}"; do [[ -n "$tag_name" ]] || continue; extra_tags+=(--tag "${tag_name}"); done
+    printf '%q ' west twister -p qemu_x86 -T {{app}}/tests "${extra_tags[@]}"; printf '\n'
+    west twister -p qemu_x86 -T {{app}}/tests "${extra_tags[@]}"
 
 # CLANG-TIDY
 clang-tidy app="bike_computer":
