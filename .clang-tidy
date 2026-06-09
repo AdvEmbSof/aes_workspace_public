@@ -1,0 +1,42 @@
+# .clang-tidy
+---
+Checks: >
+  -*, 
+  cppcoreguidelines-*,
+  modernize-*,
+  readability-*,
+  performance-*,
+  bugprone-*,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -modernize-use-trailing-return-type,
+  -readability-identifier-length,
+
+# Treat all warnings as errors in CI
+WarningsAsErrors: "cppcoreguidelines-*"
+
+# Only analyse your application headers, not Zephyr headers
+HeaderFilterRegex: "/home/serge/embsys/weather_station/*/.*"
+
+# Explicitly exclude Zephyr and dependency headers (clang-tidy 22+)
+ExcludeHeaderFilterRegex: ".*/deps/zephyr/.*"
+
+FormatStyle: file
+
+CheckOptions:
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.ConstantCase
+    value: CamelCase
+  - key: readability-identifier-naming.ConstantPrefix
+    value: "k"
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: "_"
+  - key: readability-function-cognitive-complexity.Threshold
+    value: 120
+  - key: readability-function-cognitive-complexity.DescribeBasicIncrements
+    value: false     

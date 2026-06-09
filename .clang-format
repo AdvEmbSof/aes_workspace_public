@@ -1,0 +1,15 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 2
+Language: Cpp
+ColumnLimit: 140
+AlignConsecutiveAssignments: true
+DerivePointerAlignment: false
+PointerAlignment: Left
+BinPackArguments: false
+BinPackParameters: false
+IndentAccessModifiers: false
+AllowShortFunctionsOnASingleLine: Empty
+BreakBeforeBraces: Attach
+ReferenceAlignment: Left
+SpacesBeforeTrailingComments: 2
