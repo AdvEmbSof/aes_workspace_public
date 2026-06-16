@@ -2,12 +2,13 @@
 ---
 Checks: >
   -*, 
+  bugprone-*,
+  clang-analyzer-*,
   cppcoreguidelines-*,
   modernize-*,
-  readability-*,
   performance-*,
-  bugprone-*,
-  clang-analyzer-core.*,
+  portability-*,
+  readability-*,
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -modernize-use-trailing-return-type,

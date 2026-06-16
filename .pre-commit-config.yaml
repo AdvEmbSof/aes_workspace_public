@@ -12,10 +12,13 @@ repos:
   rev: 'v22.1.5'
   hooks:
   -   id: clang-format
-- repo: https://github.com/cpplint/cpplint
-  rev: '2.0.2'
+- repo: local
   hooks:
-  -   id: cpplint
+  - id: copyright
+    name: Check copyright
+    entry: scripts/check_copyright.sh
+    language: system
+    files: \.(c|cc|cpp|cxx|h|hpp|hxx)$
 - repo: local
   hooks:
     - id: clang-tidy
