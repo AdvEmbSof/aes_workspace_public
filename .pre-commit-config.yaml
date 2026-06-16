@@ -24,5 +24,5 @@ repos:
     - id: clang-tidy
       name: clang-tidy
       language: system
-      entry: scripts/run-clang-tidy.sh
+      entry: scripts/run_clang_tidy.sh
       pass_filenames: false
