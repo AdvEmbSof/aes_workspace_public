@@ -172,8 +172,9 @@ void BikeDisplay::display_gear(uint8_t gear) {
   _display.set_font(get_font18());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
   // std::string str    = std::format("{}", static_cast<uint32_t>(gear));
+  constexpr uint32_t kMaxGearStrLength = 4;  // max string lenght is 4 characters
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
-  char buf[32] = {};
+  char buf[kMaxGearStrLength] = {};
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
   snprintf(buf, sizeof(buf), "%1d", gear);
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
@@ -186,8 +187,9 @@ void BikeDisplay::display_gear(uint8_t gear) {
 
 inline std::string print_msg(double value, const char* format) {
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
+  constexpr uint32_t kMaxGearStrLength = 10;  // max string length is 10 characters
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
-  char buf[32] = {};
+  char buf[kMaxGearStrLength] = {};
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
   snprintf(buf, sizeof(buf), format, value);
   // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
@@ -218,7 +220,7 @@ void BikeDisplay::display_temperature(float temperature) {
   _display.set_font(get_font16());
   // std::format produces a link error when compiled for qemu_x86, so we use snprintf instead
   std::string str    = print_msg(temperature,
-                              "%.1f \xB0"
+                                 "%.1f \xB0"
                                  "C");
   uint32_t str_width = _display.get_string_width(str);
   uint32_t text_xpos = _temperature_text_mid_xpos - (str_width / 2);
