@@ -44,10 +44,18 @@ test-qemu app="bike_computer" tags="":
     west twister -p qemu_x86 -T {{app}}/tests "${extra_tags[@]}"
 
 # CLANG-TIDY
-clang-tidy app="bike_computer":
+clang-tidy app="bike_computer" spec="":
+    #!/usr/bin/env bash
     # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
-    west build -b native_sim {{app}} --pristine --extra-conf prj_debug.conf --extra-conf prj_log.conf -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-
+    echo {{app}} {{spec}}
+    extra_confs=()
+    build_args=(build -b native_sim {{app}} --pristine)
+    IFS='+,' read -r -a spec_names <<< "{{spec}}"
+    for spec_name in "${spec_names[@]}"; do [[ -n "$spec_name" ]] || continue; extra_confs+=(--extra-conf "prj_${spec_name}.conf"); done
+    extra_args=(-- DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
+    printf '%q ' west "${build_args[@]}" "${extra_confs[@]}" "${extra_args[@]}"; printf '\n'
+    west "${build_args[@]}" "${extra_confs[@]}" "${extra_args[@]}"
+    
     # Step 2 — filter the compile_commands.json file for compatibility with clang-tidy
     mkdir -p build_clang
     python3 scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json
@@ -55,10 +63,18 @@ clang-tidy app="bike_computer":
     # Step 3 — run clang-tidy against the filtered database
     clang-tidy -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
 
-run-clang-tidy app="bike_computer":
-    # Step 1 — build to get compile_commands.json
-    west build -b native_sim {{app}} --pristine --extra-conf prj_debug.conf --extra-conf prj_log.conf -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-
+run-clang-tidy app="bike_computer" spec="":
+    # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
+    #!/usr/bin/env bash
+    echo {{app}} {{spec}}
+    extra_confs=()
+    build_args=(build -b native_sim {{app}} --pristine)
+    IFS='+,' read -r -a spec_names <<< "{{spec}}"
+    for spec_name in "${spec_names[@]}"; do [[ -n "$spec_name" ]] || continue; extra_confs+=(--extra-conf "prj_${spec_name}.conf"); done
+    extra_args=(-- DCMAKE_EXPORT_COMPILE_COMMANDS=ON)
+    printf '%q ' west "${build_args[@]}" "${extra_confs[@]}" "${extra_args[@]}"; printf '\n'
+    west "${build_args[@]}" "${extra_confs[@]}" "${extra_args[@]}"
+    
     # Step 2 — filter the compile_commands.json file for compatibility with clang-tidy
     mkdir -p build_clang
     python3 scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json

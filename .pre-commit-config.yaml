@@ -1,4 +1,4 @@
-files: ^(blinky/src/main.cpp)|^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/src/multi_tasking)|^(bike_computer/tests)|^(multi_tasking)|^(memory)|^(programming/src)|^(car_system)
+files: ^(blinky/src/main.cpp)|^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/src/multi_tasking)|^(bike_computer/tests)|^(multi_tasking)|^(memory)|^(programming/src)|^(car_system)|^(sanitize)
 exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)|py$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks

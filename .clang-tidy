@@ -34,6 +34,10 @@ CheckOptions:
     value: lower_case
   - key: readability-identifier-naming.ConstantCase
     value: CamelCase
+  - key: readability-identifier-naming.StaticVariableCase
+    value: lower_case
+  - key: readability-identifier-naming.StaticVariablePrefix
+    value: "s"
   - key: readability-identifier-naming.ConstantPrefix
     value: "k"
   - key: readability-identifier-naming.PrivateMemberPrefix
