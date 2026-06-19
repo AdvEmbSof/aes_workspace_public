@@ -43,7 +43,7 @@ namespace car_system {
 using std::literals::chrono_literals::operator""us;
 
 class TaskRecorder : private zpp_lib::NonCopyable<TaskRecorder> {
- public:
+public:
   explicit TaskRecorder(const PeriodicTaskInfo& taskInfo);
 
   // called by the last thread reaching the barrier for setting the zero time
@@ -85,7 +85,7 @@ class TaskRecorder : private zpp_lib::NonCopyable<TaskRecorder> {
   const ViolationInfo* get_violation_info(uint16_t violationIndex) const;
   void print_all_violations() const;
 
- private:
+private:
   // private methods
   std::chrono::microseconds get_expected_computation_time() const;
   bool has_violation(uint32_t slotIndex) const;

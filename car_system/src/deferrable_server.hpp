@@ -41,14 +41,14 @@
 namespace car_system {
 
 class DeferrableServer : private zpp_lib::NonCopyable<DeferrableServer> {
- public:
+public:
   // method called from CarSystem::start() for starting generation of sporadic events
   void start(zpp_lib::Barrier& barrier, const PeriodicTaskInfo& taskInfo, SporadicTaskGenerator& taskGenerator);
 
   // method called for stopping the generator
   void stop();
 
- private:
+private:
   // stop flag, used for stopping each task (set in stop())
   std::atomic<bool> _stopFlag = false;
 };

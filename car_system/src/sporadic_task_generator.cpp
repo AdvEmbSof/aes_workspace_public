@@ -60,11 +60,11 @@ SporadicTaskGenerator::SporadicTaskGenerator() : _messageQueue(gMsgqBuffer) {}
 
 void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   // Wait that all threads are ready to start
-  std::chrono::milliseconds startExecutionTime =
+  auto startExecutionTime =
 #if CONFIG_TEST
-      std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait(&TaskRecorder::set_zero_time));
+      barrier.wait(&TaskRecorder::set_zero_time);
 #else
-      std::chrono::duration_cast<std::chrono::milliseconds>(barrier.wait());
+      barrier.wait();
 #endif
   LOG_DBG("SporadicTaskGenerator Thread starting at time %lld ms", startExecutionTime.count());
 
@@ -102,10 +102,12 @@ void SporadicTaskGenerator::start(zpp_lib::Barrier& barrier) {
   }
 }
 
-void SporadicTaskGenerator::stop() { _stopFlag = true; }
+void SporadicTaskGenerator::stop() {
+  _stopFlag = true;
+}
 
 zpp_lib::ZephyrBoolResult SporadicTaskGenerator::get_sporadic_task(std::chrono::milliseconds& taskComputationTime,
-                                                                   const std::chrono::milliseconds& timeOut) {
+                                                                   const std::chrono::microseconds& timeOut) {
   zpp_lib::ZephyrBoolResult boolRes = _messageQueue.try_get_for(timeOut, taskComputationTime);
   __ASSERT(!boolRes.has_error(), "Got an error from try_put_for: %d", static_cast<int>(boolRes.error()));
   return boolRes;
@@ -123,7 +125,9 @@ zpp_lib::ZephyrBoolResult SporadicTaskGenerator::resubmit_sporadic_task(const st
 }
 
 #if CONFIG_USERSPACE
-void SporadicTaskGenerator::grant_access(k_tid_t tid) { _messageQueue.grant_access(tid); }
+void SporadicTaskGenerator::grant_access(k_tid_t tid) {
+  _messageQueue.grant_access(tid);
+}
 
 #endif  // CONFIG_USERSPACE
 

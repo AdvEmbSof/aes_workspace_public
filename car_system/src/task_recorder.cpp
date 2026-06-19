@@ -41,7 +41,9 @@ APP_DATA std::chrono::microseconds TaskRecorder::_zeroTime = 0us;
 
 TaskRecorder::TaskRecorder(const PeriodicTaskInfo& taskInfo) : _taskInfo(taskInfo) {}
 
-void TaskRecorder::set_zero_time(const std::chrono::microseconds& zeroTime) { _zeroTime = zeroTime; }
+void TaskRecorder::set_zero_time(const std::chrono::microseconds& zeroTime) {
+  _zeroTime = zeroTime;
+}
 
 void TaskRecorder::start() {
   // stop() must be called before calling start() again
@@ -147,11 +149,17 @@ uint32_t TaskRecorder::get_nbr_of_periods() const {
   return _slotIndex;
 }
 
-uint32_t TaskRecorder::get_nbr_of_timing_violations() const { return _violationCount; }
+uint32_t TaskRecorder::get_nbr_of_timing_violations() const {
+  return _violationCount;
+}
 
-uint32_t TaskRecorder::get_nbr_of_period_timing_violations() const { return count_violations_by_flag(SLOT_PERIOD_VIOLATION); }
+uint32_t TaskRecorder::get_nbr_of_period_timing_violations() const {
+  return count_violations_by_flag(SLOT_PERIOD_VIOLATION);
+}
 
-uint32_t TaskRecorder::get_nbr_of_execution_overshoots() const { return count_violations_by_flag(SLOT_EXEC_OVERSHOOT); }
+uint32_t TaskRecorder::get_nbr_of_execution_overshoots() const {
+  return count_violations_by_flag(SLOT_EXEC_OVERSHOOT);
+}
 
 const TaskRecorder::ViolationInfo* TaskRecorder::get_violation_info(uint16_t violationIndex) const {
   if (violationIndex >= _violationCount) {
@@ -169,32 +177,32 @@ void TaskRecorder::print_all_violations() const {
            violation._slotIndex,
            _taskInfo._szTaskName);
     switch (violation._timingViolation) {
-      case car_system::TaskRecorder::TimingViolation::SLOT_EXEC_OVERSHOOT: {
-        auto expectedComputationTime = get_expected_computation_time();
-        printk("Expected task execution time: %lld usecs, got %lld usecs\n",
-               expectedComputationTime.count(),
-               violation._taskExecutionTime.count());
-      } break;
+    case car_system::TaskRecorder::TimingViolation::SLOT_EXEC_OVERSHOOT: {
+      auto expectedComputationTime = get_expected_computation_time();
+      printk("Expected task execution time: %lld usecs, got %lld usecs\n",
+             expectedComputationTime.count(),
+             violation._taskExecutionTime.count());
+    } break;
 
-      case car_system::TaskRecorder::TimingViolation::SLOT_MISSING: {
-        printk("Slot %d is missing\n", violation._slotIndex);
-      } break;
+    case car_system::TaskRecorder::TimingViolation::SLOT_MISSING: {
+      printk("Slot %d is missing\n", violation._slotIndex);
+    } break;
 
-      case car_system::TaskRecorder::TimingViolation::SLOT_MULTIPLE_FIRE: {
-        printk("Task was scheduled more than once in slot %d\n", violation._slotIndex);
-      } break;
+    case car_system::TaskRecorder::TimingViolation::SLOT_MULTIPLE_FIRE: {
+      printk("Task was scheduled more than once in slot %d\n", violation._slotIndex);
+    } break;
 
-      case car_system::TaskRecorder::TimingViolation::SLOT_BOUNDARY_CROSS: {
-        printk("Task was scheduled over multiple slots starting in slot %d\n", violation._slotIndex);
-      } break;
+    case car_system::TaskRecorder::TimingViolation::SLOT_BOUNDARY_CROSS: {
+      printk("Task was scheduled over multiple slots starting in slot %d\n", violation._slotIndex);
+    } break;
 
-      case car_system::TaskRecorder::TimingViolation::SLOT_PERIOD_VIOLATION: {
-        printk("Multiple timing violations detected in slot %d\n", violation._slotIndex);
-      } break;
+    case car_system::TaskRecorder::TimingViolation::SLOT_PERIOD_VIOLATION: {
+      printk("Multiple timing violations detected in slot %d\n", violation._slotIndex);
+    } break;
 
-      default: {
-        printk("Unhandled violation: %d\n", violation._timingViolation);
-      } break;
+    default: {
+      printk("Unhandled violation: %d\n", violation._timingViolation);
+    } break;
     }
   }
 }
@@ -212,7 +220,9 @@ std::chrono::microseconds TaskRecorder::get_expected_computation_time() const {
   return computationTime;
 }
 
-bool TaskRecorder::has_violation(uint32_t slot_index) const { return find_violation_by_slot(slot_index) != nullptr; }
+bool TaskRecorder::has_violation(uint32_t slot_index) const {
+  return find_violation_by_slot(slot_index) != nullptr;
+}
 
 void TaskRecorder::insert_violation(const ViolationInfo& violationInfo) {
   if (_violationCount >= kMaxNbrOfViolations) {
