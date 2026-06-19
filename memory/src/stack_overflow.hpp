@@ -33,7 +33,7 @@
 namespace memory_demo {
 
 class StackOverflow {
- public:
+public:
   void allocateOnStack() {
     // allocate an array with growing size until it does not fit on the stack anymore
     size_t allocSize = kArraySize * _multiplier;
@@ -49,7 +49,7 @@ class StackOverflow {
     _multiplier++;
   }
 
- private:
+private:
   static constexpr size_t kArraySize = 40;
   double _doubleArray[kArraySize]    = {0};
   size_t _multiplier                 = 1;

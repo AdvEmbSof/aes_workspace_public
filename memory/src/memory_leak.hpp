@@ -30,7 +30,7 @@
 namespace memory_demo {
 
 class MemoryLeak {
- public:
+public:
   static constexpr uint16_t kArraySize = 1024;
 
   // create a memory leak in the constructor itself
@@ -49,7 +49,7 @@ class MemoryLeak {
     }
   }
 
- private:
+private:
   uint8_t* _ptr;
 };
 

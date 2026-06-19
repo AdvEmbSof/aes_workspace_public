@@ -39,7 +39,7 @@ extern struct sys_heap _system_heap;
 namespace memory_demo {
 
 class MemoryFragmenter {
- public:
+public:
   // create a memory leak in the constructor itself
   MemoryFragmenter() {}
 
@@ -104,7 +104,7 @@ class MemoryFragmenter {
     }
   }
 
- private:
+private:
   static constexpr uint8_t kNbrOfBlocks  = 8;
   static constexpr uint16_t kMarginSpace = 1024;
   static constexpr uint8_t kArraySize    = 100;
