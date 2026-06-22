@@ -2,6 +2,14 @@ set shell := ["bash", "-cxu"]
 prefix := "/"
 working_dir := justfile_directory()
 
+# CREATE A NEW APPLICATION FROM github template
+create-app app:
+    #!/usr/bin/env bash
+    echo {{app}}
+    if [[ -d {{app}} ]]; then echo "Directory {{app}} already exists!"; exit 1; fi    
+    git clone --depth 1 https://github.com/AdvEmbSof/template_application.git {{app}}
+    rm -rf {{app}}/.git
+
 # BUILDS FOR THE APPLICATIONS RUNNING ON CONFIGURED REAL HARDWARE
 build app spec="" clean="yes":
     #!/usr/bin/env bash
@@ -64,8 +72,8 @@ clang-tidy app="bike_computer" spec="":
     clang-tidy -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
 
 run-clang-tidy app="bike_computer" spec="":
-    # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
     #!/usr/bin/env bash
+    # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
     echo {{app}} {{spec}}
     extra_confs=()
     build_args=(build -b native_sim {{app}} --pristine)
@@ -80,5 +88,5 @@ run-clang-tidy app="bike_computer" spec="":
     python3 scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json
 
     # Step 3 — run clang-tidy against the filtered database
-    run-clang-tidy -p build_clang "{{working_dir}}/{{app}}/src/.*\\.cpp$"
-    run-clang-tidy -p build_clang "{{working_dir}}/deps/zpp_lib/.*\\.cpp$"
+    run-clang-tidy -p build_clang "{{working_dir}}/{{app}}/src/.*\\.cpp$" --warning-as-error=* -quiet
+    run-clang-tidy -p build_clang "{{working_dir}}/deps/zpp_lib/.*\\.cpp$" --warning-as-error=* -quiet
