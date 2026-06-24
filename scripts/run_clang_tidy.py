@@ -65,6 +65,7 @@ def run_clang_tidy_files(files):
             "build_clang",
             f,
             "--warnings-as-errors=*",
+            "-quiet",
         ])
 
 

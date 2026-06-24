@@ -12,7 +12,21 @@
 		ngpios=<2>;
 		#gpio-cells = <2>;
 	};
+	
+	i2c_emul: i2c_emul@1000 {
+        compatible = "zephyr,i2c-emul-controller";
+        reg = <0x1000 1>;
+        #address-cells = <1>;
+        #size-cells = <0>;
+        clock-frequency = <100000>;
 
+        bme280_emul: bme280@77 {
+            compatible = "bosch,bme280", "bosch,bme280-emul";
+            reg = <0x77>;
+            label = "BME280";
+        };
+    };
+	
 	resources {
 		compatible = "test-gpio-basic-api";
 		out-gpios = <&gpio0 0 0>; /* Pin 0 */
