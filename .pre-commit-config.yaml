@@ -1,4 +1,5 @@
-files: ^(blinky/src/main.cpp)|^(bike_computer/src/main.cpp)|^(bike_computer/src/common)|^(bike_computer/src/static_scheduling)|^(bike_computer/src/multi_tasking)|^(bike_computer/tests)|^(multi_tasking)|^(memory)|^(programming/src)|^(car_system)|^(sanitize)
+files: >
+  ^(blinky)|^(bme280)|^(sanitize)|^(simple_tests)$
 exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)|py$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -22,8 +23,9 @@ repos:
     files: \.(c|cc|cpp|cxx|h|hpp|hxx)$    
 - repo: local
   hooks:
-    - id: clang-tidy
-      name: clang-tidy
-      entry: python scripts/run_clang_tidy.py --files
-      language: system
-      pass_filenames: true
+  - id: clang-tidy
+    name: clang-tidy
+    entry: python scripts/run_clang_tidy.py --files
+    language: system
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx)$

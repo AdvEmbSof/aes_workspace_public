@@ -83,7 +83,7 @@ def main():
     # -----------------------------
     # Full mode
     # -----------------------------
-    app = args[0] if len(args) > 0 else "weather_station"
+    app = args[0] if len(args) > 0 else "bike_computer"
     spec = args[1] if len(args) > 1 else ""
     workdir = args[2] if len(args) > 2 else "."
 
