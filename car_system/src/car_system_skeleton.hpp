@@ -41,7 +41,7 @@ namespace car_system {
 using std::literals::chrono_literals::operator""ms;
 
 class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
- public:
+public:
   // constructor
   CarSystem();
 
@@ -56,7 +56,7 @@ class CarSystem : private zpp_lib::NonCopyable<CarSystem> {
   // method called for stopping the system
   void stop();
 
- private:
+private:
   // task related methods
   void task_method(uint8_t taskIndex);
 

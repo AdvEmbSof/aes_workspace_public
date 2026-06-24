@@ -16,13 +16,14 @@ repos:
   hooks:
   - id: copyright
     name: Check copyright
-    entry: scripts/check_copyright.sh
+    entry: python scripts/check_copyright.py
     language: system
-    files: \.(c|cc|cpp|cxx|h|hpp|hxx)$
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx|h|hpp|hxx)$    
 - repo: local
   hooks:
     - id: clang-tidy
       name: clang-tidy
+      entry: python scripts/run_clang_tidy.py --files
       language: system
-      entry: scripts/run_clang_tidy.sh
-      pass_filenames: false
+      pass_filenames: true

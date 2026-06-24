@@ -23,6 +23,7 @@
  ***************************************************************************/
 
 // std
+#include <atomic>
 #include <memory>
 #include <utility>
 
@@ -48,7 +49,7 @@ struct Test : public zpp_lib::NonCopyable<Test> {
 
   int _value = 0;
   static constexpr uint32_t kMagicNumber = 33;
-  static inline uint32_t s_instance_count = 0;
+  static inline std::atomic<uint32_t> s_instance_count = 0;
 };
 
 /**
