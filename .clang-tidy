@@ -38,8 +38,8 @@ CheckOptions:
     value: lower_case
   - key: readability-identifier-naming.StaticVariablePrefix
     value: "s"
-  - key: readability-identifier-naming.ConstantPrefix
-    value: "k"
+  - key: readability-identifier-naming.ConstexprVariablePrefix
+    value: "k"  
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: "_"
   - key: readability-function-cognitive-complexity.Threshold
