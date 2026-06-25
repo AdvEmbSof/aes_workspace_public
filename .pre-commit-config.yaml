@@ -24,8 +24,32 @@ repos:
 - repo: local
   hooks:
   - id: clang-tidy
-    name: clang-tidy
-    entry: python scripts/run_clang_tidy.py --files
+    name: clang-tidy-blinky
+    entry: python scripts/run_clang_tidy.py --app blinky --specs "log+debug+gpio" --wd "."
+    language: system
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx)$
+  - id: clang-tidy
+    name: clang-tidy-bme280
+    entry: python scripts/run_clang_tidy.py --app bme280 --specs "log+debug+sensor" --wd "."
+    language: system
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx)$
+  - id: clang-tidy
+    name: clang-tidy-sanitize
+    entry: python scripts/run_clang_tidy.py --app sanitize --specs "log+debug+san" --wd "."
+    language: system
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx)$
+  - id: clang-tidy
+    name: clang-tidy-always-succeed
+    entry: python scripts/run_clang_tidy.py --app simple_tests/tests/always_succeed --specs "log+debug+test" --wd "."
+    language: system
+    pass_filenames: true
+    files: \.(c|cc|cpp|cxx)$
+  - id: clang-tidy
+    name: clang-tidy-ptr-test
+    entry: python scripts/run_clang_tidy.py --app simple_tests/tests/ptr_test --specs "log+debug+test" --wd "."
     language: system
     pass_filenames: true
     files: \.(c|cc|cpp|cxx)$

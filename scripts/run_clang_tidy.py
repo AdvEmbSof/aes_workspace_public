@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import sys
 import re
+import argparse
 
 def run(cmd):
     print("+", " ".join(cmd))
@@ -70,31 +71,28 @@ def run_clang_tidy_files(files):
 
 
 def main():
-    args = sys.argv[1:]
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--app", required=True)
+    parser.add_argument("--specs", required=True)
+    parser.add_argument("--wd", required=True)
+    parser.add_argument("files", nargs="*")
 
-    # -----------------------------
-    # Mode detection
-    # -----------------------------
-    if args and args[0] == "--files":
-        files = args[1:]
-        print("Running clang-tidy on files:", files)
-        run_clang_tidy_files(files)
-        return
+    args = parser.parse_args()
+    
+    print(f"App: {args.app}")
+    print(f"Spec: {args.specs}")
 
-    # -----------------------------
-    # Full mode
-    # -----------------------------
-    app = args[0] if len(args) > 0 else "bike_computer"
-    spec = args[1] if len(args) > 1 else ""
-    workdir = args[2] if len(args) > 2 else "."
-
-    print(f"App: {app}")
-    print(f"Spec: {spec}")
-
-    build_database(app, spec)
+    build_database(args.app, args.specs)
     filter_database()
-    run_clang_tidy_patterns(workdir, app)
-
+    if args.files:
+        print("Running clang-tidy on files:")
+        for f in args.files:
+            print(f"  {f}")
+        run_clang_tidy_files(args.files)
+    else:
+        print("Running clang-tidy on app:" + args.app)
+        run_clang_tidy_patterns(args.wd, args.app)
 
 if __name__ == "__main__":
     main()

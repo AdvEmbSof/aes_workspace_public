@@ -33,4 +33,4 @@ clang-tidy app="bike_computer" spec="":
     clang-tidy -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
 
 run-clang-tidy app="bike_computer" spec="":
-    python scripts/run_clang_tidy.py {{app}} {{quote(spec)}} {{working_dir}}
+    python scripts/run_clang_tidy.py --app {{app}} --spec {{quote(spec)}} --wd {{working_dir}}
