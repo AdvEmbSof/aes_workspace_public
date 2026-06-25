@@ -1,5 +1,5 @@
 files: >
-  ^(blinky)|^(bme280)|^(sanitize)|^(simple_tests)$
+  ^(blinky)|^(bme280)|^(sanitize)|^(simple_tests/tests/always_succeed)|^(simple_tests/tests/ptr_test)
 exclude: .*\.(yaml|conf|overlay|txt|bmp|png)$|(Kconfig)|py$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -28,28 +28,28 @@ repos:
     entry: python scripts/run_clang_tidy.py --app blinky --specs "log+debug+gpio" --wd "."
     language: system
     pass_filenames: true
-    files: ^(blinky/.*\.(c|cc|cpp|cxx)$
+    files: ^(blinky)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy
     name: clang-tidy-bme280
     entry: python scripts/run_clang_tidy.py --app bme280 --specs "log+debug+sensor" --wd "."
     language: system
     pass_filenames: true
-    files: ^(bme280/.*\.(c|cc|cpp|cxx)$
+    files: ^(bme280)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy
     name: clang-tidy-sanitize
     entry: python scripts/run_clang_tidy.py --app sanitize --specs "log+debug+san" --wd "."
     language: system
     pass_filenames: true
-    files: ^(sanitize/.*\.(c|cc|cpp|cxx)$
+    files: ^(sanitize)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy
     name: clang-tidy-always-succeed
     entry: python scripts/run_clang_tidy.py --app simple_tests/tests/always_succeed --specs "log+debug+test" --wd "."
     language: system
     pass_filenames: true
-    files: ^(simple_tests/tests/always_succeed/.*\.(c|cc|cpp|cxx)$
+    files: ^(simple_tests/tests/always_succeed)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy
     name: clang-tidy-ptr-test
     entry: python scripts/run_clang_tidy.py --app simple_tests/tests/ptr_test --specs "log+debug+test" --wd "."
     language: system
     pass_filenames: true
-    files: ^(simple_tests/tests/ptr_test/.*\.(c|cc|cpp|cxx)$
+    files: ^(simple_tests/tests/ptr_test)/.*\.(c|cc|cpp|cxx)$

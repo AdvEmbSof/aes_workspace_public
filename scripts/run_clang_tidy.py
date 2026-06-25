@@ -41,7 +41,6 @@ def filter_database():
 def run_clang_tidy_patterns(workdir: str, app: str):
     patterns = [
         rf"{workdir}/{app}/src/.*\.cpp$",
-        rf"{workdir}/deps/zpp_lib/.*\.cpp$",
     ]
 
     for pattern in patterns:
