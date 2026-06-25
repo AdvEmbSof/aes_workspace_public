@@ -30,7 +30,7 @@ clang-tidy app="bike_computer" spec="":
     python3 scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json
 
     # Step 3 — run clang-tidy against the filtered database
-    clang-tidy -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
+    clang-tidy-22 -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
 
 run-clang-tidy app="bike_computer" spec="":
     python scripts/run_clang_tidy.py --app {{app}} --spec {{quote(spec)}} --wd {{working_dir}}

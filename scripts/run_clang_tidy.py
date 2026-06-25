@@ -46,7 +46,7 @@ def run_clang_tidy_patterns(workdir: str, app: str):
 
     for pattern in patterns:
         run([
-            "run-clang-tidy",
+            "run-clang-tidy-22",
             "-p",
             "build_clang",
             pattern,
@@ -61,7 +61,7 @@ def run_clang_tidy_files(files):
             continue
 
         run([
-            "clang-tidy",
+            "clang-tidy-22",
             "-p",
             "build_clang",
             f,
