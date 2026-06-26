@@ -1,6 +1,0 @@
-tests:
-  simple_tests.always_succeed:
-    tags:
-      - cpp
-    extra_conf_files: ["prj_test.conf"]
-      
