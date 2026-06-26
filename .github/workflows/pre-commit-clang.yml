@@ -1,0 +1,53 @@
+name: pre-commit-clang
+
+on:
+  push:
+    branches:
+      - main    
+  pull_request:
+    branches:
+      - main    
+  workflow_dispatch:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      # Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # In a ubuntu image, setup zephyr environment
+      - name: Setup Zephyr
+        uses: AdvEmbSof/setup-zephyr-action@v1
+        timeout-minutes: 5
+        with:
+          sdk_version: ${{ github.event.inputs.sdk_version || '1.0.1' }}
+          path_west_workspace: ${{ github.workspace }}
+          path_west_manifest: ${{ github.workspace }}/manifest-repo/
+      
+      - name: Install pre-commit
+        run: |
+          pip install --upgrade pip
+          pip install pre-commit
+          pre-commit install
+      
+      - name: Install LLVM 22
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 22
+
+          sudo apt-get install -y \
+            clang-tidy-22 \
+            clang-tools-22 \
+            clang-22
+          
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files --color=always --show-diff-on-failure
+        
