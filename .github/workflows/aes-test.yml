@@ -11,16 +11,14 @@ jobs:
     secrets:
       personal_access_token: ${{ secrets.ADVEMBSOF_2025_2026 }}
     with:
-      boards: '["nrf5340dk/nrf5340/cpuapp","qemu_x86"]' # JSON array of target boards for the build
-      applications: '["blinky","sensor-bme280"]' # JSON array of applications to build
-   
+      configuration_file: 'ci/applications_for_build.yaml' # file where build parameters are defined
+      
   test-apps:
     uses: AdvEmbSof/common-workflows/.github/workflows/twister-tests.yml@main
     secrets:
       personal_access_token: ${{ secrets.ADVEMBSOF_2025_2026 }}
     with:
-      application: 'bike_computer'
-      tags: "phase_a"
+      configuration_file: 'ci/applications_for_test.yaml' # file where test parameters are defined      
     permissions:
       checks: write
       pull-requests: write
