@@ -8,12 +8,12 @@ create-app app:
     python {{zpp_lib_dir}}/scripts/create_app.py {{app}}
 
 # BUILDS FOR THE APPLICATIONS RUNNING ON CONFIGURED REAL HARDWARE
-build app specs="" clean="yes":
-    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board {{default_board}} --clean {{clean}} 
+build app specs="" pristine="yes":
+    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board {{default_board}} {{ if pristine == "yes" { "--pristine" } else { "" } }}
 
 # QEMU BUILDS
-build-qemu app specs="" clean="yes":
-    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board "qemu_x86" --clean {{clean}}
+build-qemu app specs="" pristine="yes":
+    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board "qemu_x86" {{ if pristine == "yes" { "--pristine" } else { "" } }}
     
 # TESTS ON HARDWARE
 test test_suite_root map_file tags="":
@@ -26,7 +26,7 @@ test-qemu test_suite_root tags="":
 # CLANG-TIDY
 clang-tidy app specs="":    
     # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
-    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board "native_sim" --clean "yes"
+    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --specs {{quote(specs)}} --board "native_sim" --pristine
     
     # Step 2 — filter the compile_commands.json file for compatibility with clang-tidy
     mkdir -p build_clang
