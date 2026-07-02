@@ -33,7 +33,7 @@
 
 namespace bike_computer::static_scheduling {
 
-class GearDevice : private zpp_lib::NonCopyable<GearDevice> {
+class GearDevice : private zpp_lib::NonCopyable {
 public:
   GearDevice();
 

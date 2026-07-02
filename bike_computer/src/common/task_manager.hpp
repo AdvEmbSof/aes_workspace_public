@@ -37,7 +37,7 @@ namespace bike_computer {
 using std::literals::chrono_literals::operator""ms;
 using std::literals::chrono_literals::operator""us;
 
-class TaskManager : private zpp_lib::NonCopyable<TaskManager> {
+class TaskManager : private zpp_lib::NonCopyable {
 public:
   // TaskType definitions (YOU MUST UPDATE kNbrOfTasksTypes if you modify it)
   enum class TaskType {

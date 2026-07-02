@@ -45,9 +45,10 @@ namespace bike_computer {
 using std::literals::chrono_literals::operator""ms;
 using std::literals::chrono_literals::operator""us;
 
-class Speedometer : private zpp_lib::NonCopyable<Speedometer> {
+class Speedometer : private zpp_lib::NonCopyable {
 public:
   Speedometer();
+  ~Speedometer() = default;
 
   // method used for setting the current pedal rotation time
   void set_current_pedal_rotation_time(const std::chrono::milliseconds& current_rotation_time);

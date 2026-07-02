@@ -37,6 +37,9 @@ public:
   // constructor
   BikeDisplay() = default;
 
+  // destructor
+  ~BikeDisplay() = default;
+  
   // to be called prior to any other method
   zpp_lib::ZephyrResult initialize();
 

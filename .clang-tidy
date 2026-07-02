@@ -13,12 +13,13 @@ Checks: >
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -modernize-use-trailing-return-type,
   -readability-identifier-length,
+  -portability-avoid-pragma-once
 
 # Treat all warnings as errors in CI
 WarningsAsErrors: "cppcoreguidelines-*"
 
 # Only analyse your application headers, not Zephyr headers
-HeaderFilterRegex: "/home/serge/embsys/weather_station/*/.*"
+HeaderFilterRegex: ".*/deps/zpp_lib/.*"
 
 # Explicitly exclude Zephyr and dependency headers (clang-tidy 22+)
 ExcludeHeaderFilterRegex: ".*/deps/zephyr/.*"
@@ -34,6 +35,8 @@ CheckOptions:
     value: lower_case
   - key: readability-identifier-naming.ConstantCase
     value: CamelCase
+  - key: readability-identifier-naming.ConstantCasePrefix
+    value: "k"
   - key: readability-identifier-naming.StaticConstantCase
     value: CamelCase
   - key: readability-identifier-naming.ConstexprVariablePrefix

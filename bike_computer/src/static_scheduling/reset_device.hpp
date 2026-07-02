@@ -30,12 +30,15 @@
 // zpp_lib
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/non_copyable.hpp"
+#include "zpp_include/registration_token.hpp"
 
 namespace bike_computer::static_scheduling {
 
-class ResetDevice : private zpp_lib::NonCopyable<ResetDevice> {
+class ResetDevice : private zpp_lib::NonCopyable {
 public:
+  // constructor and destructor
   ResetDevice();
+  ~ResetDevice() = default;
 
   // method called for checking the reset status
   bool check_reset();
@@ -49,6 +52,7 @@ private:
 
   // data members
   zpp_lib::InterruptIn _button1;
+  zpp_lib::RegistrationToken _button1_token;
   std::chrono::microseconds _press_time{std::chrono::microseconds::zero()};
 };
 

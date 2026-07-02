@@ -39,7 +39,7 @@
 namespace bike_computer {
 
 template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize>
-class TTCE : private zpp_lib::NonCopyable<TTCE<F, NbrOfMinorCycles, MaxMinorCycleSize>> {
+class TTCE : private zpp_lib::NonCopyable {
 public:
   explicit TTCE(std::chrono::milliseconds minorCycle) : _minorCycle(minorCycle) {
     k_timer_init(&_timer, &TTCE::_thunk, nullptr);
@@ -53,6 +53,10 @@ public:
     k_work_queue_init(&_workQueue);
   }
 
+  ~TTCE() {
+    stop();
+  }
+  
   void start() {
     // first start the timer
     k_timeout_t period = zpp_lib::milliseconds_to_ticks(_minorCycle);
@@ -97,12 +101,12 @@ public:
     zpp_lib::ZephyrResult res;
     if (minorCycleIndex >= NbrOfMinorCycles) {
       __ASSERT(false, "Invalid minor cycle index %d", minorCycleIndex);
-      res.assign_error(zpp_lib::ZephyrErrorCode::k_inval);
+      res.assign_error(zpp_lib::ZephyrErrorCode::Inval);
       return res;
     }
     if (_nbrOfTasksInMinorCycle[minorCycleIndex] >= MaxMinorCycleSize) {
       __ASSERT(false, "Too many tasks in minor cycle %d: %d", minorCycleIndex, _nbrOfTasksInMinorCycle[minorCycleIndex] + 1);
-      res.assign_error(zpp_lib::ZephyrErrorCode::k_inval);
+      res.assign_error(zpp_lib::ZephyrErrorCode::Inval);
       return res;
     }
 

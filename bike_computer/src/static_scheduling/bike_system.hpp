@@ -43,7 +43,7 @@
 
 namespace bike_computer::static_scheduling {
 
-class BikeSystem : private zpp_lib::NonCopyable<BikeSystem> {
+class BikeSystem : private zpp_lib::NonCopyable {
 public:
   // constructor
   BikeSystem() = default;

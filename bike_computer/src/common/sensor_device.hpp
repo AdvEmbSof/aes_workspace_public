@@ -33,7 +33,7 @@
 
 namespace bike_computer {
 
-class SensorDevice : private zpp_lib::NonCopyable<SensorDevice> {
+class SensorDevice : private zpp_lib::NonCopyable {
 public:
   // constructor
   SensorDevice() = default;
