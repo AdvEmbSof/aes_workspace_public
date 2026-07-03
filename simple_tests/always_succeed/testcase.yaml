@@ -2,5 +2,9 @@ tests:
   simple_tests.always_succeed:
     tags:
       - cpp
-    extra_conf_files: ["prj_test.conf"]
+    extra_conf_files: 
+      - ../../deps/zpp_lib/configs/prj.conf
+      - ../../deps/zpp_lib/configs/prj_log.conf
+      - ../../deps/zpp_lib/configs/prj_debug.conf
+      - ../../deps/zpp_lib/configs/prj_test.conf
       

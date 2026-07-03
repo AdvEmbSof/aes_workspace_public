@@ -38,8 +38,7 @@
 
 namespace bike_computer {
 
-template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize>
-class TTCE : private zpp_lib::NonCopyable {
+template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize> class TTCE : private zpp_lib::NonCopyable {
 public:
   explicit TTCE(std::chrono::milliseconds minorCycle) : _minorCycle(minorCycle) {
     k_timer_init(&_timer, &TTCE::_thunk, nullptr);
@@ -56,7 +55,7 @@ public:
   ~TTCE() {
     stop();
   }
-  
+
   void start() {
     // first start the timer
     k_timeout_t period = zpp_lib::milliseconds_to_ticks(_minorCycle);

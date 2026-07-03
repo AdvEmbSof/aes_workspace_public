@@ -27,31 +27,31 @@ repos:
   hooks:
   - id: clang-tidy-blinky
     name: clang-tidy-blinky
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app blinky --specs "log+debug+gpio" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app blinky --spec "log+debug+gpio" --wd "."
     language: system
     pass_filenames: true
     files: ^(blinky)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bme280
     name: clang-tidy-bme280
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bme280 --specs "log+debug+sensor" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bme280 --spec "log+debug+sensor" --wd "."
     language: system
     pass_filenames: true
     files: ^(bme280)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-sanitize
     name: clang-tidy-sanitize
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --specs "log+debug+san" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --spec "log+debug+san" --wd "."
     language: system
     pass_filenames: true
     files: ^(sanitize)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-always-succeed
     name: clang-tidy-always-succeed
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/always_succeed --specs "log+debug+test" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/always_succeed --spec "log+debug+test" --wd "."
     language: system
     pass_filenames: true
     files: ^(simple_tests/always_succeed)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-ptr-test
     name: clang-tidy-ptr-test
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/ptr_test --specs "log+debug+test" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/ptr_test --spec "log+debug+test" --wd "."
     language: system
     pass_filenames: true
     files: ^(simple_tests/ptr_test)/.*\.(c|cc|cpp|cxx)$

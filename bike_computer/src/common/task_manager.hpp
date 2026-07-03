@@ -67,7 +67,8 @@ private:
 #endif  // CONFIG_TEST
 
   // constants
-  static constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {"Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
+  static inline constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {
+      "Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
   // kTaskOverheadTime accounts for additional time needed for switching between tasks
   static constexpr std::chrono::microseconds kTaskOverheadTime                      = 1us;
   static constexpr std::chrono::microseconds kTaskComputationTimes[kNbrOfTaskTypes] = {

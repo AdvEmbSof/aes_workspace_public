@@ -36,7 +36,7 @@
 // We inherit from zpp_lib::NonCopyable to prevent accidental copies of the Test class
 // cppcoreguidelines-special-member-functions is therefore a false positive
 // NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
-struct Test : public zpp_lib::NonCopyable<Test> {
+struct Test : public zpp_lib::NonCopyable {
   Test() : _value(kMagicNumber) {
     s_instance_count++;
   }
