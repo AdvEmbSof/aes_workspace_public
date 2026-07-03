@@ -33,11 +33,19 @@ build-qemu app spec pristine="yes":
     python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --spec {{quote(spec)}} --board "qemu_x86" {{ if pristine == "yes" { "--pristine" } else { "" } }}
 
 # TESTS ON HARDWARE
+# Launch all tests as described in the configuration file, for the default board
+test-all map_file config_file="ci/applications_for_test.yaml":
+    python {{zpp_lib_dir}}/scripts/twister_from_config.py --config {{quote(config_file)}} --board {{default_board}} --map-file {{map_file}}
+
 # Launch tests at the specified root, using hardware specified in the map file
 test test_suite_root map_file tags="":
     python {{zpp_lib_dir}}/scripts/twister.py --root {{test_suite_root}} --tags {{quote(tags)}} --board {{default_board}} --map-file {{map_file}}
 
 # TESTS ON QEMU
+# Launch all tests as described in the configuration file, using qemu_x86
+test-all-qemu config_file="ci/applications_for_test.yaml":
+    python {{zpp_lib_dir}}/scripts/twister_from_config.py --config {{quote(config_file)}} --board "qemu_x86"
+
 # Launch tests at the specified root, using qemu_x86
 test-qemu test_suite_root tags="":
     python {{zpp_lib_dir}}/scripts/twister.py --root {{test_suite_root}} --tags {{quote(tags)}} --board "qemu_x86"
