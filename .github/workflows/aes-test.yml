@@ -9,14 +9,14 @@ jobs:
   build-apps:
     uses: AdvEmbSof/common-workflows/.github/workflows/build-zephyr-apps.yml@main
     secrets:
-      personal_access_token: ${{ secrets.ADVEMBSOF_2025_2026 }}
+      personal_access_token: ${{ secrets.ADVEMBSOF_2026_2027 }}
     with:
       configuration_file: 'ci/applications_for_build.yaml' # file where build parameters are defined
       
   test-apps:
     uses: AdvEmbSof/common-workflows/.github/workflows/twister-tests.yml@main
     secrets:
-      personal_access_token: ${{ secrets.ADVEMBSOF_2025_2026 }}
+      personal_access_token: ${{ secrets.ADVEMBSOF_2026_2027 }}
     with:
       configuration_file: 'ci/applications_for_test.yaml' # file where test parameters are defined      
     permissions:
