@@ -46,7 +46,7 @@ using std::literals::chrono_literals::operator""s;
 // Different modes
 // nrf5340, busy: 22s
 // qemu_x86, busy: tested up to 120s
-static constexpr std::chrono::milliseconds kTestDuration = 30s;
+static constexpr std::chrono::milliseconds kTestDuration = 22s;
 
 // test_bike_system_static handler function
 ZTEST(bike_system_part1, test_bike_system_static) {

@@ -23,7 +23,6 @@
  ***************************************************************************/
 
 // zephyr
-#include <zephyr/logging/log.h>
 #include <zephyr/ztest.h>
 
 // bike_computer
