@@ -25,81 +25,90 @@
 #include "speedometer.hpp"
 
 // zephyr
-#include <zephyr/logging/log.h>
 
 // std
 #include <chrono>
-#include <ratio>
 
 // zpp_lib
 #include "zpp_include/time.hpp"
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
-LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 namespace bike_computer {
 
-Speedometer::Speedometer() : _lastTime(zpp_lib::Time::getUpTime()) {}
+Speedometer::Speedometer() : _last_time(zpp_lib::Time::get_uptime()) {}
 
-void Speedometer::setCurrentRotationTime(
-    const std::chrono::milliseconds& currentRotationTime) {
-  if (_pedalRotationTime != currentRotationTime) {
+void Speedometer::set_current_pedal_rotation_time(const std::chrono::milliseconds& current_rotation_time) {
+  if (_pedal_rotation_time != current_rotation_time) {
     // compute distance before changing the rotation time
-    computeDistance();
+    compute_traveled_distance();
 
     // change pedal rotation time
-    _pedalRotationTime = currentRotationTime;
+    _pedal_rotation_time = current_rotation_time;
 
     // compute speed with the new pedal rotation time
-    computeSpeed();
+    compute_speed();
   }
 }
 
-void Speedometer::setGearSize(uint8_t gearSize) {
-  if (_gearSize != gearSize) {
-    // compute distance before chaning the gear size
-    computeDistance();
+void Speedometer::set_gear_size(uint8_t gear_size) {
+  if (_gear_size != gear_size) {
+    // compute distance before changing the gear size
+    compute_traveled_distance();
 
     // change gear size
-    _gearSize = gearSize;
+    _gear_size = gear_size;
 
     // compute speed with the new gear size
-    computeSpeed();
+    compute_speed();
   }
 }
 
-float Speedometer::getCurrentSpeed() const { return _currentSpeed; }
+float Speedometer::get_current_speed() const {
+  return _current_speed;
+}
 
-float Speedometer::getDistance() {
+float Speedometer::get_traveled_distance() {
   // make sure to update the distance traveled
-  return computeDistance();
+  return compute_traveled_distance();
 }
 
 void Speedometer::reset() {
-#if CONFIG_TEST == 1
+#if CONFIG_TEST
   if (_cb != nullptr) {
     _cb();
   }
-#endif  // CONFIG_TEST == 1
-
-  // TODO
+#endif  // CONFIG_TEST
+  // TODO(Student)
+    
 }
 
-#if CONFIG_TEST == 1
-uint8_t Speedometer::getGearSize() const { return _gearSize; }
-
-float Speedometer::getWheelCircumference() const { return kWheelCircumference; }
-
-float Speedometer::getTraySize() const { return kTraySize; }
-
-std::chrono::milliseconds Speedometer::getCurrentPedalRotationTime() const {
-  return _pedalRotationTime;
+#if CONFIG_TEST
+uint8_t Speedometer::get_gear_size() const {
+  return _gear_size;
 }
 
-void Speedometer::setOnResetCallback(std::function<void()> cb) { _cb = cb; }
+float Speedometer::get_wheel_circumference() const {
+  return kWheelCircumference;
+}
 
-#endif  // CONFIG_TEST == 1
+uint8_t Speedometer::get_tray_size() const {
+  return kTraySize;
+}
 
-void Speedometer::computeSpeed() {
+std::chrono::milliseconds Speedometer::get_current_pedal_rotation_time() const {
+  return _pedal_rotation_time;
+}
+
+void Speedometer::set_on_reset_callback(CallbackFunction cb) {
+  _cb = cb;
+}
+
+#endif  // CONFIG_TEST
+
+void Speedometer::compute_speed() {
   // For computing the speed given a rear gear (braquet), one must divide the size of
   // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
   // the result by the circumference of the wheel. Example: tray = 50, rear gear = 15.
@@ -107,10 +116,9 @@ void Speedometer::computeSpeed() {
   // = 6.99m If you ride at 80 pedal turns / min, you run a distance of 6.99 * 80 / min
   // ~= 560 m / min = 33.6 km/h
 
-  // TODO
-}
+  // TODO(Student)
 
-float Speedometer::computeDistance() {
+float Speedometer::compute_traveled_distance() {
   // For computing the speed given a rear gear (braquet), one must divide the size of
   // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
   // the result by the circumference of the wheel. Example: tray = 50, rear gear = 15.
@@ -119,8 +127,7 @@ float Speedometer::computeDistance() {
   // ~= 560 m / min = 33.6 km/h. We then multiply the speed by the time for getting the
   // distance traveled.
 
-  // TODO
-  return 0.0f;
-}
+  // TODO(Student)
+  
 
 }  // namespace bike_computer
