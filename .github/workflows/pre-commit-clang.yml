@@ -24,7 +24,7 @@ jobs:
 
       # In a ubuntu image, setup zephyr environment
       - name: Setup Zephyr
-        uses: AdvEmbSof/setup-zephyr-action@v1
+        uses: AdvEmbSof/setup-zephyr-action@v2
         timeout-minutes: 5
         with:
           sdk_version: ${{ github.event.inputs.sdk_version || '1.0.1' }}

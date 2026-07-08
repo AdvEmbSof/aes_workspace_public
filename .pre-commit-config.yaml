@@ -27,77 +27,77 @@ repos:
   hooks:
   - id: clang-tidy-blinky
     name: clang-tidy-blinky
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app blinky --spec "log+debug+gpio" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app blinky --configs "log+debug+gpio" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(blinky)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bme280
     name: clang-tidy-bme280
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bme280 --spec "log+debug+sensor" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bme280 --configs "log+debug+sensor" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bme280)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-sanitize
     name: clang-tidy-sanitize
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --spec "log+debug+san" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --configs "log+debug+san" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(sanitize)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-always-succeed
     name: clang-tidy-always-succeed
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/always_succeed --spec "log+debug+test" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/always_succeed --configs "log+debug+test" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(simple_tests/always_succeed)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-ptr-test
     name: clang-tidy-ptr-test
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/ptr_test --spec "log+debug+test" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app simple_tests/ptr_test --configs "log+debug+test" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(simple_tests/ptr_test)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer
     name: clang-tidy-bike-computer
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer --spec "log+debug+gpio+display+sensor+phase_a" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer --configs "log+debug+gpio+display+sensor+phase_a" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer)/(?!tests/).*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-speedometer
     name: clang-tidy-bike-computer-speedometer
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/speedometer --spec "log+debug+gpio+display+sensor+test+phase_a+phase_b+phase_c" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/speedometer --configs "log+debug+gpio+display+sensor+test+phase_a+phase_b+phase_c" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/speedometer)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-sensor-device
     name: clang-tidy-bike-computer-sensor-device
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/sensor_device --spec "log+debug+gpio+display+sensor+test+phase_a" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/sensor_device --configs "log+debug+gpio+display+sensor+test+phase_a" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/sensor_device)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part1
     name: clang-tidy-bike-computer-bike-system-part1
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part1 --spec "log+debug+gpio+display+sensor+test+phase_a" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part1 --configs "log+debug+gpio+display+sensor+test+phase_a" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/bike_system_part1)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part2
     name: clang-tidy-bike-computer-bike-system-part2
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part2 --spec "log+debug+gpio+display+sensor+test+phase_b" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part2 --configs "log+debug+gpio+display+sensor+test+phase_b" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/bike_system_part2)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part3
     name: clang-tidy-bike-computer-bike-system-part3
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part3 --spec "log+debug+gpio+display+sensor+button_emul+test+phase_c" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part3 --configs "log+debug+gpio+display+sensor+button_emul+test+phase_c" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
