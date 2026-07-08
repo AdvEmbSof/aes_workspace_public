@@ -28,143 +28,153 @@
 #include <chrono>
 
 // zephyr
-// false positive cpplint warning
-// NOLINTNEXTLINE(build/include_order)
-#include <zephyr/logging/log.h>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/time.hpp"
+#include "zpp_include/utils.hpp"
 #include "zpp_include/work_queue.hpp"
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
-LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
+// common
+#include "common/ttce.hpp"
 
-namespace bike_computer {
+ZPP_LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
-namespace static_scheduling {
+namespace bike_computer::static_scheduling {
 
+// The complexity is increased by zephyr macros
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 zpp_lib::ZephyrResult BikeSystem::start() {
-  LOG_INF("Starting Super-Loop without event handling");
+  ZPP_LOG_INF("Starting Super-Loop without event handling");
+
+  zpp_lib::Utils::log_threads_summary();
 
   auto res = initialize();
   if (!res) {
-    LOG_ERR("Init failed: %d", (int)res.error());
+    ZPP_LOG_ERR("Init failed: %d", (int)res.error());
     return res;
   }
 
-  LOG_DBG("Starting super-loop");
+  ZPP_LOG_DBG("Starting super-loop");
 
   // initialize the task manager phase
-  _taskManager.initializePhase();
+  _task_manager.initialize_phase();
 
   while (true) {
-    auto startTime = zpp_lib::Time::getUpTime();
+#if CONFIG_APP_LOG_LEVEL_DEBUG
+    auto start_time = zpp_lib::Time::get_uptime();
+#endif  // CONFIG_APP_LOG_LEVEL_DEBUG
 
-    // TODO: implement calls to different tasks based on computed schedule
-
+    // TODO(Student): implement calls to different tasks based on computed schedule
+    
     // register the time at the end of the cyclic schedule period and print the
     // elapsed time for the period
-    std::chrono::microseconds endTime = zpp_lib::Time::getUpTime();
-    const auto cycle =
-        std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
-    LOG_DBG("Repeating cycle time is %" PRIu64 " milliseconds", cycle.count());
+#if CONFIG_APP_LOG_LEVEL_DEBUG
+    std::chrono::microseconds end_time = zpp_lib::Time::get_uptime();
+    auto cycle                         = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    ZPP_LOG_DBG("Repeating cycle time is %" PRIu64 " milliseconds", cycle.count());
+#endif  // CONFIG_APP_LOG_LEVEL_DEBUG
 
-    // check whether stop has been requested (call to BikeSystem::stop())
-    if (_stopFlag.load()) {
+    if (_stop_flag.load()) {
       break;
     }
-  }
 
+#ifdef CONFIG_CPU_LOAD
+    zpp_lib::Utils::log_cpu_load();
+#endif
+  }
   return res;
 }
 
 void BikeSystem::stop() {
-  _stopFlag.store(true);
+  _stop_flag.store(true);
 }
 
 zpp_lib::ZephyrResult BikeSystem::initialize() {
   // initialize the display
-  auto res = _bikeDisplay.initialize();
+  auto res = _bike_display.initialize();
   if (!res) {
-    LOG_ERR("Cannot initialize display: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot initialize display: %d", (int)res.error());
     return res;
   }
 
   // initialize the sensor device
-  res = _sensorDevice.initialize();
+  res = _sensor_device.initialize();
   if (!res) {
-    LOG_ERR("Sensor not present or initialization failed: %d", (int)res.error());
+    ZPP_LOG_ERR("Sensor not present or initialization failed: %d", (int)res.error());
   }
 
-  return zpp_lib::ZephyrResult();
+  return {};
 }
 
-void BikeSystem::gearTask() {
+void BikeSystem::gear_task() {
   // gear task
-  _taskManager.registerTaskStart(TaskManager::TaskType::GearTaskType);
+  _task_manager.register_task_start(TaskManager::TaskType::GearTaskType);
 
   // no need to protect access to data members (single threaded)
-  _currentGear     = _gearDevice.getCurrentGear();
-  _currentGearSize = _gearDevice.getCurrentGearSize();
+  _current_gear      = _gear_device.get_current_gear();
+  _current_gear_size = _gear_device.get_current_gear_size();
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::GearTaskType, kAllowSleep);
+  _task_manager.simulate_computation_time(TaskManager::TaskType::GearTaskType, kAllowSleep);
 }
 
-void BikeSystem::speedDistanceTask() {
+void BikeSystem::speed_distance_task() {
   // speed and distance task
-  _taskManager.registerTaskStart(TaskManager::TaskType::SpeedTaskType);
+  _task_manager.register_task_start(TaskManager::TaskType::SpeedTaskType);
 
-  const auto pedalRotationTime = _pedalDevice.getCurrentRotationTime();
-  _speedometer.setCurrentRotationTime(pedalRotationTime);
-  _speedometer.setGearSize(_currentGearSize);
+  auto pedal_rotation_time = _pedal_device.get_current_rotation_time();
+  _speedometer.set_current_pedal_rotation_time(pedal_rotation_time);
+  _speedometer.set_gear_size(_current_gear_size);
   // no need to protect access to data members (single threaded)
-  _currentSpeed     = _speedometer.getCurrentSpeed();
-  _traveledDistance = _speedometer.getDistance();
+  _current_speed     = _speedometer.get_current_speed();
+  _traveled_distance = _speedometer.get_traveled_distance();
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::SpeedTaskType, kAllowSleep);
+  _task_manager.simulate_computation_time(TaskManager::TaskType::SpeedTaskType, kAllowSleep);
 }
 
-void BikeSystem::temperatureTask() {
-  _taskManager.registerTaskStart(TaskManager::TaskType::TemperatureTaskType);
+void BikeSystem::temperature_task() {
+  _task_manager.register_task_start(TaskManager::TaskType::TemperatureTaskType);
 
-  // TO DO: read temperature from _sensorDevice
-  
+  // no need to protect access to data members (single threaded)
+  zpp_lib::ZephyrResult res = _sensor_device.read_temperature(_current_temperature);
+  if (!res) {
+    ZPP_LOG_ERR("Cannot read temperature: %d", (int)res.error());
+  }
+
   // simulate task computation by waiting for the required task computation time
-  _taskManager.simulateComputationTime(TaskManager::TaskType::TemperatureTaskType,
-                                       kAllowSleep);
+  _task_manager.simulate_computation_time(TaskManager::TaskType::TemperatureTaskType, kAllowSleep);
 }
 
-void BikeSystem::resetTask() {
-  _taskManager.registerTaskStart(TaskManager::TaskType::ResetTaskType);
+void BikeSystem::reset_task() {
+  _task_manager.register_task_start(TaskManager::TaskType::ResetTaskType);
 
-  if (_resetDevice.checkReset()) {
-    std::chrono::microseconds responseTime =
-        zpp_lib::Time::getUpTime() - _resetDevice.getPressTime();
-    LOG_INF("Reset task: response time is %" PRIu64 " usecs", responseTime.count());
+  if (_reset_device.check_reset()) {
+#if CONFIG_APP_LOG_LEVEL_INFO
+    std::chrono::microseconds response_time = zpp_lib::Time::get_uptime() - _reset_device.get_press_time();
+    ZPP_LOG_INF("Reset task: response time is %" PRIu64 " usecs", response_time.count());
+#endif  // CONFIG_APP_LOG_LEVEL_INFO
     _speedometer.reset();
   }
 
-  _taskManager.simulateComputationTime(TaskManager::TaskType::ResetTaskType, kAllowSleep);
+  _task_manager.simulate_computation_time(TaskManager::TaskType::ResetTaskType, kAllowSleep);
 }
 
-void BikeSystem::displayTask1() {
-  _taskManager.registerTaskStart(TaskManager::TaskType::DisplayTask1Type);
-
-  // TODO: update gear, speed and distance displayed on screen
+void BikeSystem::display_task1() {
+  _task_manager.register_task_start(TaskManager::TaskType::DisplayTask1Type);
   
-  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask1Type,
-                                       kAllowSleep);
-}
-
-void BikeSystem::displayTask2() {
-  _taskManager.registerTaskStart(TaskManager::TaskType::DisplayTask2Type);
-
-  // TODO: update temperature on screen
+  // TODO(Student): update gear, speed and distance displayed on screen
   
-  _taskManager.simulateComputationTime(TaskManager::TaskType::DisplayTask2Type,
-                                       kAllowSleep);
+  _task_manager.simulate_computation_time(TaskManager::TaskType::DisplayTask1Type, kAllowSleep);
 }
 
-}  // namespace static_scheduling
+void BikeSystem::display_task2() {
+  _task_manager.register_task_start(TaskManager::TaskType::DisplayTask2Type);
+  
+  // TODO(Student): update temperature on screen
+  
+  _task_manager.simulate_computation_time(TaskManager::TaskType::DisplayTask2Type, kAllowSleep);
+}
 
-}  // namespace bike_computer
+}  // namespace bike_computer::static_scheduling
