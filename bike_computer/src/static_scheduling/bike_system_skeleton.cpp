@@ -151,10 +151,10 @@ void BikeSystem::reset_task() {
   _task_manager.register_task_start(TaskManager::TaskType::ResetTaskType);
 
   if (_reset_device.check_reset()) {
-#if CONFIG_APP_LOG_LEVEL_INFO
+#if CONFIG_APP_LOG_LEVEL >= CONFIG_LOG_LEVEL_INFO
     std::chrono::microseconds response_time = // TODO(Student): compute response time
     ZPP_LOG_INF("Reset task: response time is %" PRIu64 " usecs", response_time.count());
-#endif  // CONFIG_APP_LOG_LEVEL_INFO
+#endif  // CONFIG_APP_LOG_LEVEL >= CONFIG_LOG_LEVEL_INFO
     _speedometer.reset();
   }
 
