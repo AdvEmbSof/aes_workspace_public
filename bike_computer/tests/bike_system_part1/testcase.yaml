@@ -1,0 +1,20 @@
+tests:
+  bike_computer.bike_system_part1:
+    tags:
+      - bike_computer
+      - phase_a
+    timeout: 150
+    extra_conf_files: 
+      - ../../../deps/zpp_lib/configs/prj.conf
+      - ../../../deps/zpp_lib/configs/prj_gpio.conf
+      - ../../../deps/zpp_lib/configs/prj_sensor.conf
+      - ../../../deps/zpp_lib/configs/prj_display.conf
+      - ../../../deps/zpp_lib/configs/prj_test.conf
+      - ../../../deps/zpp_lib/configs/prj_phase_a.conf
+    extra_args: 
+      - platform:qemu_x86/atom:CONFIG_INTERRUPT_IN_EMUL=y
+      - platform:qemu_x86/atom:CONFIG_EMUL=y
+      - platform:qemu_x86/atom:CONFIG_SYS_CLOCK_TICKS_PER_SEC=5000
+      - platform:qemu_x86/atom:DTC_OVERLAY_FILE=../../../deps/zpp_lib/configs/boards/qemu_x86.overlay
+      - platform:nrf5340dk/nrf5340/cpuapp:SHIELD=adafruit_2_8_tft_touch_v2
+      - platform:nrf5340dk/nrf5340/cpuapp:DTC_OVERLAY_FILE=../../../deps/zpp_lib/configs/boards/nrf5340dk_nrf5340_cpuapp.overlay

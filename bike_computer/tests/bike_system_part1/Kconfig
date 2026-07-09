@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2022 Meta
+
+module = APP
+module-str = APP
+source "subsys/logging/Kconfig.template.log_config"
+
+rsource "../../Kconfig"
