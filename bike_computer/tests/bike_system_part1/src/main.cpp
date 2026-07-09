@@ -43,10 +43,11 @@ ZPP_LOG_MODULE_REGISTER(bike_computer, CONFIG_APP_LOG_LEVEL);
 // for ms or s literals
 using std::literals::chrono_literals::operator""s;
 
-// Different modes
-// nrf5340, busy: 22s
-// qemu_x86, busy: tested up to 120s
-static constexpr std::chrono::milliseconds kTestDuration = 22s;
+// TODO(Student): Validate the test duration for your target platform.
+// The value of TEST_DURATION_IN_MS is set in the test case configuration file (testcase.yaml) and
+// can be overridden for each platform. The value should be set so that the test passes on your platform.
+// It should not be below 20s for any platform.
+static constexpr std::chrono::milliseconds kTestDuration(CONFIG_TEST_DURATION_IN_MS);
 
 // test_bike_system_static handler function
 ZPP_ZTEST(bike_system_part1, test_bike_system_static) {

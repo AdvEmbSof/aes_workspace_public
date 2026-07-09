@@ -26,19 +26,17 @@
 
 // zpp_lib
 #include "zpp_include/display.hpp"
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/zephyr_result.hpp"
 
 namespace bike_computer {
 
 #if CONFIG_DISPLAY == 1
 
-class BikeDisplay {
+class BikeDisplay : public zpp_lib::NonCopyable {
 public:
   // constructor
   BikeDisplay() = default;
-
-  // destructor
-  ~BikeDisplay() = default;
 
   // to be called prior to any other method
   zpp_lib::ZephyrResult initialize();

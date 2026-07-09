@@ -19,7 +19,7 @@ Checks: >
 WarningsAsErrors: "cppcoreguidelines-*"
 
 # Only analyse your application headers, not Zephyr headers
-HeaderFilterRegex: ".*/deps/zpp_lib/.*"
+HeaderFilterRegex: ".*/(blinky|bike_computer|bme280|sanitize|simple_tests)/.*"
 
 # Explicitly exclude Zephyr and dependency headers (clang-tidy 22+)
 ExcludeHeaderFilterRegex: ".*/deps/zephyr/.*"

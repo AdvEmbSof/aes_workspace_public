@@ -38,8 +38,8 @@ public:
   GearDevice();
 
   // method called for updating the bike system
-  uint8_t get_current_gear();
-  uint8_t get_current_gear_size() const;
+  [[nodiscard]] uint8_t get_current_gear();
+  [[nodiscard]] uint8_t get_current_gear_size() const;
 
 private:
   // data members

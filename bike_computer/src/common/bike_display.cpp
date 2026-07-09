@@ -62,13 +62,13 @@ static constexpr uint8_t kNbrOfIcons = 4;
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays) -- static data known at compile time
 static constexpr ImageInfo kImageInfo[kNbrOfIcons] = {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-    {.p_image_data = speedometer_icon, .image_width = kSpeedometerIconWidth, .image_height = kSpeedometerIconHeight},
+    {.p_image_data = kSpeedometerIcon, .image_width = kSpeedometerIconWidth, .image_height = kSpeedometerIconHeight},
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-    {.p_image_data = gear_icon, .image_width = kGearIconWidth, .image_height = kGearIconHeight},
+    {.p_image_data = kGearIcon, .image_width = kGearIconWidth, .image_height = kGearIconHeight},
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-    {.p_image_data = thermometer_icon, .image_width = kThermometerIconWidth, .image_height = kThermometerIconHeight},
+    {.p_image_data = kThermometerIcon, .image_width = kThermometerIconWidth, .image_height = kThermometerIconHeight},
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-array-to-pointer-decay) -- static data known at compile time
-    {.p_image_data = distance_icon, .image_width = kDistanceIconWidth, .image_height = kDistanceIconHeight}};
+    {.p_image_data = kDistanceIcon, .image_width = kDistanceIconWidth, .image_height = kDistanceIconHeight}};
 
 zpp_lib::ZephyrResult BikeDisplay::initialize() {
   // initialize the display

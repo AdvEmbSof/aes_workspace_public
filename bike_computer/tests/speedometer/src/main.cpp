@@ -106,8 +106,8 @@ ZPP_ZTEST(speedometer, test_gear_size) {
   bike_computer::Speedometer speedometer;
 
   // get speedometer constant values (for this test)
-  auto tray_size           = speedometer.get_tray_size();
-  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto tray_size           = bike_computer::Speedometer::s_get_tray_size();
+  auto wheel_circumference = bike_computer::Speedometer::s_get_wheel_circumference();
   auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 
   for (uint8_t gear_size = bike_computer::kMinGearSize; gear_size <= bike_computer::kMaxGearSize; gear_size++) {
@@ -132,8 +132,8 @@ ZPP_ZTEST(speedometer, test_rotation_speed) {
   speedometer.set_gear_size(bike_computer::kMaxGearSize);
 
   // get speedometer constant values
-  auto tray_size           = speedometer.get_tray_size();
-  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto tray_size           = bike_computer::Speedometer::s_get_tray_size();
+  auto wheel_circumference = bike_computer::Speedometer::s_get_wheel_circumference();
   auto gear_size           = speedometer.get_gear_size();
 
   // first test increasing rotation speed (decreasing rotation time)
@@ -174,8 +174,8 @@ ZPP_ZTEST(speedometer, test_distance) {
   speedometer.set_gear_size(bike_computer::kMaxGearSize);
 
   // get speedometer constant values
-  auto tray_size           = speedometer.get_tray_size();
-  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto tray_size           = bike_computer::Speedometer::s_get_tray_size();
+  auto wheel_circumference = bike_computer::Speedometer::s_get_wheel_circumference();
   auto gear_size           = speedometer.get_gear_size();
   auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 
@@ -256,8 +256,8 @@ ZPP_ZTEST(speedometer, test_reset) {
   speedometer.set_gear_size(bike_computer::kMinGearSize);
 
   // get speedometer constant values
-  auto tray_size           = speedometer.get_tray_size();
-  auto wheel_circumference = speedometer.get_wheel_circumference();
+  auto tray_size           = bike_computer::Speedometer::s_get_tray_size();
+  auto wheel_circumference = bike_computer::Speedometer::s_get_wheel_circumference();
   auto gear_size           = speedometer.get_gear_size();
   auto pedal_rotation_time = speedometer.get_current_pedal_rotation_time();
 

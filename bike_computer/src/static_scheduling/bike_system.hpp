@@ -43,10 +43,22 @@
 
 namespace bike_computer::static_scheduling {
 
-class BikeSystem : private zpp_lib::NonCopyable {
+class BikeSystem {
 public:
   // constructor
   BikeSystem() = default;
+
+  // destructor
+  ~BikeSystem();
+
+  /** Explicity prevent (move) copy and assignment
+      rather than inheriting from NonCopyable. This avoids
+      cppcoreguidelines-special-member-functions warning by clang-tidy.
+  */
+  BikeSystem(const BikeSystem&)            = delete;
+  BikeSystem(BikeSystem&&)                 = delete;
+  BikeSystem& operator=(const BikeSystem&) = delete;
+  BikeSystem& operator=(BikeSystem&&)      = delete;
 
   // method called in main() for starting the system
   [[nodiscard]] zpp_lib::ZephyrResult start();
@@ -64,7 +76,7 @@ private:
   void display_task1();
   void display_task2();
 
-  // flag stating whether sleep is allows when simulating computation times
+  // flag stating whether sleep is allowed when simulating computation times
   static constexpr bool kAllowSleep = false;
   // stop flag, used for stopping the super-loop (set in stop())
   volatile std::atomic<bool> _stop_flag = false;

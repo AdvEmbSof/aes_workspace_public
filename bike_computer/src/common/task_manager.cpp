@@ -25,10 +25,6 @@
 #include "task_manager.hpp"
 
 // zephyr
-#if CONFIG_TEST
-#include <zephyr/ztest.h>
-#endif  // CONFIG_TEST
-// #include <zephyr/tracing/tracing.h>
 
 // std
 #include <chrono>
@@ -37,37 +33,41 @@
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/zpp_assert.hpp"
 #include "zpp_include/zpp_log.hpp"
+#if CONFIG_TEST
+#include "zpp_include/zpp_test.hpp"
+#endif  // CONFIG_TEST
 
 ZPP_LOG_MODULE_DECLARE(bike_computer, CONFIG_APP_LOG_LEVEL);
 
 namespace bike_computer {
 
 void TaskManager::initialize_phase() {
-#if CONFIG_TEST
-  for (uint8_t task_index = 0; task_index < kNbrOfTaskTypes; task_index++) {
-    _nbr_of_calls[task_index] = 0;
+#if CONFIG_TEST || CONFIG_LOG_TASK_TIMES
+  for (uint32_t& nbr_of_calls : _nbr_of_calls) {
+    nbr_of_calls = 0;
   }
   _phase = zpp_lib::Time::get_uptime();
-#endif  // CONFIG_TEST
+#endif  // CONFIG_TEST || CONFIG_LOG_TASK_TIMES
 }
 
 void TaskManager::register_task_start(TaskType task_type) {
   auto task_index = static_cast<uint8_t>(task_type);
   ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
-  // we assert that task_index is valid in the beginning of the method
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+  // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   _task_start_time[task_index] = zpp_lib::Time::get_uptime();
-#if CONFIG_TEST
+#if CONFIG_TEST || CONFIG_LOG_TASK_TIMES
   // we assert that task_index is valid in the beginning of the method
   _dephased_task_start_time[task_index] = _task_start_time[task_index] - _phase;
-#endif  // CONFIG_TEST
+#endif  // CONFIG_TEST || CONFIG_LOG_TASK_TIMES
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 }
 
 void TaskManager::simulate_computation_time(TaskType task_type, bool allow_sleep) {
   auto task_index = static_cast<uint8_t>(task_type);
   ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
-  // we assert that task_index is valid in the beginning of the method
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+  // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   auto task_start_time = _task_start_time[task_index];
   auto elapsed_time    = zpp_lib::Time::get_uptime() - task_start_time;
   if (allow_sleep) {
@@ -87,55 +87,75 @@ void TaskManager::simulate_computation_time(TaskType task_type, bool allow_sleep
       elapsed_time = zpp_lib::Time::get_uptime() - task_start_time;
     }
   }
+#if CONFIG_LOG_TASK_TIMES
+  auto task_computation_time        = zpp_lib::Time::get_uptime() - task_start_time;
+  auto min_dephased_task_start_time = kTaskPeriods[task_index] * _nbr_of_calls[task_index];
+  auto max_dephased_task_start_time = kTaskPeriods[task_index] * (_nbr_of_calls[task_index] + 1) - kTaskComputationTimes[task_index];
+  ZPP_LOG_DBG("Task %s: start time %lld (bounds %lld - %lld), computation time %lld",
+              kTaskDescriptors[task_index].c_str(),
+              _dephased_task_start_time[task_index].count(),
+              min_dephased_task_start_time.count(),
+              max_dephased_task_start_time.count(),
+              task_computation_time.count());
+#endif  // CONFIG_LOG_TASK_TIMES
 #if CONFIG_TEST
   check_task_time(task_type);
+#endif
+#if CONFIG_TEST || CONFIG_LOG_TASK_TIMES
   _nbr_of_calls[task_index]++;
 #endif
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 }
 
 #if CONFIG_TEST
-void TaskManager::check_task_time(TaskType taskType) {
-  uint8_t task_index = static_cast<uint8_t>(taskType);
+void TaskManager::check_task_time(TaskType task_type) {
+  auto task_index = static_cast<uint8_t>(task_type);
+  // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
-  std::chrono::microseconds taskComputationTime = zpp_lib::Time::get_uptime() - _task_start_time[task_index];
-  zassert_true(taskComputationTime <= kTaskComputationTimes[task_index] + kAllowedDelta,
-               "Task %d computation time is too large at call #%d (%lld vs %lld us, "
-               "allowed delta %lld us)",
-               task_index,
-               _nbr_of_calls[task_index],
-               taskComputationTime.count(),
-               kTaskComputationTimes[task_index].count(),
-               kAllowedDelta.count());
+  auto task_computation_time = zpp_lib::Time::get_uptime() - _task_start_time[task_index];
+  zpp_zassert_true(task_computation_time <= kTaskComputationTimes[task_index] + kAllowedDelta,
+                   "Task %d computation time is too large at call #%d (%lld vs %lld us, "
+                   "allowed delta %lld us)",
+                   task_index,
+                   _nbr_of_calls[task_index],
+                   task_computation_time.count(),
+                   kTaskComputationTimes[task_index].count(),
+                   kAllowedDelta.count());
 
   // The minimum task start time is the period x nbrOfCalls
   // The minimum task start time is the period x (nbrOfCalls + 1) - task computation
   // time
-  std::chrono::microseconds min_dephased_task_start_time = kTaskPeriods[task_index] * _nbr_of_calls[task_index];
-  std::chrono::microseconds max_dephased_task_start_time =
-      kTaskPeriods[task_index] * (_nbr_of_calls[task_index] + 1) - kTaskComputationTimes[task_index];
-  zassert_true(_dephased_task_start_time[task_index] >= min_dephased_task_start_time - kAllowedDelta,
-               "Task %s started too early at call #%d (%lld vs %lld us, allowedDelta %lld us)",
-               kTaskDescriptors[task_index].c_str(),
-               _nbr_of_calls[task_index],
-               _dephased_task_start_time[task_index].count(),
-               min_dephased_task_start_time.count(),
-               kAllowedDelta.count());
-  zassert_true(_dephased_task_start_time[task_index] <= max_dephased_task_start_time + kAllowedDelta,
-               "Task %s started too late at call #%d (%lld vs %lld us, allowedDelta %lld us)",
-               kTaskDescriptors[task_index].c_str(),
-               _nbr_of_calls[task_index],
-               _dephased_task_start_time[task_index].count(),
-               max_dephased_task_start_time.count(),
-               kAllowedDelta.count());
+  auto min_dephased_task_start_time = kTaskPeriods[task_index] * _nbr_of_calls[task_index];
+  auto max_dephased_task_start_time = kTaskPeriods[task_index] * (_nbr_of_calls[task_index] + 1) - kTaskComputationTimes[task_index];
+  zpp_zassert_true(_dephased_task_start_time[task_index] >= min_dephased_task_start_time - kAllowedDelta,
+                   "Task %s started too early at call #%d (%lld vs %lld us, allowedDelta %lld us)",
+                   kTaskDescriptors[task_index].c_str(),
+                   _nbr_of_calls[task_index],
+                   _dephased_task_start_time[task_index].count(),
+                   min_dephased_task_start_time.count(),
+                   kAllowedDelta.count());
+  zpp_zassert_true(_dephased_task_start_time[task_index] <= max_dephased_task_start_time + kAllowedDelta,
+                   "Task %s started too late at call #%d (%lld vs %lld us, allowedDelta %lld us)",
+                   kTaskDescriptors[task_index].c_str(),
+                   _nbr_of_calls[task_index],
+                   _dephased_task_start_time[task_index].count(),
+                   max_dephased_task_start_time.count(),
+                   kAllowedDelta.count());
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 }
 
 // This method is provided for convenience.
 // Suppress the exception if you use it
 // cppcheck-suppress unusedFunction
 bool TaskManager::is_within_expected_time(TaskType task_type) {
-  uint8_t task_index = static_cast<uint8_t>(task_type);
+  auto task_index = static_cast<uint8_t>(task_type);
   ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
+  // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   auto expected_task_end_time = kTaskPeriods[task_index] * (_nbr_of_calls[task_index] + 1);
+  // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   return (_dephased_task_start_time[task_index] + kTaskComputationTimes[task_index]) < expected_task_end_time;
 }
 #endif  // CONFIG_TEST

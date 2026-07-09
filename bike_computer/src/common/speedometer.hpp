@@ -48,7 +48,6 @@ using std::literals::chrono_literals::operator""us;
 class Speedometer : private zpp_lib::NonCopyable {
 public:
   Speedometer();
-  ~Speedometer() = default;
 
   // method used for setting the current pedal rotation time
   void set_current_pedal_rotation_time(const std::chrono::milliseconds& current_rotation_time);
@@ -57,22 +56,32 @@ public:
   void set_gear_size(uint8_t gear_size);
 
   // method called for getting the current speed (expressed in km / h)
-  float get_current_speed() const;
+  [[nodiscard]] float get_current_speed() const;
 
   // method called for getting the current traveled distance (expressed in km)
-  float get_traveled_distance();
+  [[nodiscard]] float get_traveled_distance();
 
   // method called for resetting the traveled distance
   void reset();
 
   // methods used for tests only
 #if CONFIG_TEST == 1
-  uint8_t get_gear_size() const;
-  float get_wheel_circumference() const;
-  uint8_t get_tray_size() const;
-  std::chrono::milliseconds get_current_pedal_rotation_time() const;
+  [[nodiscard]] uint8_t get_gear_size() const {
+    return _gear_size;
+  }
+  static float s_get_wheel_circumference() {
+    return kWheelCircumference;
+  }
+  static uint8_t s_get_tray_size() {
+    return kTraySize;
+  }
+  [[nodiscard]] std::chrono::milliseconds get_current_pedal_rotation_time() const {
+    return _pedal_rotation_time;
+  }
   using CallbackFunction = std::function<void()>;
-  void set_on_reset_callback(CallbackFunction cb);
+  void set_on_reset_callback(CallbackFunction cb) {
+    _cb = std::move(cb);
+  }
 #endif  // CONFIG_TEST == 1
 
 private:
@@ -86,16 +95,16 @@ private:
   static constexpr std::chrono::microseconds kTaskRunTime = 200000us;
 
   // constants related to speed computation
-  static constexpr float kWheelCircumference     = 2.1f;
+  static constexpr float kWheelCircumference     = 2.1F;
   static constexpr uint8_t kTraySize             = 50;
   std::chrono::microseconds _last_time           = std::chrono::microseconds::zero();
   std::chrono::milliseconds _pedal_rotation_time = kInitialPedalRotationTime;
 
   // data members
   // LowPowerTicker _ticker;
-  float _current_speed = 0.0f;
+  float _current_speed = 0.0F;
   zpp_lib::Mutex _total_distance_mutex;
-  float _total_distance = 0.0f;
+  float _total_distance = 0.0F;
   uint8_t _gear_size    = 1;
 
 #if CONFIG_TEST == 1

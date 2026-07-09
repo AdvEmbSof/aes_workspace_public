@@ -27,7 +27,9 @@ constexpr uint8_t kThermometerIconHeight = 50;
 constexpr uint8_t kThermometerIconWidth  = 50;
 
 // array size is 10000
-const uint32_t thermometer_icon[] = {
+// This array is known at compile time, so we can use a constexpr array
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+static constexpr uint32_t kThermometerIcon[] = {
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xfbfbfbff, 0x000000ff, 0x000000ff, 0x000000ff, 0x000000ff, 0xbebebeff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,

@@ -24,11 +24,13 @@
 
 #pragma once
 
-constexpr uint8_t kGearIconHeight = 100;
-constexpr uint8_t kGearIconWidth  = 100;
+static constexpr uint8_t kGearIconHeight = 100;
+static constexpr uint8_t kGearIconWidth  = 100;
 
 // array size is 40000
-const uint32_t gear_icon[] = {
+// This array is known at compile time, so we can use a constexpr array
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+static constexpr uint32_t kGearIcon[] = {
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,

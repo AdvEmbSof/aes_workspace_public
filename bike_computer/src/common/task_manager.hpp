@@ -40,7 +40,7 @@ using std::literals::chrono_literals::operator""us;
 class TaskManager : private zpp_lib::NonCopyable {
 public:
   // TaskType definitions (YOU MUST UPDATE kNbrOfTasksTypes if you modify it)
-  enum class TaskType {
+  enum class TaskType : uint8_t {
     GearTaskType        = 0,
     SpeedTaskType       = 1,
     TemperatureTaskType = 2,
@@ -54,21 +54,26 @@ public:
   void initialize_phase();
   void register_task_start(TaskType task_type);
   void simulate_computation_time(TaskType task_type, bool allow_sleep);
-  static inline std::chrono::microseconds get_task_computation_time(TaskType task_type) {
-    uint8_t task_index = static_cast<uint8_t>(task_type);
+  static std::chrono::microseconds get_task_computation_time(TaskType task_type) {
+    auto task_index = static_cast<uint8_t>(task_type);
+    // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     return kTaskComputationTimes[task_index] - kTaskOverheadTime;
   }
 
 private:
   // private
 #if CONFIG_TEST
-  void check_task_time(TaskType taskType);
-  bool is_within_expected_time(TaskType taskType);
+  void check_task_time(TaskType task_type);
+  bool is_within_expected_time(TaskType task_type);
 #endif  // CONFIG_TEST
 
   // constants
-  static inline constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {
-      "Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
+  // Declaring these arrays as static constexpr allows the compiler to optimize them and avoid unnecessary copies.
+  // The arrays are also declared as inline to ensure that they have internal linkage and can be defined in
+  // a header file without violating the One Definition Rule (ODR).
+  // NOLINTBEGIN(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  static constexpr std::string kTaskDescriptors[kNbrOfTaskTypes] = {"Gear", "Speed", "Temperature", "Reset", "Display(1)", "Display(2)"};
   // kTaskOverheadTime accounts for additional time needed for switching between tasks
   static constexpr std::chrono::microseconds kTaskOverheadTime                      = 1us;
   static constexpr std::chrono::microseconds kTaskComputationTimes[kNbrOfTaskTypes] = {
@@ -82,11 +87,13 @@ private:
 
   // data members
   std::chrono::microseconds _task_start_time[kNbrOfTaskTypes] = {0ms};
-#if CONFIG_TEST
+#if CONFIG_TEST || CONFIG_LOG_TASK_TIMES
   std::chrono::microseconds _dephased_task_start_time[kNbrOfTaskTypes] = {0ms};
   uint32_t _nbr_of_calls[kNbrOfTaskTypes]                              = {0};
-  std::chrono::microseconds _phase;
-#endif  // CONFIG_TEST
+  std::chrono::microseconds _phase                                     = {0us};
+#endif  // CONFIG_TEST || CONFIG_LOG_TASK_TIMES
+
+  // NOLINTEND(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
 };
 
 }  // namespace bike_computer

@@ -24,11 +24,13 @@
 
 #pragma once
 
-constexpr uint8_t kSpeedometerIconHeight = 100;
-constexpr uint8_t kSpeedometerIconWidth  = 100;
+static constexpr uint8_t kSpeedometerIconHeight = 100;
+static constexpr uint8_t kSpeedometerIconWidth  = 100;
 
 // array size is 40000
-const uint32_t speedometer_icon[] = {
+// This array is known at compile time, so we can use a constexpr array
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+static constexpr uint32_t kSpeedometerIcon[] = {
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,

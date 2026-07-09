@@ -6,3 +6,14 @@ module-str = APP
 source "subsys/logging/Kconfig.template.log_config"
 
 rsource "../../Kconfig"
+
+config TEST_DURATION_IN_MS
+  int "Test duration in milliseconds"
+  depends on TEST
+  default 120000
+  help 
+    This option allows to specify the test duration in milliseconds for a successful test run. 
+    The value can be overridden for each platform in the testcase.yaml file. 
+    The value should be set so that the test passes on your platform. It should not be below 20000 for any platform.
+
+    

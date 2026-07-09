@@ -23,11 +23,13 @@
  ***************************************************************************/
 #pragma once
 
-constexpr uint8_t kDistanceIconHeight = 50;
-constexpr uint8_t kDistanceIconWidth  = 50;
+static constexpr uint8_t kDistanceIconHeight = 50;
+static constexpr uint8_t kDistanceIconWidth  = 50;
 
 // array size is 10000
-const uint32_t distance_icon[] = {
+// This array is known at compile time, so we can use a constexpr array
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+static constexpr uint32_t kDistanceIcon[] = {
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xd2d2d2ff, 0x000000ff, 0x000000ff, 0x000000ff, 0x000000ff, 0x000000ff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
     0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,

@@ -38,7 +38,6 @@ class ResetDevice : private zpp_lib::NonCopyable {
 public:
   // constructor and destructor
   ResetDevice();
-  ~ResetDevice() = default;
 
   // method called for checking the reset status
   bool check_reset();

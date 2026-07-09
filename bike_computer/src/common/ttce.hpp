@@ -33,32 +33,41 @@
 
 // zpp_lib
 #include "zpp_include/clock.hpp"
-#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/zephyr_result.hpp"
+#include "zpp_include/zpp_assert.hpp"
 
 namespace bike_computer {
 
-template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize> class TTCE : private zpp_lib::NonCopyable {
+template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize> class TTCE {
 public:
-  explicit TTCE(std::chrono::milliseconds minorCycle) : _minorCycle(minorCycle) {
-    k_timer_init(&_timer, &TTCE::_thunk, nullptr);
+  explicit TTCE(std::chrono::milliseconds minorCycle) : _minor_cycle(minorCycle) {
+    k_timer_init(&_timer, &TTCE::s_thunk, nullptr);
     // specify this instance as user data
     // this cast is ugly but the only way to pass a reference to this instance to the
     // timer
-    // cppcheck-suppress cstyleCast
+    // NOLINTNEXTLINE(modernize-avoid-c-style-cast)
     _timer.user_data = (void*)this;  // NOLINT(readability/casting)
-    k_work_init(&_work, &TTCE::_workHandler);
+    k_work_init(&_work, &TTCE::s_work_handler);
     // initialize the work queue
-    k_work_queue_init(&_workQueue);
+    k_work_queue_init(&_work_queue);
   }
 
   ~TTCE() {
     stop();
   }
 
+  /** Explicity prevent (move) copy and assignment
+      rather than inheriting from NonCopyable. This avoids
+      cppcoreguidelines-special-member-functions warning by clang-tidy.
+  */
+  TTCE(const TTCE&)            = delete;
+  TTCE(TTCE&&)                 = delete;
+  TTCE& operator=(const TTCE&) = delete;
+  TTCE& operator=(TTCE&&)      = delete;
+
   void start() {
     // first start the timer
-    k_timeout_t period = zpp_lib::milliseconds_to_ticks(_minorCycle);
+    k_timeout_t period = zpp_lib::milliseconds_to_ticks(_minor_cycle);
     k_timer_start(&_timer, period, period);
 
     // then run the work queue
@@ -66,104 +75,117 @@ public:
         .name     = "TTCE Work Queue",
         .no_yield = true,
     };
-    _isStarted = true;
-    k_work_queue_run(&_workQueue, &cfg);
+    _is_started = true;
+    k_work_queue_run(&_work_queue, &cfg);
   }
 
+  // Complexity is increased by zephyr macros
+  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   void stop() {
-    if (!_isStarted) {
+    if (!_is_started) {
       return;
     }
     // first stop the time
     k_timer_stop(&_timer);
     // drain the work queue
-    auto ret = k_work_queue_drain(&_workQueue, true);
+    auto ret = k_work_queue_drain(&_work_queue, true);
     if (ret < 0) {
-      __ASSERT(false, "k_work_queue_drain failed with code %d", ret);
+      ZPP_ASSERT(false, "k_work_queue_drain failed with code %d", ret);
     }
-    ret = k_work_queue_stop(&_workQueue, K_SECONDS(1));
+    // This is a Zephyr macro
+    // NOLINTNEXTLINE(readability-math-missing-parentheses)
+    ret = k_work_queue_stop(&_work_queue, K_SECONDS(1));
     if (ret != 0) {
-      __ASSERT(false, "k_work_queue_stop failed with code %d", ret);
+      ZPP_ASSERT(false, "k_work_queue_stop failed with code %d", ret);
     }
-    _isStarted = false;
+    _is_started = false;
   }
 
-  bool isStarted() {
-    return _isStarted;
+  bool is_started() {
+    return _is_started;
   }
 
-  void addInitialTask(F f) {
-    _initialTask = f;
+  void add_initial_task(F f) {
+    _initial_task = std::move(f);
   }
 
-  [[nodiscard]] zpp_lib::ZephyrResult addTask(uint16_t minorCycleIndex, F f) {
+  [[nodiscard]] zpp_lib::ZephyrResult add_task(uint16_t minor_cycle_index, F f) {
     zpp_lib::ZephyrResult res;
-    if (minorCycleIndex >= NbrOfMinorCycles) {
-      __ASSERT(false, "Invalid minor cycle index %d", minorCycleIndex);
+    if (minor_cycle_index >= NbrOfMinorCycles) {
+      ZPP_ASSERT(false, "Invalid minor cycle index %d", minor_cycle_index);
       res.assign_error(zpp_lib::ZephyrErrorCode::Inval);
       return res;
     }
-    if (_nbrOfTasksInMinorCycle[minorCycleIndex] >= MaxMinorCycleSize) {
-      __ASSERT(false, "Too many tasks in minor cycle %d: %d", minorCycleIndex, _nbrOfTasksInMinorCycle[minorCycleIndex] + 1);
+    // Everything is known at compile time, so we can safely use the minor_cycle_index as an index
+    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
+    if (_nbr_of_tasks_in_minor_cycle[minor_cycle_index] >= MaxMinorCycleSize) {
+      ZPP_ASSERT(false, "Too many tasks in minor cycle %d: %d", minor_cycle_index, _nbr_of_tasks_in_minor_cycle[minor_cycle_index] + 1);
       res.assign_error(zpp_lib::ZephyrErrorCode::Inval);
       return res;
     }
 
-    _tasks[minorCycleIndex][_nbrOfTasksInMinorCycle[minorCycleIndex]] = f;
-    _nbrOfTasksInMinorCycle[minorCycleIndex]++;
+    _tasks[minor_cycle_index][_nbr_of_tasks_in_minor_cycle[minor_cycle_index]] = std::move(f);
+    _nbr_of_tasks_in_minor_cycle[minor_cycle_index]++;
+    // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
     return res;
   }
 
 private:
-  static void _thunk(struct k_timer* timer_id) {
+  static void s_thunk(struct k_timer* timer_id) {
     // submit the periodic TTCE task
     if (timer_id != nullptr) {
       // get instance from user data
       // this cast is ugly but the only way to pass a reference
       // to this instance to the timer
-      // cppcheck-suppress cstyleCast
-      TTCE* pTTCE = (TTCE*)timer_id->user_data;  // NOLINT(readability/casting)
-      auto ret    = k_work_submit_to_queue(&pTTCE->_workQueue, &pTTCE->_work);
+      // NOLINTNEXTLINE(modernize-avoid-c-style-cast)
+      TTCE* p_ttce = (TTCE*)timer_id->user_data;  // NOLINT(readability/casting)
+      auto ret     = k_work_submit_to_queue(&p_ttce->_work_queue, &p_ttce->_work);
       if (ret != 0 && ret != 1 && ret != 2) {
-        __ASSERT(false, "Failed to submit work: %d", ret);
+        ZPP_ASSERT(false, "Failed to submit work: %d", ret);
         return;
       }
     }
   }
 
-  static void _workHandler(struct k_work* item) {
+  static void s_work_handler(struct k_work* item) {
     // this ugly casting is the simplest way of getting the information
-    // we need in the _workHandler method
+    // we need in the s_workHandler method
     // CASTING IS POSSIBLE ONLY WHEN k_work IS THE FIRST ATTRIBUTE IN THE CLASS
-    // cppcheck-suppress dangerousTypeCast
-    TTCE* pTTCE = (TTCE*)item;  // NOLINT(readability/casting)
+    // NOLINTNEXTLINE(modernize-avoid-c-style-cast)
+    TTCE* p_ttce = (TTCE*)item;  // NOLINT(readability/casting)
 
     // if an initial task is set, execute it and reset it
-    if (pTTCE->_initialTask != nullptr) {
-      pTTCE->_initialTask();
-      pTTCE->_initialTask = nullptr;
+    if (p_ttce->_initial_task != nullptr) {
+      p_ttce->_initial_task();
+      p_ttce->_initial_task = nullptr;
     }
 
     // execute tasks based on schedule table
-    for (uint16_t taskIndex = 0; taskIndex < MaxMinorCycleSize; taskIndex++) {
-      if (pTTCE->_tasks[pTTCE->_minorCycleIndex][taskIndex] != nullptr) {
-        pTTCE->_tasks[pTTCE->_minorCycleIndex][taskIndex]();
+    // Everything is known at compile time, so we can safely use the minor_cycle_index as an index
+    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
+    for (uint16_t task_index = 0; task_index < MaxMinorCycleSize; task_index++) {
+      if (p_ttce->_tasks[p_ttce->_minor_cycle_index][task_index] != nullptr) {
+        p_ttce->_tasks[p_ttce->_minor_cycle_index][task_index]();
       }
     }
-    pTTCE->_minorCycleIndex = (pTTCE->_minorCycleIndex + 1) % NbrOfMinorCycles;
+    p_ttce->_minor_cycle_index = (p_ttce->_minor_cycle_index + 1) % NbrOfMinorCycles;
+    // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
   }
 
   // _work MUST be the first attribute
-  struct k_work _work;
-  struct k_work_q _workQueue;
-  bool _isStarted = false;
-  struct k_timer _timer;
-  std::chrono::milliseconds _minorCycle;
-  uint16_t _minorCycleIndex                          = 0;
-  F _tasks[NbrOfMinorCycles][MaxMinorCycleSize]      = {nullptr};
-  uint16_t _nbrOfTasksInMinorCycle[NbrOfMinorCycles] = {0};
-  F _initialTask                                     = nullptr;
+  struct k_work _work         = {};
+  struct k_work_q _work_queue = {};
+  bool _is_started            = false;
+  struct k_timer _timer       = {};
+  std::chrono::milliseconds _minor_cycle;
+  uint16_t _minor_cycle_index = 0;
+  // Declaring these arrays as static constexpr allows the compiler to optimize them and avoid unnecessary copies.
+  // NOLINTBEGIN(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  F _tasks[NbrOfMinorCycles][MaxMinorCycleSize]           = {nullptr};
+  uint16_t _nbr_of_tasks_in_minor_cycle[NbrOfMinorCycles] = {0};
+  // NOLINTEND(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  F _initial_task = nullptr;
 };
 
 }  // namespace bike_computer
