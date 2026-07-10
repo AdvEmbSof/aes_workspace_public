@@ -37,7 +37,8 @@ namespace multi_tasking {
 
 Clock::Clock()
     : _display_queue("CDQueue"), _display_work(zpp_lib::Work<Clock>(this, &Clock::display_current_time)), _update_queue("TQueue"),
-      _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"), _update_work(zpp_lib::Work<Clock>(this, &Clock::update_current_time)) {}
+      _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
+      _update_work(zpp_lib::Work<Clock>(this, &Clock::update_current_time)) {}
 
 // Complexity is increased by the use of Zephyr macros
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)

@@ -36,8 +36,8 @@ ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 namespace multi_tasking {
 
 ClockUnsafe::ClockUnsafe()
-    : _display_queue("CDQueue"), _display_work(zpp_lib::Work<ClockUnsafe>(this, &ClockUnsafe::display_current_time)), _update_queue("TQueue"),
-      _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
+    : _display_queue("CDQueue"), _display_work(zpp_lib::Work<ClockUnsafe>(this, &ClockUnsafe::display_current_time)),
+      _update_queue("TQueue"), _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
       _update_work(zpp_lib::Work<ClockUnsafe>(this, &ClockUnsafe::update_current_time)) {}
 
 // Complexity is increased by the use of Zephyr macros
@@ -62,7 +62,7 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
 
   // Call the displayFromTicker() method every second (from ISR context)
   TickerFunction display_from_ticker_function = [this] { display_from_ticker(); };
-  res                                        = _display_ticker.attach(display_from_ticker_function, kClockDisplayTimeout);
+  res                                         = _display_ticker.attach(display_from_ticker_function, kClockDisplayTimeout);
   if (!res) {
     ZPP_LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
     return res;
