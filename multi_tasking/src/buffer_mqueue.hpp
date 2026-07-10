@@ -29,7 +29,9 @@
 // zpp_lib
 #include "zpp_include/digital_out.hpp"
 #include "zpp_include/message_queue.hpp"
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
 
 namespace multi_tasking {
 
@@ -38,63 +40,63 @@ using std::literals::chrono_literals::operator""ms;
 static constexpr uint8_t kLedOff = 0;
 static constexpr uint8_t kLedOn  = 1;
 
-class Buffer {
+class Buffer : public zpp_lib::NonCopyable {
 public:
-  Buffer() : _producerLed(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumerLed(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
+  Buffer() : _producer_led(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumer_led(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
 
   uint32_t append(uint32_t data) {
-    _producerLed = kLedOn;
+    _producer_led = kLedOn;
 
     zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kApppendWaitTime));
 
     std::chrono::milliseconds timeout = std::chrono::milliseconds::max();
-    auto res                          = _messageQueue.try_put_for(timeout, data);
+    auto res                          = _message_queue.try_put_for(timeout, data);
     if (res.has_error()) {
-      __ASSERT(false, "Error getting message from queue: %d", (int)res.error());
+      ZPP_ASSERT(false, "Error getting message from queue: %d", (int)res.error());
       return 0;
     }
     if (!res) {
-      __ASSERT(false, "Timeout when getting message from queue");
+      ZPP_ASSERT(false, "Timeout when getting message from queue");
       return 0;
     }
 
-    _producerLed = kLedOff;
+    _producer_led = kLedOff;
 
-    return _producerIndex++;
+    return _producer_index++;
   }
 
   uint32_t extract(uint32_t& data) {
-    _consumerLed = kLedOn;
+    _consumer_led = kLedOn;
 
     zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kExtractWaitTime));
     std::chrono::milliseconds timeout = std::chrono::milliseconds::max();
-    auto res                          = _messageQueue.try_get_for(timeout, data);
+    auto res                          = _message_queue.try_get_for(timeout, data);
     if (res.has_error()) {
-      __ASSERT(false, "Error getting message from queue: %d", (int)res.error());
+      ZPP_ASSERT(false, "Error getting message from queue: %d", (int)res.error());
       return 0;
     }
     if (!res) {
-      __ASSERT(false, "Timeout when getting message from queue");
+      ZPP_ASSERT(false, "Timeout when getting message from queue");
       return 0;
     }
 
-    _consumerLed = kLedOff;
-    return _consumerIndex++;
+    _consumer_led = kLedOff;
+    return _consumer_index++;
   }
 
-  std::chrono::milliseconds computeRandomWaitTime(const std::chrono::milliseconds& waitTime) {
-    return std::chrono::milliseconds((sys_rand32_get() % waitTime.count()) + waitTime.count());
+  std::chrono::milliseconds compute_random_wait_time(const std::chrono::milliseconds& wait_time) {
+    return std::chrono::milliseconds((sys_rand32_get() % wait_time.count()) + wait_time.count());
   }
 
 private:
   static constexpr std::chrono::milliseconds kApppendWaitTime = 500ms;
   static constexpr std::chrono::milliseconds kExtractWaitTime = 500ms;
   static constexpr uint8_t kBufferSize                        = 10;
-  zpp_lib::DigitalOut _producerLed;
-  zpp_lib::DigitalOut _consumerLed;
-  zpp_lib::MessageQueue<uint32_t, kBufferSize> _messageQueue;
-  uint32_t _producerIndex = 0;
-  uint32_t _consumerIndex = 0;
+  zpp_lib::DigitalOut _producer_led;
+  zpp_lib::DigitalOut _consumer_led;
+  zpp_lib::MessageQueue<uint32_t, kBufferSize> _message_queue;
+  uint32_t _producer_index = 0;
+  uint32_t _consumer_index = 0;
 };
 
 }  // namespace multi_tasking

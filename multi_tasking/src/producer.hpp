@@ -30,41 +30,42 @@
 #include <iostream>
 
 // zpp_lib
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
 
 // local
 #include "buffer_solution.hpp"
 
 namespace multi_tasking {
 
-template <typename T, class DataGenerator> class Producer {
+template <typename T, class DataGenerator> class Producer : public zpp_lib::NonCopyable {
 public:
   explicit Producer(Buffer<T>& buffer)
-      : _buffer(buffer), _producerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ProducerThread") {}
+      : _buffer(buffer), _producer_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ProducerThread") {}
 
   void start() {
-    auto res = _producerThread.start(std::bind(&Producer::producerMethod, this));
-    __ASSERT(res, "Cannot start producer thread: %d", (int)res.error());
+    auto res = _producer_thread.start([this] { producer_method(); });
+    ZPP_ASSERT(res, "Cannot start producer thread: %d", (int)res.error());
   }
 
   void wait() {
-    auto res = _producerThread.join();
-    __ASSERT(res, "Cannot join producer thread: %d", (int)res.error());
+    auto res = _producer_thread.join();
+    ZPP_ASSERT(res, "Cannot join producer thread: %d", (int)res.error());
   }
 
 private:
-  void producerMethod() {
+  void producer_method() {
     while (true) {
-      T producerData = DataGenerator::produceNextValue();
-      uint32_t index = _buffer.append(producerData);
-      std::cout << "Producer data is " << producerData << " (index in buffer " << index << ")" << std::endl;
+      T producer_data = DataGenerator::s_produce_next_value();
+      uint32_t index  = _buffer.append(producer_data);
+      std::cout << "Producer data is " << producer_data << " (index in buffer " << index << ")" << std::endl;
     }
   }
 
-private:
   static constexpr std::chrono::milliseconds kProduceWaitTime = 500ms;
   Buffer<T>& _buffer;
-  zpp_lib::Thread _producerThread;
+  zpp_lib::Thread _producer_thread;
 };
 
 }  // namespace multi_tasking

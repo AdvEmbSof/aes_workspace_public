@@ -25,60 +25,67 @@
 #include "deadlock.hpp"
 
 // zephyr
-#include <zephyr/logging/log.h>
 
-LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
+// zpp_lib
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
+
+ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
-// static data member allocation
-zpp_lib::Mutex Deadlock::_mutex[kNbrOfMutexes];
-
-Deadlock::Deadlock(int index, const char* threadName)
-    : _index(index), _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName) {}
+Deadlock::Deadlock(uint8_t index, const char* threadName)
+    : c_index(index), _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName) {
+  ZPP_ASSERT(index < kNbrOfMutexes, "Index must be smaller than %d", kNbrOfMutexes);
+}
 
 void Deadlock::start() {
-  auto res = _thread.start(std::bind(&Deadlock::execute, this));
-  __ASSERT(res, "Cannot start deadlock thread: %d", (int)res.error());
+  auto res = _thread.start([this]() { this->execute(); });
+  ZPP_ASSERT(res, "Cannot start deadlock thread: %d", (int)res.error());
 }
 
 void Deadlock::wait() {
   auto res = _thread.join();
-  __ASSERT(res, "Cannot join deadlock thread: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot join deadlock thread: %d", (int)res.error());
 }
 
-void Deadlock::execute() {
+// Complexity is increased by the use of Zephyr macros
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+void Deadlock::execute() const {
+  // _index is initialized in the constructor and asserted for correctness
+  // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   // enter the first critical section
-  auto res = _mutex[_index].lock();
-  __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  LOG_DBG("Thread %d entered critical section %d", _index, _index);
+  auto res = s_mutex[c_index].lock();
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_LOG_DBG("Thread %d entered critical section %d", c_index, c_index);
 
   // perform some operations
-  zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  LOG_DBG("Thread %d processing in mutex %d done", _index, _index);
+  zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
+  ZPP_LOG_DBG("Thread %d processing in mutex %d done", c_index, c_index);
 
   // enter the second critical section
-  int secondIndex = (_index + 1) % kNbrOfMutexes;
-  LOG_DBG("Thread %d trying to enter critical section %d", _index, secondIndex);
-  res = _mutex[secondIndex].lock();
-  __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  LOG_DBG("Thread %d entered critical section %d", _index, secondIndex);
+  int second_index = (c_index + 1) % kNbrOfMutexes;
+  ZPP_LOG_DBG("Thread %d trying to enter critical section %d", c_index, second_index);
+  res = s_mutex[second_index].lock();
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_LOG_DBG("Thread %d entered critical section %d", c_index, second_index);
 
   // perform some operations
-  zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  LOG_DBG("Thread %d processing in mutex %d and %d done", _index, _index, secondIndex);
+  zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
+  ZPP_LOG_DBG("Thread %d processing in mutex %d and %d done", c_index, c_index, second_index);
 
   // exit the second critical section
-  res = _mutex[secondIndex].unlock();
-  __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  res = s_mutex[second_index].unlock();
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
 
   // perform some operations
-  zpp_lib::ThisThread::busyWait(kProcessingWaitTime);
-  LOG_DBG("Thread %d processing in mutex %d done", _index, _index);
+  zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
+  ZPP_LOG_DBG("Thread %d processing in mutex %d done", c_index, c_index);
 
   // exit the first critical section
-  res = _mutex[_index].unlock();
-  __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  res = s_mutex[c_index].unlock();
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 }
 
 }  // namespace multi_tasking

@@ -15,5 +15,3 @@ config TEST_DURATION_IN_MS
     This option allows to specify the test duration in milliseconds for a successful test run. 
     The value can be overridden for each platform in the testcase.yaml file. 
     The value should be set so that the test passes on your platform. It should not be below 20000 for any platform.
-
-    

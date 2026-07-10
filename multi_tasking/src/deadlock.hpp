@@ -38,21 +38,23 @@ using std::literals::chrono_literals::operator""us;
 
 class Deadlock {
 public:
-  Deadlock(int index, const char* threadName);
+  Deadlock(uint8_t index, const char* threadName);
 
   void start();
   void wait();
 
 private:
-  void execute();
+  void execute() const;
 
   // time that the threads should spend processing (e.g. wait in our case)
   static constexpr std::chrono::microseconds kProcessingWaitTime = 1000000us;
   static constexpr int kNbrOfMutexes                             = 2;
-  uint8_t _index;
+  const uint8_t c_index;
   zpp_lib::Thread _thread;
   // the mutex must be declared as static for being a class instance
-  static zpp_lib::Mutex _mutex[kNbrOfMutexes];
+  // kNbrOfMutexes is a constant, so using a c array is safe
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  static inline zpp_lib::Mutex s_mutex[kNbrOfMutexes] = {};
 };
 
 }  // namespace multi_tasking

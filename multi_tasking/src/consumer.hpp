@@ -27,6 +27,7 @@
 #include <iostream>
 
 // zpp_lib
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/thread.hpp"
 
 // local
@@ -34,35 +35,34 @@
 
 namespace multi_tasking {
 
-template <typename T> class Consumer {
+template <typename T> class Consumer : public zpp_lib::NonCopyable {
 public:
   explicit Consumer(Buffer<T>& buffer)
-      : _buffer(buffer), _consumerThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ConsumerThread") {}
+      : _buffer(buffer), _consumer_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ConsumerThread") {}
   void start() {
-    auto res = _consumerThread.start(std::bind(&Consumer::consumerMethod, this));
-    __ASSERT(res, "Cannot start consumer thread: %d", (int)res.error());
+    auto res = _consumer_thread.start([this] { consumer_method(); });
+    ZPP_ASSERT(res, "Cannot start consumer thread: %d", (int)res.error());
   }
   void wait() {
-    auto res = _consumerThread.join();
-    __ASSERT(res, "Cannot join consumer thread: %d", (int)res.error());
+    auto res = _consumer_thread.join();
+    ZPP_ASSERT(res, "Cannot join consumer thread: %d", (int)res.error());
   }
 
 private:
   void consume(T data) {
     // does nothing
   }
-  void consumerMethod() {
+  void consumer_method() {
     while (true) {
-      T consumerData;
-      uint32_t index = _buffer.extract(consumerData);
-      consume(consumerData);
-      std::cout << "Consumer data is " << consumerData << " (index in buffer " << index << ")" << std::endl;
+      T consumer_data = {};
+      uint32_t index  = _buffer.extract(consumer_data);
+      consume(consumer_data);
+      std::cout << "Consumer data is " << consumer_data << " (index in buffer " << index << ")" << std::endl;
     }
   }
 
-private:
   Buffer<T>& _buffer;
-  zpp_lib::Thread _consumerThread;
+  zpp_lib::Thread _consumer_thread;
 };
 
 }  // namespace multi_tasking

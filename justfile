@@ -67,5 +67,6 @@ clang-tidy app configs:
     clang-tidy-22 -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
 
 # Check all application files
-run-clang-tidy app configs:
-    python {{zpp_lib_dir}}/scripts/run_clang_tidy.py --app {{app}} --configs {{quote(configs)}} --wd {{working_dir}}
+run-clang-tidy app configs app_config="":
+    python {{zpp_lib_dir}}/scripts/run_clang_tidy.py --app {{app}} --configs {{quote(configs)}} --wd {{working_dir}} \
+    {{ if app_config != "" { "--app-config " + quote(app_config) } else { "" } }}

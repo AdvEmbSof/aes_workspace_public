@@ -24,28 +24,28 @@
 #include "wait_on_button.hpp"
 
 // zephyr
-#include <zephyr/logging/log.h>
 
 // zpp_lib
 #include "zpp_include/time.hpp"
+#include "zpp_include/zpp_log.hpp"
 
-LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
 WaitOnButton::WaitOnButton(const char* threadName)
-    : _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName), _pressedTime(std::chrono::microseconds::zero()) {
-  _pushButton.fall(std::bind(&WaitOnButton::buttonPressed, this));
-  LOG_DBG("WaitOnButton initialized");
+    : _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName), _pressed_time(std::chrono::microseconds::zero()),
+      _push_button_token(_push_button.add_callback([this]() { this->on_button_pressed(); })) {
+  ZPP_LOG_DBG("WaitOnButton initialized");
 }
 
 zpp_lib::ZephyrResult WaitOnButton::start() {
-  auto res = _thread.start(std::bind(&WaitOnButton::waitForButtonEvent, this));
+  auto res = _thread.start([this]() { this->wait_for_button_event(); });
   if (!res) {
-    LOG_ERR("Failed to start thread: %d", (int)res.error());
+    ZPP_LOG_ERR("Failed to start thread: %d", (int)res.error());
     return res;
   }
-  LOG_DBG("Thread started successfully");
+  ZPP_LOG_DBG("Thread started successfully");
   return res;
 }
 
@@ -56,25 +56,27 @@ void WaitOnButton::wait_started() {
 void WaitOnButton::wait_exit() {
   auto res = _thread.join();
   if (!res) {
-    LOG_ERR("join() failed: %d", (int)res.error());
+    ZPP_LOG_ERR("join() failed: %d", (int)res.error());
   }
 }
 
-void WaitOnButton::waitForButtonEvent() {
-  LOG_DBG("Waiting for button press");
+// Complexity is increased by the use of Zephyr macros
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+void WaitOnButton::wait_for_button_event() {
+  ZPP_LOG_DBG("Waiting for button press");
   _event.set(kStartedEvent);
 
   while (true) {
     _event.wait_any(kPressedEvent);
-    std::chrono::microseconds time    = zpp_lib::Time::getUpTime();
-    std::chrono::microseconds latency = time - _pressedTime;
-    LOG_DBG("Button pressed with response time: %lld usecs", latency.count());
-    LOG_DBG("Waiting for button press");
+    std::chrono::microseconds time    = zpp_lib::Time::get_uptime();
+    std::chrono::microseconds latency = time - _pressed_time;
+    ZPP_LOG_DBG("Button pressed with response time: %lld usecs", latency.count());
+    ZPP_LOG_DBG("Waiting for button press");
   }
 }
 
-void WaitOnButton::buttonPressed() {
-  _pressedTime = zpp_lib::Time::getUpTime();
+void WaitOnButton::on_button_pressed() {
+  _pressed_time = zpp_lib::Time::get_uptime();
   _event.set(kPressedEvent);
 }
 

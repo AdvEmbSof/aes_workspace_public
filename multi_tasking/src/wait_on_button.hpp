@@ -43,16 +43,17 @@ public:
   void wait_exit();
 
 private:
-  void waitForButtonEvent();
-  void buttonPressed();
+  void wait_for_button_event();
+  void on_button_pressed();
 
   static constexpr uint8_t kPressedEvent = BIT(0);
   static constexpr uint8_t kStartedEvent = BIT(1);
 
   zpp_lib::Thread _thread;
-  std::chrono::microseconds _pressedTime;
+  std::chrono::microseconds _pressed_time;
   zpp_lib::Event _event;
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> _pushButton;
+  zpp_lib::InterruptIn _push_button{zpp_lib::InterruptIn::PinName::BUTTON1};
+  zpp_lib::RegistrationToken _push_button_token;
 };
 
 }  // namespace multi_tasking

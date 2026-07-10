@@ -25,110 +25,116 @@
 #include "clock_with_mutex.hpp"
 
 // zephyr
-#include <zephyr/logging/log.h>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
+#include "zpp_include/zpp_log.hpp"
 
-LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
 Clock::Clock()
-    : _displayQueue("CDQueue"), _displayWork(this, &Clock::displayCurrentTime), _updateQueue("TQueue"),
-      _updateThread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"), _updateWork(this, &Clock::updateCurrentTime) {}
+    : _display_queue("CDQueue"), _display_work(zpp_lib::Work<Clock>(this, &Clock::display_current_time)), _update_queue("TQueue"),
+      _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"), _update_work(zpp_lib::Work<Clock>(this, &Clock::update_current_time)) {}
 
+// Complexity is increased by the use of Zephyr macros
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 zpp_lib::ZephyrResult Clock::start() {
   // Start a thread for running the _tickerQueue work queue.
   // Events are dispatched to the queue in the tickerUpdate() method called by the
   // ticker.
-  auto res = _updateThread.start(std::bind(&zpp_lib::WorkQueue::run, &_updateQueue));
+  auto res = _update_thread.start([this] { _update_queue.run(); });
   if (!res) {
-    LOG_ERR("Cannot start ticker thread: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot start ticker thread: %d", (int)res.error());
     return res;
   }
 
   // Call the updateFromTicker() method every second (from ISR context)
-  TickerFunction updateFromTickerFunction = std::bind(&Clock::updateFromTicker, this);
-  res                                     = _updateTicker.attach(updateFromTickerFunction, clockUpdateTimeout);
+  TickerFunction update_from_ticker_function = [this] { update_from_ticker(); };
+  res                                        = _update_ticker.attach(update_from_ticker_function, kClockUpdateTimeout);
   if (!res) {
-    LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
     return res;
   }
 
   // Call the displayFromTicker() method every second (from ISR context)
-  TickerFunction displayFromTickerFunction = std::bind(&Clock::displayFromTicker, this);
-  res                                      = _displayTicker.attach(displayFromTickerFunction, clockDisplayTimeout);
+  TickerFunction display_from_ticker_function = [this] { display_from_ticker(); };
+  res                                         = _display_ticker.attach(display_from_ticker_function, kClockDisplayTimeout);
   if (!res) {
-    LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
     return res;
   }
 
   // run the displayQueue from the calling thread
-  _displayQueue.run();
+  _display_queue.run();
 
   // should not get here
-  __ASSERT(false, "Should not get here");
+  ZPP_ASSERT(false, "Should not get here");
 
   return res;
 }
 
-void Clock::displayFromTicker() {
+void Clock::display_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations
-  auto res = _displayQueue.call(_displayWork);
-  __ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
+  auto res = _display_queue.call(_display_work);
+  ZPP_ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
 }
 
-void Clock::displayCurrentTime() {
-  DateTimeType dt = {0};
+// display_current_time is used as work handler and $
+// must be non-const because the work handler is non-const
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void Clock::display_current_time() {
+  DateTimeType dt = {};
 
   auto res = _mutex.lock();
-  __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
 
-  dt.day  = _currentTime.day;
-  dt.hour = _currentTime.hour;
+  dt.day  = _current_time.day;
+  dt.hour = _current_time.hour;
 
-  static constexpr std::chrono::microseconds waitTime = 1000ms;
-  zpp_lib::ThisThread::busyWait(waitTime);
+  static constexpr std::chrono::microseconds kWaitTime = 1000ms;
+  zpp_lib::ThisThread::busy_wait(kWaitTime);
 
-  dt.minute = _currentTime.minute;
-  dt.second = _currentTime.second;
+  dt.minute = _current_time.minute;
+  dt.second = _current_time.second;
 
   res = _mutex.unlock();
-  __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
 
   printk("Day %u Hour %u min %u sec %u\n", dt.day, dt.hour, dt.minute, dt.second);
 }
 
-void Clock::updateFromTicker() {
+void Clock::update_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations updateCurrentTime();
-  auto res = _updateQueue.call(_updateWork);
-  __ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
+  auto res = _update_queue.call(_update_work);
+  ZPP_ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }
 
-void Clock::updateCurrentTime() {
+void Clock::update_current_time() {
   auto res = _mutex.lock();
-  __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
 
-  _currentTime.second += std::chrono::duration_cast<std::chrono::seconds>(clockUpdateTimeout).count();
+  _current_time.second += std::chrono::duration_cast<std::chrono::seconds>(kClockUpdateTimeout).count();
 
-  if (_currentTime.second > 59) {
-    _currentTime.second = 0;
-    _currentTime.minute++;
-    if (_currentTime.minute > 59) {
-      _currentTime.minute = 0;
-      _currentTime.hour++;
-      if (_currentTime.hour > 23) {
-        _currentTime.hour = 0;
-        _currentTime.day++;
+  if (_current_time.second >= kNbrOfSecondsInMinute) {
+    _current_time.second = 0;
+    _current_time.minute++;
+    if (_current_time.minute >= kNbrOfMinutesInHour) {
+      _current_time.minute = 0;
+      _current_time.hour++;
+      if (_current_time.hour >= kNbrOfHoursInDay) {
+        _current_time.hour = 0;
+        _current_time.day++;
       }
     }
   }
 
   res = _mutex.unlock();
-  __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
 }
 
 }  // namespace multi_tasking

@@ -29,6 +29,7 @@
 
 // zpp_lib
 #include "zpp_include/digital_out.hpp"
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/this_thread.hpp"
 
 namespace multi_tasking {
@@ -38,7 +39,7 @@ using std::literals::chrono_literals::operator""ms;
 static constexpr uint8_t kLedOff = 0;
 static constexpr uint8_t kLedOn  = 1;
 
-template <typename T> class Buffer {
+template <typename T> class Buffer : public zpp_lib::NonCopyable {
 public:
   Buffer() : _producerLed(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumerLed(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
 
@@ -66,8 +67,8 @@ public:
     return index;
   }
 
-  std::chrono::milliseconds computeRandomWaitTime(const std::chrono::milliseconds& waitTime) {
-    return std::chrono::milliseconds((sys_rand32_get() % waitTime.count()) + waitTime.count());
+  std::chrono::milliseconds compute_random_wait_time(const std::chrono::milliseconds& wait_time) {
+    return std::chrono::milliseconds((sys_rand32_get() % wait_time.count()) + wait_time.count());
   }
 
 private:
@@ -76,6 +77,8 @@ private:
   static constexpr uint8_t kBufferSize                        = 10;
   zpp_lib::DigitalOut _producerLed;
   zpp_lib::DigitalOut _consumerLed;
+  // kBufferSize is a constant, so using a c array is safe
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
   T _buffer[kBufferSize]  = {0};
   uint32_t _producerIndex = 0;
   uint32_t _consumerIndex = 0;

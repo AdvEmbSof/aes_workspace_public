@@ -24,7 +24,6 @@
 
 // zephyr
 #include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
 #include <zephyr/random/random.h>
 
 // std
@@ -33,6 +32,7 @@
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/utils.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 // local
 #include "buffer_solution.hpp"
@@ -42,22 +42,26 @@
 #include "producer.hpp"
 #include "wait_on_button.hpp"
 
-LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 class RandomIntGenerator {
 public:
   static constexpr uint8_t kMaxRandomValue = 20;
 
-  static uint32_t produceNextValue() {
+  static uint32_t s_produce_next_value() {
     return sys_rand32_get() % kMaxRandomValue;
   }
 };
 
 class RandomDoubleGenerator {
 public:
-  static constexpr double randomValues[] = {1.1, 2.2, 3.3, 4.4, 5.5};
-  static double produceNextValue() {
-    return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))];
+  // kRandomValues is a static array, so using a c array is safe
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  static constexpr double kRandomValues[] = {1.1, 2.2, 3.3, 4.4, 5.5};
+  static double s_produce_next_value() {
+    // kRandomValues is a static array, so we are sure that the index is within bounds
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+    return kRandomValues[sys_rand32_get() % (sizeof(kRandomValues) / sizeof(kRandomValues[0]))];
   }
 };
 
@@ -73,54 +77,60 @@ std::ostream& operator<<(std::ostream& os, const Rect& rect) {
 
 class RandomRectGenerator {
 public:
-  static constexpr Rect randomValues[] = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
-  static Rect produceNextValue() {
-    return randomValues[sys_rand32_get() % (sizeof(randomValues) / sizeof(randomValues[0]))];
+  // kRandomValues is a static array, so using a c array is safe
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  static constexpr Rect kRandomValues[] = {{.x = 1, .y = 1}, {.x = 2, .y = 2}, {.x = 3, .y = 3}, {.x = 4, .y = 4}, {.x = 5, .y = 5}};
+  static Rect s_produce_next_value() {
+    // kRandomValues is a static array, so we are sure that the index is within bounds
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+    return kRandomValues[sys_rand32_get() % (sizeof(kRandomValues) / sizeof(kRandomValues[0]))];
   }
 };
 
-int main(void) {
+// Complexity is increased by the use of zephyr macros
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+int main() {
   using std::literals::chrono_literals::operator""ms;
 
-  LOG_DBG("Multi-tasking program started");
+  ZPP_LOG_DBG("Multi-tasking program started");
 
   // check which button is pressed
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> button1;
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON2> button2;
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON3> button3;
+  zpp_lib::InterruptIn button1(zpp_lib::InterruptIn::PinName::BUTTON1);
+  zpp_lib::InterruptIn button2(zpp_lib::InterruptIn::PinName::BUTTON2);
+  zpp_lib::InterruptIn button3(zpp_lib::InterruptIn::PinName::BUTTON3);
   if (button1.read() == zpp_lib::kPolarityPressed) {
     // log thread statistics
-    zpp_lib::Utils::logThreadsSummary();
+    zpp_lib::Utils::log_threads_summary();
 
-    LOG_DBG("Starting WaitOnButton demo");
+    ZPP_LOG_DBG("Starting WaitOnButton demo");
     // create the WaitOnButton instance and start it
-    multi_tasking::WaitOnButton waitOnButton("ButtonThread");
-    auto res = waitOnButton.start();
+    multi_tasking::WaitOnButton wait_on_button("ButtonThread");
+    auto res = wait_on_button.start();
     if (!res) {
-      LOG_ERR("Cannot start waitOnButton: %d", static_cast<int>(res.error()));
+      ZPP_LOG_ERR("Cannot start wait_on_button: %d", static_cast<int>(res.error()));
       return -1;
     }
 
     // wait that the WaitOnButton thread started
-    LOG_DBG("Calling wait_started()");
-    waitOnButton.wait_started();
-    LOG_DBG("wait_started() unblocked");
+    ZPP_LOG_DBG("Calling wait_started()");
+    wait_on_button.wait_started();
+    ZPP_LOG_DBG("wait_started() unblocked");
 
     // log thread statistics
-    zpp_lib::Utils::logThreadsSummary();
+    zpp_lib::Utils::log_threads_summary();
 
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
-    waitOnButton.wait_exit();
+    wait_on_button.wait_exit();
     // or do busy waiting
     while (true) {
     }
   } else if (button2.read() == zpp_lib::kPolarityPressed) {
-    LOG_DBG("Starting Clock demo");
+    ZPP_LOG_DBG("Starting Clock demo");
     // create and start a clock
     multi_tasking::Clock clock;
     clock.start();
   } else if (button3.read() == zpp_lib::kPolarityPressed) {
-    LOG_DBG("Starting Deadlock demo");
+    ZPP_LOG_DBG("Starting Deadlock demo");
 
     // create a first deadlock instance
     multi_tasking::Deadlock deadlock0(0, "Thread0");
@@ -134,7 +144,7 @@ int main(void) {
     deadlock0.wait();
     deadlock1.wait();
   } else {
-    LOG_DBG("Starting Consumer/Producer demo");
+    ZPP_LOG_DBG("Starting Consumer/Producer demo");
 
     using BufferType     = Rect;
     using ValueGenerator = RandomRectGenerator;

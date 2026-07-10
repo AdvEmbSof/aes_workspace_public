@@ -30,92 +30,100 @@
 // zpp_lib
 #include "zpp_include/digital_out.hpp"
 #include "zpp_include/mutex.hpp"
+#include "zpp_include/non_copyable.hpp"
 #include "zpp_include/semaphore.hpp"
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/zpp_assert.hpp"
 
 namespace multi_tasking {
 
 using std::literals::chrono_literals::operator""ms;
 
-static constexpr uint8_t kLedOff = 0;
-static constexpr uint8_t kLedOn  = 1;
+static constexpr bool kLedOff = false;
+static constexpr bool kLedOn  = true;
 
-template <typename T> class Buffer {
+template <typename T> class Buffer : public zpp_lib::NonCopyable {
 public:
-  Buffer() : _producerLed(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumerLed(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
+  Buffer() : _producer_led(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumer_led(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
 
   uint32_t append(const T& data) {
     // make sure that we can produce without overflow
-    auto res = _inSemaphore.acquire();
-    __ASSERT(res, "Cannot acquire inSemaphore: %d", (int)res.error());
+    auto res = _in_semaphore.acquire();
+    ZPP_ASSERT(res, "Cannot acquire inSemaphore: %d", (int)res.error());
 
     // lock buffer
-    res = _producerConsumerMutex.lock();
-    __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+    res = _producer_consumer_mutex.lock();
+    ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
 
-    _producerLed            = kLedOn;
-    _buffer[_producerIndex] = data;
-    uint32_t index          = _producerIndex;
-    _producerIndex          = (_producerIndex + 1) % kBufferSize;
+    _producer_led = kLedOn;
+    // _producer_index is updated with % kBufferSize
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+    _buffer[_producer_index] = data;
+    uint32_t index           = _producer_index;
+    _producer_index          = (_producer_index + 1) % kBufferSize;
 
-    zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kApppendWaitTime));
-    _producerLed = kLedOff;
+    zpp_lib::ThisThread::busy_wait(compute_random_wait_time(kApppendWaitTime));
+    _producer_led = kLedOff;
 
     // unlock buffer
-    res = _producerConsumerMutex.unlock();
-    __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+    res = _producer_consumer_mutex.unlock();
+    ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
 
     // tell that one element is available for consumer
-    res = _outSemaphore.release();
-    __ASSERT(res, "Cannot release outSemaphore: %d", (int)res.error());
+    res = _out_semaphore.release();
+    ZPP_ASSERT(res, "Cannot release outSemaphore: %d", (int)res.error());
 
     return index;
   }
 
   uint32_t extract(T& data) {
     // make sure that we can consume without underflow
-    auto res = _outSemaphore.acquire();
-    __ASSERT(res, "Cannot acquire outSemaphore: %d", (int)res.error());
+    auto res = _out_semaphore.acquire();
+    ZPP_ASSERT(res, "Cannot acquire outSemaphore: %d", (int)res.error());
 
     // lock buffer
-    res = _producerConsumerMutex.lock();
-    __ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+    res = _producer_consumer_mutex.lock();
+    ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
 
-    _consumerLed   = kLedOn;
-    data           = _buffer[_consumerIndex];
-    uint32_t index = _consumerIndex;
-    _consumerIndex = (_consumerIndex + 1) % kBufferSize;
+    _consumer_led = kLedOn;
+    // _consumer_index is updated with % kBufferSize
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
+    data            = _buffer[_consumer_index];
+    uint32_t index  = _consumer_index;
+    _consumer_index = (_consumer_index + 1) % kBufferSize;
 
-    zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kExtractWaitTime));
-    _consumerLed = kLedOff;
+    zpp_lib::ThisThread::busy_wait(compute_random_wait_time(kExtractWaitTime));
+    _consumer_led = kLedOff;
 
     // unlock buffer
-    res = _producerConsumerMutex.unlock();
-    __ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+    res = _producer_consumer_mutex.unlock();
+    ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
 
     // tell that one element is available for producer
-    res = _inSemaphore.release();
-    __ASSERT(res, "Cannot release inSemaphore: %d", (int)res.error());
+    res = _in_semaphore.release();
+    ZPP_ASSERT(res, "Cannot release inSemaphore: %d", (int)res.error());
 
     return index;
   }
 
-  std::chrono::milliseconds computeRandomWaitTime(const std::chrono::milliseconds& waitTime) {
-    return std::chrono::milliseconds((sys_rand32_get() % waitTime.count()) + waitTime.count());
+  std::chrono::milliseconds compute_random_wait_time(const std::chrono::milliseconds& wait_time) {
+    return std::chrono::milliseconds((sys_rand32_get() % wait_time.count()) + wait_time.count());
   }
 
 private:
   static constexpr std::chrono::milliseconds kApppendWaitTime = 500ms;
   static constexpr std::chrono::milliseconds kExtractWaitTime = 500ms;
   static constexpr uint8_t kBufferSize                        = 10;
-  zpp_lib::DigitalOut _producerLed;
-  zpp_lib::DigitalOut _consumerLed;
-  zpp_lib::Mutex _producerConsumerMutex;
-  zpp_lib::Semaphore _outSemaphore{0, kBufferSize - 1};
-  zpp_lib::Semaphore _inSemaphore{kBufferSize - 1, kBufferSize - 1};
-  T _buffer[kBufferSize]  = {0};
-  uint32_t _producerIndex = 0;
-  uint32_t _consumerIndex = 0;
+  zpp_lib::DigitalOut _producer_led;
+  zpp_lib::DigitalOut _consumer_led;
+  zpp_lib::Mutex _producer_consumer_mutex;
+  zpp_lib::Semaphore _out_semaphore{0, kBufferSize - 1};
+  zpp_lib::Semaphore _in_semaphore{kBufferSize - 1, kBufferSize - 1};
+  // kBufferSize is a constant, so using a c array is safe
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
+  T _buffer[kBufferSize]   = {0};
+  uint32_t _producer_index = 0;
+  uint32_t _consumer_index = 0;
 };
 
 }  // namespace multi_tasking

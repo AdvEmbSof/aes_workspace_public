@@ -52,26 +52,30 @@ public:
   zpp_lib::ZephyrResult start();
 
 private:
-  void displayFromTicker();
-  void displayCurrentTime();
-  void updateFromTicker();
-  void updateCurrentTime();
+  void display_from_ticker();
+  void display_current_time();
+  void update_from_ticker();
+  void update_current_time();
 
   // type definition used by tickers and queues
   using TickerFunction    = std::function<void()>;
   using WorkQueueFunction = std::function<void()>;
   // used for display the current time
-  zpp_lib::WorkQueue _displayQueue;
-  zpp_lib::Ticker<TickerFunction> _displayTicker;
-  zpp_lib::Work _displayWork;
+  zpp_lib::WorkQueue _display_queue;
+  zpp_lib::Ticker<TickerFunction> _display_ticker;
+  zpp_lib::Work<ClockUnsafe> _display_work;
   // used for updating _currentTime
-  zpp_lib::WorkQueue _updateQueue;
-  zpp_lib::Thread _updateThread;
-  zpp_lib::Ticker<TickerFunction> _updateTicker;
-  zpp_lib::Work _updateWork;
-  DateTimeType _currentTime{.day = 0, .hour = 10, .minute = 59, .second = 58};
-  static constexpr std::chrono::milliseconds clockUpdateTimeout  = 1000ms;
-  static constexpr std::chrono::milliseconds clockDisplayTimeout = 1000ms;
+  zpp_lib::WorkQueue _update_queue;
+  zpp_lib::Thread _update_thread;
+  zpp_lib::Ticker<TickerFunction> _update_ticker;
+  zpp_lib::Work<ClockUnsafe> _update_work;
+  static constexpr auto kNbrOfSecondsInMinute = 60;
+  static constexpr auto kNbrOfMinutesInHour   = 60;
+  static constexpr auto kNbrOfHoursInDay      = 24;
+  static constexpr auto kInitialHour          = 10;
+  DateTimeType _current_time{.day = 0, .hour = kInitialHour, .minute = kNbrOfMinutesInHour - 1, .second = kNbrOfSecondsInMinute - 1};
+  static constexpr std::chrono::milliseconds kClockUpdateTimeout  = 1000ms;
+  static constexpr std::chrono::milliseconds kClockDisplayTimeout = 1000ms;
 };
 
 }  // namespace multi_tasking

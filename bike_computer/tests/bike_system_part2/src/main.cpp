@@ -16,7 +16,7 @@
  * @file test_bike_system_part2.cpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
- * @brief Test program for the BikeSystem class (codelab part 2)
+ * @brief Test program for the BikeSystem class (codelab part 1)
  *
  * @date 2025-07-01
  * @version 1.0.0
@@ -43,21 +43,21 @@ ZPP_LOG_MODULE_REGISTER(bike_computer, CONFIG_APP_LOG_LEVEL);
 // for ms or s literals
 using std::literals::chrono_literals::operator""s;
 
-// Different modes
-// nrf5340, busy: 48s
-// nrf5340, sleep: 48s
-// qemu_x86, busy: tested up to 120s
-// qemu_x86, sleep: tested up to 120s
-static constexpr std::chrono::milliseconds kTestDuration = 48s;
+// TODO(Student): Validate the test duration for your target platform.
+// The value of TEST_DURATION_IN_MS is set in the test case configuration file (testcase.yaml) and
+// can be overridden for each platform. The value should be set so that the test passes on your platform.
+// It should not be below 20s for any platform.
+static constexpr std::chrono::milliseconds kTestDuration(CONFIG_TEST_DURATION_IN_MS);
 
-// test_bike_system_event_queue handler function
-ZPP_ZTEST(bike_system_part2, test_bike_system_with_event) {
+// test_bike_system_static handler function
+ZPP_ZTEST(bike_system_part2, test_bike_system_static_with_event) {
   // create the BikeSystem instance
   bike_computer::static_scheduling_with_event::BikeSystem bike_system;
 
   // run the bike system in a separate thread
-  zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "Test BS TTCE");
-  auto res = thread.start([&]() {
+  zpp_lib::Thread thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "Test BS static with event");
+  ZPP_LOG_DBG("Starting thread");
+  auto res = thread.start([&bike_system]() {
     auto res = bike_system.start();
     zpp_zassert_true(res, "BikeSystem start failed");
   });
@@ -69,6 +69,7 @@ ZPP_ZTEST(bike_system_part2, test_bike_system_with_event) {
   // stop the bike system
   bike_system.stop();
 
+  // wait for thread to terminate
   res = thread.join();
   zpp_zassert_true(res, "Could not join thread");
 }

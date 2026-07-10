@@ -102,3 +102,10 @@ repos:
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/bike_system_part3)/.*\.(c|cc|cpp|cxx)$
+  - id: clang-tidy-multi-tasking
+    name: clang-tidy-multi-tasking
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app multi_tasking --configs "log+debug+stats+gpio" --wd "." --app-config prj_multi_tasking.conf
+    language: system
+    pass_filenames: true  
+    require_serial: true
+    files: ^(multi_tasking)/.*\.(c|cc|cpp|cxx)$
