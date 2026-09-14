@@ -50,6 +50,8 @@ private:
   static constexpr uint8_t kStartedEvent = BIT(1);
 
   zpp_lib::Thread _thread;
+  static constexpr zpp_lib::PreemptableThreadPriority kThreadPriority =
+      zpp_lib::prio_to_preemptable_thread_priority(CONFIG_WAIT_ON_BUTTON_THREAD_PRIORITY);
   std::chrono::microseconds _pressed_time;
   zpp_lib::Event _event;
   zpp_lib::InterruptIn _push_button{zpp_lib::InterruptIn::PinName::BUTTON1};

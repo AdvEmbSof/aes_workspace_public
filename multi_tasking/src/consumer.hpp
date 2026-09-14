@@ -31,7 +31,7 @@
 #include "zpp_include/thread.hpp"
 
 // local
-#include "buffer_solution.hpp"
+#include "buffer.hpp"
 
 namespace multi_tasking {
 

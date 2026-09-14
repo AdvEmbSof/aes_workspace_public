@@ -37,7 +37,7 @@ namespace multi_tasking {
 
 using std::literals::chrono_literals::operator""ms;
 
-class ClockUnsafe {
+class Clock {
 public:
   struct DateTimeType {
     uint32_t day;
@@ -46,10 +46,10 @@ public:
     uint32_t second;
   };
 
-  ClockUnsafe();
+  Clock();
 
   // method called for starting the clock demo
-  zpp_lib::ZephyrResult start();
+  [[nodiscard]] zpp_lib::ZephyrResult start();
 
 private:
   void display_from_ticker();
@@ -63,17 +63,21 @@ private:
   // used for display the current time
   zpp_lib::WorkQueue _display_queue;
   zpp_lib::Ticker<TickerFunction> _display_ticker;
-  zpp_lib::Work<ClockUnsafe> _display_work;
+  zpp_lib::Work<Clock> _display_work;
   // used for updating _currentTime
   zpp_lib::WorkQueue _update_queue;
   zpp_lib::Thread _update_thread;
   zpp_lib::Ticker<TickerFunction> _update_ticker;
-  zpp_lib::Work<ClockUnsafe> _update_work;
+  zpp_lib::Work<Clock> _update_work;
+#if CONFIG_CURRENT_TIME_MUTEX
+  zpp_lib::Mutex _mutex;
+#endif  // CONFIG_CURRENT_TIME_MUTEX
+
   static constexpr auto kNbrOfSecondsInMinute = 60;
   static constexpr auto kNbrOfMinutesInHour   = 60;
   static constexpr auto kNbrOfHoursInDay      = 24;
   static constexpr auto kInitialHour          = 10;
-  DateTimeType _current_time{.day = 0, .hour = kInitialHour, .minute = kNbrOfMinutesInHour - 1, .second = kNbrOfSecondsInMinute - 1};
+  DateTimeType _current_time{.day = 0, .hour = kInitialHour, .minute = kNbrOfMinutesInHour - 1, .second = kNbrOfSecondsInMinute - 2};
   static constexpr std::chrono::milliseconds kClockUpdateTimeout  = 1000ms;
   static constexpr std::chrono::milliseconds kClockDisplayTimeout = 1000ms;
 };

@@ -34,10 +34,8 @@ ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 namespace multi_tasking {
 
 WaitOnButton::WaitOnButton(const char* threadName)
-    : _thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, threadName), _pressed_time(std::chrono::microseconds::zero()),
-      _push_button_token(_push_button.add_callback([this]() { this->on_button_pressed(); })) {
-  ZPP_LOG_DBG("WaitOnButton initialized");
-}
+    : _thread(kThreadPriority, threadName), _pressed_time(std::chrono::microseconds::zero()),
+      _push_button_token(_push_button.add_callback([this]() { this->on_button_pressed(); })) {}
 
 zpp_lib::ZephyrResult WaitOnButton::start() {
   auto res = _thread.start([this]() { this->wait_for_button_event(); });
@@ -45,7 +43,7 @@ zpp_lib::ZephyrResult WaitOnButton::start() {
     ZPP_LOG_ERR("Failed to start thread: %d", (int)res.error());
     return res;
   }
-  ZPP_LOG_DBG("Thread started successfully");
+  printk("Thread started successfully\n");
   return res;
 }
 
@@ -63,15 +61,15 @@ void WaitOnButton::wait_exit() {
 // Complexity is increased by the use of Zephyr macros
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void WaitOnButton::wait_for_button_event() {
-  ZPP_LOG_DBG("Waiting for button press");
+  printk("Waiting for button press\n");
   _event.set(kStartedEvent);
 
   while (true) {
     _event.wait_any(kPressedEvent);
     std::chrono::microseconds time    = zpp_lib::Time::get_uptime();
     std::chrono::microseconds latency = time - _pressed_time;
-    ZPP_LOG_DBG("Button pressed with response time: %lld usecs", latency.count());
-    ZPP_LOG_DBG("Waiting for button press");
+    printk("Button pressed with response time: %lld usecs\n", latency.count());
+    printk("Waiting for button press\n");
   }
 }
 

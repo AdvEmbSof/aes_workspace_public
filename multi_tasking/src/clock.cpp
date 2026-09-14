@@ -28,6 +28,7 @@
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
+#include "zpp_include/utils.hpp"
 #include "zpp_include/zpp_assert.hpp"
 #include "zpp_include/zpp_log.hpp"
 
@@ -35,15 +36,15 @@ ZPP_LOG_MODULE_DECLARE(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
 namespace multi_tasking {
 
-ClockUnsafe::ClockUnsafe()
-    : _display_queue("CDQueue"), _display_work(zpp_lib::Work<ClockUnsafe>(this, &ClockUnsafe::display_current_time)),
-      _update_queue("TQueue"), _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
-      _update_work(zpp_lib::Work<ClockUnsafe>(this, &ClockUnsafe::update_current_time)) {}
+Clock::Clock()
+    : _display_queue("CDQueue"), _display_work(zpp_lib::Work<Clock>(this, &Clock::display_current_time)), _update_queue("TQueue"),
+      _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
+      _update_work(zpp_lib::Work<Clock>(this, &Clock::update_current_time)) {}
 
 // Complexity is increased by the use of Zephyr macros
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-zpp_lib::ZephyrResult ClockUnsafe::start() {
-  // Start a thread for running the _tickerQueue work queue.
+zpp_lib::ZephyrResult Clock::start() {
+  // Start a thread to run the _ticker_queue work queue.
   // Events are dispatched to the queue in the tickerUpdate() method called by the
   // ticker.
   auto res = _update_thread.start([this] { _update_queue.run(); });
@@ -52,7 +53,7 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
     return res;
   }
 
-  // Call the updateFromTicker() method every second (from ISR context)
+  // Call the update_from_ticker() method every kClockUpdateTimeout (from ISR context)
   TickerFunction update_from_ticker_function = [this] { update_from_ticker(); };
   res                                        = _update_ticker.attach(update_from_ticker_function, kClockUpdateTimeout);
   if (!res) {
@@ -60,7 +61,7 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
     return res;
   }
 
-  // Call the displayFromTicker() method every second (from ISR context)
+  // Call the display_from_ticker() method every kClockDisplayTimeout (from ISR context)
   TickerFunction display_from_ticker_function = [this] { display_from_ticker(); };
   res                                         = _display_ticker.attach(display_from_ticker_function, kClockDisplayTimeout);
   if (!res) {
@@ -68,7 +69,10 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
     return res;
   }
 
-  // run the displayQueue from the calling thread
+  // log thread statistics
+  zpp_lib::Utils::log_threads_summary();
+
+  // run the _display_queue from the calling thread
   _display_queue.run();
 
   // should not get here
@@ -77,7 +81,9 @@ zpp_lib::ZephyrResult ClockUnsafe::start() {
   return res;
 }
 
-void ClockUnsafe::display_from_ticker() {
+// display_from_ticker is used as a callback function for the ticker
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void Clock::display_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations
   auto res = _display_queue.call(_display_work);
@@ -87,27 +93,49 @@ void ClockUnsafe::display_from_ticker() {
 // display_current_time is used as work handler and $
 // must be non-const because the work handler is non-const
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void ClockUnsafe::display_current_time() {
+void Clock::display_current_time() {
   DateTimeType dt = {};
+
+#if CONFIG_CURRENT_TIME_MUTEX
+  auto res = _mutex.lock();
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+#endif  // CONFIG_CURRENT_TIME_MUTEX
 
   dt.day  = _current_time.day;
   dt.hour = _current_time.hour;
+
+#if CONFIG_DISPLAY_CURRENT_TIME_WAIT
   using std::literals::chrono_literals::operator""s;
-  zpp_lib::ThisThread::busy_wait(1s);
+  zpp_lib::ThisThread::sleep_for(1s);
+#endif  // CONFIG_DISPLAY_CURRENT_TIME_WAIT
+
   dt.minute = _current_time.minute;
   dt.second = _current_time.second;
 
-  ZPP_LOG_INF("Day %u Hour %u min %u sec %u\n", dt.day, dt.hour, dt.minute, dt.second);
+#if CONFIG_CURRENT_TIME_MUTEX
+  res = _mutex.unlock();
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+#endif  // CONFIG_CURRENT_TIME_MUTEX
+
+  printk("Day %u Hour %u min %u sec %u\n", dt.day, dt.hour, dt.minute, dt.second);
 }
 
-void ClockUnsafe::update_from_ticker() {
+// update_from_ticker is used as a callback function for the ticker
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void Clock::update_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations
   auto res = _update_queue.call(_update_work);
   ZPP_ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
 }
 
-void ClockUnsafe::update_current_time() {
+void Clock::update_current_time() {
+
+#if CONFIG_CURRENT_TIME_MUTEX
+  auto res = _mutex.lock();
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+#endif  // CONFIG_CURRENT_TIME_MUTEX
+
   _current_time.second += std::chrono::duration_cast<std::chrono::seconds>(kClockUpdateTimeout).count();
 
   if (_current_time.second >= kNbrOfSecondsInMinute) {
@@ -122,6 +150,11 @@ void ClockUnsafe::update_current_time() {
       }
     }
   }
+
+#if CONFIG_CURRENT_TIME_MUTEX
+  res = _mutex.unlock();
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+#endif  // CONFIG_CURRENT_TIME_MUTEX
 }
 
 }  // namespace multi_tasking

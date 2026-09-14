@@ -57,22 +57,22 @@ void Deadlock::execute() const {
   // enter the first critical section
   auto res = s_mutex[c_index].lock();
   ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  ZPP_LOG_DBG("Thread %d entered critical section %d", c_index, c_index);
+  printk("Thread %d entered critical section %d\n", c_index, c_index);
 
   // perform some operations
-  zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
-  ZPP_LOG_DBG("Thread %d processing in mutex %d done", c_index, c_index);
+  zpp_lib::ThisThread::sleep_for(kProcessingWaitTime);
+  printk("Thread %d processing in mutex %d done\n", c_index, c_index);
 
   // enter the second critical section
   int second_index = (c_index + 1) % kNbrOfMutexes;
-  ZPP_LOG_DBG("Thread %d trying to enter critical section %d", c_index, second_index);
+  printk("Thread %d trying to enter critical section %d\n", c_index, second_index);
   res = s_mutex[second_index].lock();
   ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
-  ZPP_LOG_DBG("Thread %d entered critical section %d", c_index, second_index);
+  printk("Thread %d entered critical section %d\n", c_index, second_index);
 
   // perform some operations
   zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
-  ZPP_LOG_DBG("Thread %d processing in mutex %d and %d done", c_index, c_index, second_index);
+  printk("Thread %d processing in mutex %d and %d done\n", c_index, c_index, second_index);
 
   // exit the second critical section
   res = s_mutex[second_index].unlock();
@@ -80,7 +80,7 @@ void Deadlock::execute() const {
 
   // perform some operations
   zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
-  ZPP_LOG_DBG("Thread %d processing in mutex %d done", c_index, c_index);
+  printk("Thread %d processing in mutex %d done\n", c_index, c_index);
 
   // exit the first critical section
   res = s_mutex[c_index].unlock();

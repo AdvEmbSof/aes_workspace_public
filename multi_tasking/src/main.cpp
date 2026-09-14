@@ -35,12 +35,13 @@
 #include "zpp_include/zpp_log.hpp"
 
 // local
-#include "buffer_solution.hpp"
-#include "clock_with_mutex.hpp"
+#include "buffer.hpp"
+#include "clock.hpp"
 #include "consumer.hpp"
 #include "deadlock.hpp"
 #include "producer.hpp"
 #include "wait_on_button.hpp"
+#include "work_on_button.hpp"
 
 ZPP_LOG_MODULE_REGISTER(multi_tasking, CONFIG_APP_LOG_LEVEL);
 
@@ -90,19 +91,18 @@ public:
 // Complexity is increased by the use of zephyr macros
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
-  using std::literals::chrono_literals::operator""ms;
+  printk("Multi-tasking program started\n");
 
-  ZPP_LOG_DBG("Multi-tasking program started");
-
-  // check which button is pressed
+  // check which button is pressed and execute the corresponding demo
   zpp_lib::InterruptIn button1(zpp_lib::InterruptIn::PinName::BUTTON1);
   zpp_lib::InterruptIn button2(zpp_lib::InterruptIn::PinName::BUTTON2);
   zpp_lib::InterruptIn button3(zpp_lib::InterruptIn::PinName::BUTTON3);
+  zpp_lib::InterruptIn button4(zpp_lib::InterruptIn::PinName::BUTTON4);
   if (button1.read() == zpp_lib::kPolarityPressed) {
     // log thread statistics
     zpp_lib::Utils::log_threads_summary();
 
-    ZPP_LOG_DBG("Starting WaitOnButton demo");
+    printk("Starting WaitOnButton demo\n");
     // create the WaitOnButton instance and start it
     multi_tasking::WaitOnButton wait_on_button("ButtonThread");
     auto res = wait_on_button.start();
@@ -111,26 +111,35 @@ int main() {
       return -1;
     }
 
+    printk("WaitOnButton demo started\n");
+
     // wait that the WaitOnButton thread started
-    ZPP_LOG_DBG("Calling wait_started()");
+    printk("Calling wait_started()");
     wait_on_button.wait_started();
-    ZPP_LOG_DBG("wait_started() unblocked");
+    printk("wait_started() unblocked");
 
     // log thread statistics
     zpp_lib::Utils::log_threads_summary();
 
+#if CONFIG_WAIT_ON_BUTTON_SLEEP
     // wait for the thread to exit (will not because of infinite loop in WaitOnButton)
     wait_on_button.wait_exit();
+#else   // CONFIG_WAIT_ON_BUTTON_SLEEP
     // or do busy waiting
     while (true) {
     }
+#endif  // CONFIG_WAIT_ON_BUTTON_SLEEP
   } else if (button2.read() == zpp_lib::kPolarityPressed) {
-    ZPP_LOG_DBG("Starting Clock demo");
+    printk("Starting Clock demo\n");
     // create and start a clock
     multi_tasking::Clock clock;
-    clock.start();
+    auto res = clock.start();
+    if (!res) {
+      ZPP_LOG_ERR("Cannot start wclockait_on_button: %d", static_cast<int>(res.error()));
+      return -1;
+    }
   } else if (button3.read() == zpp_lib::kPolarityPressed) {
-    ZPP_LOG_DBG("Starting Deadlock demo");
+    printk("Starting Deadlock demo\n");
 
     // create a first deadlock instance
     multi_tasking::Deadlock deadlock0(0, "Thread0");
@@ -143,8 +152,8 @@ int main() {
     // wait for both threads to terminate (will not because of deadlock)
     deadlock0.wait();
     deadlock1.wait();
-  } else {
-    ZPP_LOG_DBG("Starting Consumer/Producer demo");
+  } else if (button4.read() == zpp_lib::kPolarityPressed) {
+    printk("Starting Consumer/Producer demo\n");
 
     using BufferType     = Rect;
     using ValueGenerator = RandomRectGenerator;
@@ -158,6 +167,18 @@ int main() {
     // wait for threads to terminate (will not)
     producer.wait();
     consumer.wait();
+  } else {
+    printk("Starting WorkOnButton demo\n");
+
+    multi_tasking::WorkOnButton work_on_button("ButtonThread");
+    auto res = work_on_button.start();
+    if (!res) {
+      ZPP_LOG_ERR("Cannot start work_on_button: %d", static_cast<int>(res.error()));
+      return -1;
+    }
+
+    // wait for the thread to exit
+    work_on_button.wait_exit();
   }
 
   return 0;

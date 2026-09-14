@@ -35,7 +35,7 @@
 #include "zpp_include/zpp_assert.hpp"
 
 // local
-#include "buffer_solution.hpp"
+#include "buffer.hpp"
 
 namespace multi_tasking {
 

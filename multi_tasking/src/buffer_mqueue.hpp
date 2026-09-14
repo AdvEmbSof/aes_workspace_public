@@ -44,7 +44,7 @@ class Buffer : public zpp_lib::NonCopyable {
 public:
   Buffer() : _producer_led(zpp_lib::DigitalOut::PinName::LED0, kLedOff), _consumer_led(zpp_lib::DigitalOut::PinName::LED1, kLedOff) {}
 
-  uint32_t append(uint32_t data) {
+  [[nodiscard]] uint32_t append(uint32_t data) {
     _producer_led = kLedOn;
 
     zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kApppendWaitTime));
@@ -65,7 +65,7 @@ public:
     return _producer_index++;
   }
 
-  uint32_t extract(uint32_t& data) {
+  [[nodiscard]] uint32_t extract(uint32_t& data) {
     _consumer_led = kLedOn;
 
     zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kExtractWaitTime));
@@ -84,7 +84,7 @@ public:
     return _consumer_index++;
   }
 
-  std::chrono::milliseconds compute_random_wait_time(const std::chrono::milliseconds& wait_time) {
+  [[nodiscard]] std::chrono::milliseconds compute_random_wait_time(const std::chrono::milliseconds& wait_time) {
     return std::chrono::milliseconds((sys_rand32_get() % wait_time.count()) + wait_time.count());
   }
 
