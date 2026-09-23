@@ -79,8 +79,6 @@ public:
     k_work_queue_run(&_work_queue, &cfg);
   }
 
-  // Complexity is increased by zephyr macros
-  // NOLINTNEXTLINE(readability-function-cognitive-complexity)
   void stop() {
     if (!_is_started) {
       return;

@@ -58,8 +58,6 @@ void WaitOnButton::wait_exit() {
   }
 }
 
-// Complexity is increased by the use of Zephyr macros
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void WaitOnButton::wait_for_button_event() {
   printk("Waiting for button press\n");
   _event.set(kStartedEvent);

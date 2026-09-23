@@ -41,8 +41,6 @@ Clock::Clock()
       _update_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "TThread"),
       _update_work(zpp_lib::Work<Clock>(this, &Clock::update_current_time)) {}
 
-// Complexity is increased by the use of Zephyr macros
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 zpp_lib::ZephyrResult Clock::start() {
   // Start a thread to run the _ticker_queue work queue.
   // Events are dispatched to the queue in the tickerUpdate() method called by the

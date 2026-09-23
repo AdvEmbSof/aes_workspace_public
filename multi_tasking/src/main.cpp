@@ -88,8 +88,6 @@ public:
   }
 };
 
-// Complexity is increased by the use of zephyr macros
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   printk("Multi-tasking program started\n");
 

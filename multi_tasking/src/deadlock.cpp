@@ -49,8 +49,6 @@ void Deadlock::wait() {
   ZPP_ASSERT(res, "Cannot join deadlock thread: %d", (int)res.error());
 }
 
-// Complexity is increased by the use of Zephyr macros
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void Deadlock::execute() const {
   // _index is initialized in the constructor and asserted for correctness
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)

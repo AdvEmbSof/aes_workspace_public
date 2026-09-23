@@ -171,8 +171,6 @@ SHELL_CMD_ARG_REGISTER(inc, NULL, "Increment value <lookup_function>", cmd_inc, 
 // NOLINTNEXTLINE(performance-no-int-to-ptr, cppcoreguidelines-pro-type-cstyle-cast, bugprone-branch-clone)
 SHELL_CMD_ARG_REGISTER(dec, NULL, "Increment value <lookup_function>", cmd_dec, 2, 0);
 
-// The complexity is increased by zephyr macros
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 int main() {
   ZPP_LOG_DBG("Running on board %s", CONFIG_BOARD_TARGET);
 
