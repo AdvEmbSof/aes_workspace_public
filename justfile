@@ -1,5 +1,5 @@
 prefix := "/"
-working_dir := justfile_directory()
+working_dir := `python -c "from pathlib import Path; print(Path.cwd().as_posix())"`
 zpp_lib_dir := "deps/zpp_lib"
 default_board := "nrf5340dk/nrf5340/cpuapp"
 
