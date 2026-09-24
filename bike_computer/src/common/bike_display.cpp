@@ -74,7 +74,7 @@ zpp_lib::ZephyrResult BikeDisplay::initialize() {
   // initialize the display
   auto res = _display.initialize();
   if (!res) {
-    ZPP_LOG_ERR("Failed to initialized display: %d", (int)res.error());
+    ZPP_LOG_ERR("Failed to initialized display: %d", static_cast<int>(res.error()));
     return res;
   }
 

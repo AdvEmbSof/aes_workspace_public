@@ -40,7 +40,7 @@ WaitOnButton::WaitOnButton(const char* threadName)
 zpp_lib::ZephyrResult WaitOnButton::start() {
   auto res = _thread.start([this]() { this->wait_for_button_event(); });
   if (!res) {
-    ZPP_LOG_ERR("Failed to start thread: %d", (int)res.error());
+    ZPP_LOG_ERR("Failed to start thread: %d", static_cast<int>(res.error()));
     return res;
   }
   printk("Thread started successfully\n");
@@ -54,7 +54,7 @@ void WaitOnButton::wait_started() {
 void WaitOnButton::wait_exit() {
   auto res = _thread.join();
   if (!res) {
-    ZPP_LOG_ERR("join() failed: %d", (int)res.error());
+    ZPP_LOG_ERR("join() failed: %d", static_cast<int>(res.error()));
   }
 }
 

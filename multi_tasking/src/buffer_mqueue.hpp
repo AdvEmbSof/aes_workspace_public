@@ -47,7 +47,7 @@ public:
   [[nodiscard]] uint32_t append(uint32_t data) {
     _producer_led = kLedOn;
 
-    zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kApppendWaitTime));
+    zpp_lib::ThisThread::busy_wait(compute_random_wait_time(kApppendWaitTime));
 
     std::chrono::milliseconds timeout = std::chrono::milliseconds::max();
     auto res                          = _message_queue.try_put_for(timeout, data);
@@ -68,7 +68,7 @@ public:
   [[nodiscard]] uint32_t extract(uint32_t& data) {
     _consumer_led = kLedOn;
 
-    zpp_lib::ThisThread::busyWait(computeRandomWaitTime(kExtractWaitTime));
+    zpp_lib::ThisThread::busy_wait(compute_random_wait_time(kExtractWaitTime));
     std::chrono::milliseconds timeout = std::chrono::milliseconds::max();
     auto res                          = _message_queue.try_get_for(timeout, data);
     if (res.has_error()) {

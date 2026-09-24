@@ -23,8 +23,11 @@
  ***************************************************************************/
 #pragma once
 
-static constexpr uint8_t kDistanceIconHeight = 100;
-static constexpr uint8_t kDistanceIconWidth  = 100;
+// std
+#include <cstdint>
+
+static constexpr std::uint8_t kDistanceIconHeight = 100;
+static constexpr std::uint8_t kDistanceIconWidth  = 100;
 
 // array size is 40000
 // This array is known at compile time, so we can use a constexpr array

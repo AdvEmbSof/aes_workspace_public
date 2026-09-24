@@ -24,8 +24,11 @@
 
 #pragma once
 
-static constexpr uint8_t kSpeedometerIconHeight = 50;
-static constexpr uint8_t kSpeedometerIconWidth  = 50;
+// std
+#include <cstdint>
+
+static constexpr std::uint8_t kSpeedometerIconHeight = 50;
+static constexpr std::uint8_t kSpeedometerIconWidth  = 50;
 
 // array size is 10000
 // This array is known at compile time, so we can use a constexpr array

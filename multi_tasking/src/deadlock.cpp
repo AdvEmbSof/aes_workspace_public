@@ -41,12 +41,12 @@ Deadlock::Deadlock(uint8_t index, const char* threadName)
 
 void Deadlock::start() {
   auto res = _thread.start([this]() { this->execute(); });
-  ZPP_ASSERT(res, "Cannot start deadlock thread: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot start deadlock thread: %d", static_cast<int>(res.error()));
 }
 
 void Deadlock::wait() {
   auto res = _thread.join();
-  ZPP_ASSERT(res, "Cannot join deadlock thread: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot join deadlock thread: %d", static_cast<int>(res.error()));
 }
 
 void Deadlock::execute() const {
@@ -54,7 +54,7 @@ void Deadlock::execute() const {
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   // enter the first critical section
   auto res = s_mutex[c_index].lock();
-  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", static_cast<int>(res.error()));
   printk("Thread %d entered critical section %d\n", c_index, c_index);
 
   // perform some operations
@@ -65,7 +65,7 @@ void Deadlock::execute() const {
   int second_index = (c_index + 1) % kNbrOfMutexes;
   printk("Thread %d trying to enter critical section %d\n", c_index, second_index);
   res = s_mutex[second_index].lock();
-  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", static_cast<int>(res.error()));
   printk("Thread %d entered critical section %d\n", c_index, second_index);
 
   // perform some operations
@@ -74,7 +74,7 @@ void Deadlock::execute() const {
 
   // exit the second critical section
   res = s_mutex[second_index].unlock();
-  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", static_cast<int>(res.error()));
 
   // perform some operations
   zpp_lib::ThisThread::busy_wait(kProcessingWaitTime);
@@ -82,7 +82,7 @@ void Deadlock::execute() const {
 
   // exit the first critical section
   res = s_mutex[c_index].unlock();
-  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", static_cast<int>(res.error()));
   // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 }
 

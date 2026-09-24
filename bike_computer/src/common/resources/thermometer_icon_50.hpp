@@ -23,8 +23,11 @@
  ***************************************************************************/
 #pragma once
 
-constexpr uint8_t kThermometerIconHeight = 50;
-constexpr uint8_t kThermometerIconWidth  = 50;
+// std
+#include <cstdint>
+
+static constexpr std::uint8_t kThermometerIconHeight = 50;
+static constexpr std::uint8_t kThermometerIconWidth  = 50;
 
 // array size is 10000
 // This array is known at compile time, so we can use a constexpr array

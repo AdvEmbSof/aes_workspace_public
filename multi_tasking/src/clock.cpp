@@ -47,7 +47,7 @@ zpp_lib::ZephyrResult Clock::start() {
   // ticker.
   auto res = _update_thread.start([this] { _update_queue.run(); });
   if (!res) {
-    ZPP_LOG_ERR("Cannot start ticker thread: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot start ticker thread: %d", static_cast<int>(res.error()));
     return res;
   }
 
@@ -55,7 +55,7 @@ zpp_lib::ZephyrResult Clock::start() {
   TickerFunction update_from_ticker_function = [this] { update_from_ticker(); };
   res                                        = _update_ticker.attach(update_from_ticker_function, kClockUpdateTimeout);
   if (!res) {
-    ZPP_LOG_ERR("Cannot attach update ticker: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot attach update ticker: %d", static_cast<int>(res.error()));
     return res;
   }
 
@@ -63,7 +63,7 @@ zpp_lib::ZephyrResult Clock::start() {
   TickerFunction display_from_ticker_function = [this] { display_from_ticker(); };
   res                                         = _display_ticker.attach(display_from_ticker_function, kClockDisplayTimeout);
   if (!res) {
-    ZPP_LOG_ERR("Cannot attach display ticker: %d", (int)res.error());
+    ZPP_LOG_ERR("Cannot attach display ticker: %d", static_cast<int>(res.error()));
     return res;
   }
 
@@ -85,7 +85,7 @@ void Clock::display_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations
   auto res = _display_queue.call(_display_work);
-  ZPP_ASSERT(res, "Cannot call display on queue: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot call display on queue: %d", static_cast<int>(res.error()));
 }
 
 // display_current_time is used as work handler and $
@@ -96,7 +96,7 @@ void Clock::display_current_time() {
 
 #if CONFIG_CURRENT_TIME_MUTEX
   auto res = _mutex.lock();
-  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", static_cast<int>(res.error()));
 #endif  // CONFIG_CURRENT_TIME_MUTEX
 
   dt.day  = _current_time.day;
@@ -112,7 +112,7 @@ void Clock::display_current_time() {
 
 #if CONFIG_CURRENT_TIME_MUTEX
   res = _mutex.unlock();
-  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", static_cast<int>(res.error()));
 #endif  // CONFIG_CURRENT_TIME_MUTEX
 
   printk("Day %u Hour %u min %u sec %u\n", dt.day, dt.hour, dt.minute, dt.second);
@@ -124,14 +124,14 @@ void Clock::update_from_ticker() {
   // this method runs in ISR mode -> we cannot allocate memory or perform other
   // forbidden operations
   auto res = _update_queue.call(_update_work);
-  ZPP_ASSERT(res, "Cannot call update on queue: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot call update on queue: %d", static_cast<int>(res.error()));
 }
 
 void Clock::update_current_time() {
 
 #if CONFIG_CURRENT_TIME_MUTEX
   auto res = _mutex.lock();
-  ZPP_ASSERT(res, "Cannot lock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot lock mutex: %d", static_cast<int>(res.error()));
 #endif  // CONFIG_CURRENT_TIME_MUTEX
 
   _current_time.second += std::chrono::duration_cast<std::chrono::seconds>(kClockUpdateTimeout).count();
@@ -151,7 +151,7 @@ void Clock::update_current_time() {
 
 #if CONFIG_CURRENT_TIME_MUTEX
   res = _mutex.unlock();
-  ZPP_ASSERT(res, "Cannot unlock mutex: %d", (int)res.error());
+  ZPP_ASSERT(res, "Cannot unlock mutex: %d", static_cast<int>(res.error()));
 #endif  // CONFIG_CURRENT_TIME_MUTEX
 }
 

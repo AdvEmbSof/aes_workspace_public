@@ -52,7 +52,11 @@ void TaskManager::initialize_phase() {
 
 void TaskManager::register_task_start(TaskType task_type) {
   auto task_index = static_cast<uint8_t>(task_type);
-  ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
+  if (task_index >= kNbrOfTaskTypes) {
+    ZPP_LOG_ERR("Invalid task index %d", task_index);
+    ZPP_ASSERT(false, "Invalid task index %d", task_index);
+    return;
+  }
   // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   _task_start_time[task_index] = zpp_lib::Time::get_uptime();
@@ -65,7 +69,11 @@ void TaskManager::register_task_start(TaskType task_type) {
 
 void TaskManager::simulate_computation_time(TaskType task_type, bool allow_sleep) {
   auto task_index = static_cast<uint8_t>(task_type);
-  ZPP_ASSERT(task_index < kNbrOfTaskTypes, "Invalid task index %d", task_index);
+  if (task_index >= kNbrOfTaskTypes) {
+    ZPP_LOG_ERR("Invalid task index %d", task_index);
+    ZPP_ASSERT(false, "Invalid task index %d", task_index);
+    return;
+  }
   // task_type is an enum class and task_index is within bounds, so we can safely use it as an index
   // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
   auto task_start_time = _task_start_time[task_index];
