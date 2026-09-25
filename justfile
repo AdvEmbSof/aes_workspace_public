@@ -55,16 +55,18 @@ test-qemu test_suite_root tags="":
     
 # CLANG-TIDY
 # Check only the main.cpp file of the application
-clang-tidy app configs:    
+clang-tidy app configs app_config="":    
     # Step 1 — build to get compile_commands.json (build with all conf files to get the most complete database)
-    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --board {{default_board}} --shield {{default_shield}} --configs {{quote(configs)}} --pristine
+    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --board {{default_board}} \
+    {{ if app_config != "" { "--app-config " + quote(app_config) } else { "" } }} \
+    --shield {{default_shield}} --configs {{quote(configs)}} --pristine
     
     # Step 2 — filter the compile_commands.json file for compatibility with clang-tidy
     mkdir -p build_clang
-    python3 {{zpp_lib_dir}}/scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json
+    python3 {{zpp_lib_dir}}/scripts/filter_compile_commands.py build/compile_commands.json build_clang/compile_commands.json {{app}}
 
     # Step 3 — run clang-tidy against the filtered database
-    clang-tidy-22 -p build_clang {{working_dir}}/{{app}}/src/main.cpp --extra-arg=-v    
+    clang-tidy -p build_clang {{working_dir}}/{{app}}/src/main.cpp    
 
 # Check all application files
 run-clang-tidy app configs app_config="":
