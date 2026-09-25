@@ -52,6 +52,7 @@ int32_t lookup_c_assert(int32_t sensor_value) {
   int32_t idx = sensor_value - kOffset;  // intended normalization
   // will abort if idx is out of bounds, but only when assertions are enabled
   ZPP_ASSERT(idx >= 0 && idx < kLutSize, "Index out of bounds: %d", idx);
+  // NOLINTNEXTLINE(clang-analyzer-security.ArrayBound,cppcoreguidelines-pro-bounds-constant-array-index)
   return kLut[idx];
 }
 

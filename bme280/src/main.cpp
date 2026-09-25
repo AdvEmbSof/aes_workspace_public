@@ -87,7 +87,7 @@ int main() {
 
   res = thread.join();
   if (!res) {
-    ZPP_LOG_ERR("Could not join thread: %d", (int)res.error());
+    ZPP_LOG_ERR("Could not join thread: %d", static_cast<int>(res.error()));
     return -1;
   }
 
