@@ -48,6 +48,22 @@ jobs:
             clang-tools-22 \
             clang-22
           
+          echo "/usr/lib/llvm-22/bin" >> "$GITHUB_PATH"
+
+          export PATH="/usr/lib/llvm-22/bin:$PATH"
+
+          echo "clang:"
+          command -v clang
+          clang --version
+
+          echo "clang++:"
+          command -v clang++
+          clang++ --version
+
+          echo "clang-tidy:"
+          command -v clang-tidy
+          clang-tidy --version
+          
       - name: Run pre-commit hooks
         run: pre-commit run --all-files --color=always --show-diff-on-failure
         
