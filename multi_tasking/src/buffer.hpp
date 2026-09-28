@@ -131,7 +131,7 @@ private:
 #endif  // CONFIG_BUFFER_USE_MUTEX_AND_SEMAPHORE
   // kBufferSize is a constant, so using a c array is safe
   // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
-  T _buffer[kBufferSize]   = {0};
+  T _buffer[kBufferSize]   = {};
   uint32_t _producer_index = 0;
   uint32_t _consumer_index = 0;
 };
