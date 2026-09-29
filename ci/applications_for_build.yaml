@@ -1,0 +1,68 @@
+applications:
+  - app: blinky
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp        
+      - board: qemu_x86
+    configs:
+      - gpio
+      - log+debug+gpio
+    configs_dir: ../deps/zpp_lib/configs
+
+  - app: bme280
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+      - board: qemu_x86
+    configs: 
+      - sensor
+      - log+debug+sensor
+    configs_dir: ../deps/zpp_lib/configs
+
+  - app: sanitize
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+      - board: qemu_x86
+    configs: 
+      - san
+      - san+log+debug
+    configs_dir: ../deps/zpp_lib/configs
+
+  - app: simple_tests/always_succeed
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+      - board: qemu_x86
+    configs:
+      - test+log+debug
+    configs_dir: ../../deps/zpp_lib/configs
+  
+  - app: simple_tests/ptr_test
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+      - board: qemu_x86
+    configs:
+      - test+log+debug
+    configs_dir: ../../deps/zpp_lib/configs
+      
+  - app: bike_computer
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+        shield: adafruit_2_8_tft_touch_v2
+      - board: qemu_x86
+    configs: 
+      - gpio+display+sensor+phase_a
+      - log+debug+gpio+display+sensor+phase_a
+      - gpio+display+sensor+phase_b
+      - log+debug+gpio+display+sensor+phase_b
+      - gpio+display+sensor+phase_c
+      - log+debug+gpio+display+sensor+phase_c
+    configs_dir: ../deps/zpp_lib/configs
+
+  - app: multi_tasking
+    boards:
+      - board: nrf5340dk/nrf5340/cpuapp
+        shield: adafruit_2_8_tft_touch_v2
+      - board: qemu_x86
+    configs: 
+      - gpio
+      - log+debug+gpio
+    configs_dir: ../deps/zpp_lib/configs
+    app_config: prj_multi_tasking.conf
