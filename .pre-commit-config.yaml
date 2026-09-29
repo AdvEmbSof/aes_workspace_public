@@ -41,7 +41,7 @@ repos:
     files: ^(bme280)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-sanitize
     name: clang-tidy-sanitize
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+san" --header-root "sanitize" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app sanitize --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+shell+san" --header-root "sanitize" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
