@@ -2,7 +2,7 @@ tests:
   bike_computer.bike_system_part1:
     tags:
       - bike_computer
-      - phase_a
+      - phase_b
     timeout: 150
     extra_configs:
       - platform:qemu_x86/atom:CONFIG_TEST_DURATION_IN_MS=120000
@@ -13,7 +13,7 @@ tests:
       - ../../../deps/zpp_lib/configs/prj_sensor.conf
       - ../../../deps/zpp_lib/configs/prj_display.conf
       - ../../../deps/zpp_lib/configs/prj_test.conf
-      - ../../../deps/zpp_lib/configs/prj_phase_a.conf
+      - ../../prj_static_scheduling.conf
     extra_args: 
       - platform:qemu_x86/atom:CONFIG_INTERRUPT_IN_EMUL=y
       - platform:qemu_x86/atom:CONFIG_EMUL=y

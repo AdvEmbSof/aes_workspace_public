@@ -62,42 +62,42 @@ repos:
     files: ^(simple_tests/ptr_test)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer
     name: clang-tidy-bike-computer
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "debug+gpio+display+sensor+phase_a" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "debug+gpio+display+sensor" --header-root "bike_computer" --wd "." --app-config prj_static_scheduling.conf
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer)/(?!tests/).*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-speedometer
     name: clang-tidy-bike-computer-speedometer
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/speedometer --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test+phase_a+phase_b+phase_c" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/speedometer --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test" --header-root "bike_computer" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/speedometer)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-sensor-device
     name: clang-tidy-bike-computer-sensor-device
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/sensor_device --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test+phase_a" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/sensor_device --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+sensor+test" --header-root "bike_computer" --wd "."
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/sensor_device)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part1
     name: clang-tidy-bike-computer-bike-system-part1
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part1 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test+phase_a" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part1 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test" --header-root "bike_computer" --wd "." --app-config prj_static_scheduling.conf
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/bike_system_part1)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part2
     name: clang-tidy-bike-computer-bike-system-part2
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part2 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test+phase_b" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part2 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+test" --header-root "bike_computer" --wd "." --app-config prj_static_scheduling_with_event.conf
     language: system
     pass_filenames: true
     require_serial: true
     files: ^(bike_computer/tests/bike_system_part2)/.*\.(c|cc|cpp|cxx)$
   - id: clang-tidy-bike-computer-bike-system-part3
     name: clang-tidy-bike-computer-bike-system-part3
-    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part3 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+button_emul+test+phase_c" --header-root "bike_computer" --wd "."
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app bike_computer/tests/bike_system_part3 --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+gpio+display+sensor+button_emul+test" --header-root "bike_computer" --wd "." --app-config prj_static_scheduling_with_wq
     language: system
     pass_filenames: true
     require_serial: true

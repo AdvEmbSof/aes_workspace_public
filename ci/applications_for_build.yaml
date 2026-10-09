@@ -49,14 +49,11 @@ applications:
         shield: adafruit_2_8_tft_touch_v2
       - board: qemu_x86
     configs: 
-      - gpio+display+sensor+phase_a
-      - log+debug+gpio+display+sensor+phase_a
-      - gpio+display+sensor+phase_b
-      - log+debug+gpio+display+sensor+phase_b
-      - gpio+display+sensor+phase_c
-      - log+debug+gpio+display+sensor+phase_c
+      - gpio+display+sensor
+      - log+debug+gpio+display+sensor
     configs_dir: ../deps/zpp_lib/configs
-
+    app_config: prj_static_scheduling.conf
+  
   - app: multi_tasking
     boards:
       - board: nrf5340dk/nrf5340/cpuapp

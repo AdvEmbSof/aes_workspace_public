@@ -2,11 +2,9 @@ tests:
   bike_computer.sensor_device:
     tags:
       - bike_computer
-      - phase_a
+      - phase_b
     extra_conf_files: 
       - ../../../deps/zpp_lib/configs/prj.conf
-      - ../../../deps/zpp_lib/configs/prj_log.conf
-      - ../../../deps/zpp_lib/configs/prj_debug.conf
       - ../../../deps/zpp_lib/configs/prj_sensor.conf
       - ../../../deps/zpp_lib/configs/prj_test.conf    
     extra_args: 
