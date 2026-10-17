@@ -38,7 +38,7 @@
 
 namespace bike_computer {
 
-template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize> class TTCE {
+template <typename F, uint16_t NbrOfMinorCycles, uint16_t MaxMinorCycleSize> class TTCE final {
 public:
   explicit TTCE(std::chrono::milliseconds minorCycle) : _minor_cycle(minorCycle) {
     k_timer_init(&_timer, &TTCE::s_thunk, nullptr);
