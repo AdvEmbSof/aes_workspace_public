@@ -118,6 +118,8 @@ void Speedometer::compute_speed() {
 
   // TODO(Student)
 
+}
+
 float Speedometer::compute_traveled_distance() {
   // For computing the speed given a rear gear (braquet), one must divide the size of
   // the tray (plateau) by the size of the rear gear (pignon arrière), and then multiply
@@ -129,5 +131,6 @@ float Speedometer::compute_traveled_distance() {
 
   // TODO(Student)
   
+}
 
 }  // namespace bike_computer
