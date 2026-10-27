@@ -30,6 +30,7 @@
 // stl
 #include <atomic>
 #include <chrono>
+#include <array>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
