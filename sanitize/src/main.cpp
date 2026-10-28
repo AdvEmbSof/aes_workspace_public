@@ -28,9 +28,9 @@
 #include <zephyr/shell/shell_string_conv.h>
 
 // stl
+#include <array>
 #include <atomic>
 #include <chrono>
-#include <array>
 
 // zpp_lib
 #include "zpp_include/this_thread.hpp"
