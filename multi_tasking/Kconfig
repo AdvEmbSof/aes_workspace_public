@@ -1,0 +1,58 @@
+menu "Zephyr"
+source "Kconfig.zephyr"
+endmenu
+
+module = APP
+module-str = APP
+source "subsys/logging/Kconfig.template.log_config"
+
+config WORK_ON_BUTTON_SLEEP
+  bool "Let the processing thread perform sleep rather than busy wait"
+  default n
+  help
+    This option must be enabled to let the processing thread sleep
+    rather than busy waiting
+
+config WORK_ON_BUTTON_USE_WORK_QUEUE
+  bool "Let the ISR defer work to another thread"
+  default n
+  help
+    This option must be enabled to let the ISR defer work
+    and not attempt to perform processing and enter a critical section
+
+config WAIT_ON_BUTTON_THREAD_PRIORITY
+  int "Define the priority of the WaitOnButton thread"
+  default 9
+  help
+    This option defines the priority at which the WaitOnButton
+    must execute. The default value corresponds to 
+    PreemptableThreadPriority::PriorityNormal which is
+    CONFIG_NUM_PREEMPT_PRIORITIES - 6
+
+config WAIT_ON_BUTTON_SLEEP
+  bool "Let the main thread perform sleep rather than busy wait"
+  default n
+  help
+    This option must be enabled to let the main thread sleep
+    rather than busy waiting
+
+config DISPLAY_CURRENT_TIME_WAIT
+  bool "Let the display thread perform a wait while updating current time"
+  default n
+  help
+    This option must be enabled to let the display thread wait and 
+    thus be suspended in the middle of an update
+
+config CURRENT_TIME_MUTEX
+  bool "Add a mutex to protect _current_time from concurrent accesses"
+  default n
+  help
+    This option must be enabled to add a mutex to protect _current_time
+    from concurrent accesses
+
+config BUFFER_USE_MUTEX_AND_SEMAPHORE
+  bool "Use a mutex and semaphores for a correct buffer implementation"
+  default n
+  help
+    This option must be enabled to implement the Buffer class correctly
+    with the use of a mutex and semaphores
