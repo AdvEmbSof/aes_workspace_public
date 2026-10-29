@@ -13,10 +13,10 @@
 // limitations under the License.
 
 /****************************************************************************
- * @file buffer.hpp
+ * @file consumer.hpp
  * @author Serge Ayer <serge.ayer@hefr.ch>
  *
- * @brief Declaration/Implementation of the Producer class
+ * @brief Declaration/Implementation of the Consumer class
  *
  * @date 2025-07-01
  * @version 1.0.0
