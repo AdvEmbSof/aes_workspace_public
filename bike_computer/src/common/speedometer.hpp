@@ -65,7 +65,7 @@ public:
   void reset();
 
   // methods used for tests only
-#if CONFIG_TEST == 1
+#if CONFIG_TEST
   [[nodiscard]] uint8_t get_gear_size() const {
     return _gear_size;
   }
@@ -82,7 +82,7 @@ public:
   void set_on_reset_callback(CallbackFunction cb) {
     _cb = std::move(cb);
   }
-#endif  // CONFIG_TEST == 1
+#endif  // CONFIG_TEST
 
 private:
   // private methods
