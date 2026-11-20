@@ -27,6 +27,9 @@
 // zephyr
 #include <zephyr/kernel.h>
 
+// zpp_lib
+#include "zpp_include/zpp_assert.hpp"
+
 namespace memory_demo {
 
 class MemoryLeak {
@@ -34,14 +37,16 @@ public:
   static constexpr uint16_t kArraySize = 1024;
 
   // create a memory leak in the constructor itself
-  MemoryLeak() {
-    _ptr = new uint8_t[kArraySize];
-    __ASSERT(_ptr != nullptr, "Cannot allocate memory");
+  MemoryLeak() : _ptr(new uint8_t[kArraySize]) {
+    ZPP_ASSERT(_ptr != nullptr, "Cannot allocate memory");
   }
-  ~MemoryLeak() {}
+  ~MemoryLeak() = default;
 
-  MemoryLeak(const MemoryLeak&)            = delete;
-  MemoryLeak& operator=(const MemoryLeak&) = delete;
+  // prevent copy and move operations
+  MemoryLeak(const MemoryLeak&)             = delete;
+  MemoryLeak& operator=(const MemoryLeak&)  = delete;
+  MemoryLeak(const MemoryLeak&&)            = delete;
+  MemoryLeak& operator=(const MemoryLeak&&) = delete;
 
   void use() {
     for (uint16_t i = 0; i < kArraySize; i++) {

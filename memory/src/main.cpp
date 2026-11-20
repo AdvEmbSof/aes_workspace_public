@@ -24,55 +24,57 @@
 
 // zephyr
 #include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
 
 // zpp_lib
 #include "zpp_include/interrupt_in.hpp"
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/utils.hpp"
+#include "zpp_include/zpp_log.hpp"
 
 // local
 #include "memory_fragmenter.hpp"
 #include "memory_leak.hpp"
 #include "stack_overflow.hpp"
 
-LOG_MODULE_REGISTER(memory_demo, CONFIG_APP_LOG_LEVEL);
+ZPP_LOG_MODULE_REGISTER(memory_demo, CONFIG_APP_LOG_LEVEL);
 
-int main(void) {
+int main() {
   using std::literals::chrono_literals::operator""s;
 
-  LOG_DBG("Memory demo program started");
+  ZPP_LOG_DBG("Memory demo program started");
 
   // check which button is pressed
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON1> button1;
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON2> button2;
-  zpp_lib::InterruptIn<zpp_lib::PinName::BUTTON3> button3;
+  zpp_lib::InterruptIn button1(zpp_lib::InterruptIn::PinName::BUTTON1);
+  zpp_lib::InterruptIn button2(zpp_lib::InterruptIn::PinName::BUTTON2);
+  zpp_lib::InterruptIn button3(zpp_lib::InterruptIn::PinName::BUTTON3);
   if (button1.read() == zpp_lib::kPolarityPressed) {
-    LOG_DBG("Starting MemoryLeak demo");
+    ZPP_LOG_DBG("Starting MemoryLeak demo");
 
     static constexpr uint8_t kNbrOfIterations = 20;
-    for (int i = 0; i < kNbrOfIterations; i++) {
-      memory_demo::MemoryLeak memoryLeak;
-      memoryLeak.use();
+    for (uint8_t i = 0; i < kNbrOfIterations; i++) {
+      memory_demo::MemoryLeak memory_leak;
+      memory_leak.use();
 
-      zpp_lib::Utils::logHeapSummary();
+      ZPP_LOG_DBG("Heap summary:");
+      zpp_lib::Utils::log_heap_summary();
 
       zpp_lib::ThisThread::sleep_for(1s);
     }
   } else if (button2.read() == zpp_lib::kPolarityPressed) {
-    LOG_DBG("Starting MemoryFragmenter demo");
+    ZPP_LOG_DBG("Starting MemoryFragmenter demo");
 
-    memory_demo::MemoryFragmenter memoryFragmenter;
-    memoryFragmenter.fragmentMemory();
+    memory_demo::MemoryFragmenter memory_fragmenter;
+    memory_fragmenter.fragment_memory();
   } else if (button3.read() == zpp_lib::kPolarityPressed) {
-    LOG_DBG("Starting StackOverflow demo");
+    ZPP_LOG_DBG("Starting StackOverflow demo");
 
-    memory_demo::StackOverflow stackOverflow;
+    memory_demo::StackOverflow stack_overflow;
     static constexpr uint8_t kNbrOfIterations = 20;
-    for (int i = 0; i < kNbrOfIterations; i++) {
-      stackOverflow.allocateOnStack();
+    for (uint8_t i = 0; i < kNbrOfIterations; i++) {
+      stack_overflow.allocate_on_stack();
 
-      zpp_lib::Utils::logThreadsSummary();
+      ZPP_LOG_DBG("Thread summary: iteration %d", i);
+      zpp_lib::Utils::log_threads_summary();
 
       zpp_lib::ThisThread::sleep_for(1s);
     }
