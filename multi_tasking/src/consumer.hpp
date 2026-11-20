@@ -41,11 +41,11 @@ public:
       : _buffer(buffer), _consumer_thread(zpp_lib::PreemptableThreadPriority::PriorityNormal, "ConsumerThread") {}
   void start() {
     auto res = _consumer_thread.start([this] { consumer_method(); });
-    ZPP_ASSERT(res, "Cannot start consumer thread: %d", (int)res.error());
+    ZPP_ASSERT(res, "Cannot start consumer thread: %d", static_cast<int>(res.error()));
   }
   void wait() {
     auto res = _consumer_thread.join();
-    ZPP_ASSERT(res, "Cannot join consumer thread: %d", (int)res.error());
+    ZPP_ASSERT(res, "Cannot join consumer thread: %d", static_cast<int>(res.error()));
   }
 
 private:

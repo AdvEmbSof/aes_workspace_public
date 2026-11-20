@@ -46,12 +46,12 @@ public:
 
   void start() {
     auto res = _producer_thread.start([this] { producer_method(); });
-    ZPP_ASSERT(res, "Cannot start producer thread: %d", (int)res.error());
+    ZPP_ASSERT(res, "Cannot start producer thread: %d", static_cast<int>(res.error()));
   }
 
   void wait() {
     auto res = _producer_thread.join();
-    ZPP_ASSERT(res, "Cannot join producer thread: %d", (int)res.error());
+    ZPP_ASSERT(res, "Cannot join producer thread: %d", static_cast<int>(res.error()));
   }
 
 private:

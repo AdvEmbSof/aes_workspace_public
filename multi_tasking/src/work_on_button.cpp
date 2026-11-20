@@ -62,8 +62,10 @@ zpp_lib::ZephyrResult WorkOnButton::start() {
 void WorkOnButton::perform_work() {
   using std::literals::chrono_literals::operator""s;
   zpp_lib::ThisThread::sleep_for(1s);
+#if CONFIG_THREAD_STACK_INFO
   zpp_lib::Utils::log_threads_summary();
   zpp_lib::Utils::log_threads_stack_info();
+#endif  // CONFIG_THREAD_STACK_INFO
   // executes in thread context
   while (true) {
     // processing within cs
@@ -112,16 +114,19 @@ void WorkOnButton::on_button_pressed() {
     ZPP_LOG_ERR("Cannot call work in on_button_pressed: %d", static_cast<int>(res.error()));
   }
 #else
+  // remove the #if 0 to show on which stack the ISR is executed
+  // NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if)
+#if 0
   int marker = 0;
-  k_tid_t t  = k_current_get();
-  int* i     = (int*)malloc(sizeof(int) * 10);
-  i[3]       = 42;
-  free(i);
-  i = nullptr;
-  ZPP_LOG_INF("i[3] = %d", i[3]);
-  ZPP_LOG_INF("thread stack: start=%p size=%zu", (void*)t->stack_info.start, (size_t)t->stack_info.size);
   ZPP_LOG_INF("MSP=%p PSP=%p", (void*)__get_MSP(), (void*)__get_PSP());
+  k_tid_t t  = k_current_get();
+  ZPP_LOG_INF("thread stack: start=%p size=%zu", (void*)t->stack_info.start, (size_t)t->stack_info.size);
   ZPP_LOG_INF("Thread %p, button pressed, executing work in ISR context (%p)", static_cast<void*>(k_current_get()), &marker);
+  // uncomment the following lines to show that malloc is forbidden in ISSR
+  // int* i     = static_cast<int*>(malloc(sizeof(int) * 10));
+  // i[3]       = 42;
+  // ZPP_LOG_INF("i[3] = %d", i[3]);
+#endif  // 0
   // execute the work in ISR context
   do_processing_with_cs();
   ZPP_LOG_INF("Button pressed, work executed in ISR context");

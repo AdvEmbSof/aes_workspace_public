@@ -109,3 +109,10 @@ repos:
     pass_filenames: true  
     require_serial: true
     files: ^(multi_tasking)/.*\.(c|cc|cpp|cxx)$
+  - id: clang-tidy-memory
+    name: clang-tidy-memory
+    entry: python deps/zpp_lib/scripts/run_clang_tidy.py --app memory --board nrf5340dk/nrf5340/cpuapp --shield adafruit_2_8_tft_touch_v2 --configs "log+debug+stats+gpio" --header-root "memory" --wd "." --app-config prj_memory.conf
+    language: system
+    pass_filenames: true  
+    require_serial: true
+    files: ^(memory)/.*\.(c|cc|cpp|cxx)$
