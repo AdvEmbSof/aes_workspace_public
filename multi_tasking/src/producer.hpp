@@ -59,7 +59,13 @@ private:
     while (true) {
       T producer_data = DataGenerator::s_produce_next_value();
       uint32_t index  = _buffer.append(producer_data);
+#if CONFIG_QEMU_TARGET
+      // use prink() instead of stream operators, because using stream operators on qemu produces link errors
+      printk("Producer data is %f (index in buffer %d)\n", producer_data, index);
+#else
       std::cout << "Producer data is " << producer_data << " (index in buffer " << index << ")" << std::endl;
+#endif  // CONFIG_QEMU_TARGET
+
     }
   }
 

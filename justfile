@@ -32,9 +32,10 @@ build-qemu-yaml app yaml_file="ci/applications_for_build.yaml":
     python {{zpp_lib_dir}}/scripts/build_from_yaml.py --yaml {{quote(yaml_file)}} --app {{app}} --board "qemu_x86"
 
 # Build the specified application with the specified configs, for qemu_x86
-build-qemu app configs pristine="yes":
-    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --configs {{quote(configs)}} --board "qemu_x86" {{ if pristine == "yes" { "--pristine" } else { "" } }}
-
+build-qemu app configs pristine="yes" app_config="":
+    python {{zpp_lib_dir}}/scripts/build.py --app {{app}} --configs {{quote(configs)}} --board "qemu_x86" {{ if pristine == "yes" { "--pristine" } else { "" } }} \
+    {{ if app_config != "" { "--app-config " + quote(app_config) } else { "" } }}
+    
 # TESTS ON HARDWARE
 # Launch all tests as described in the configuration file, for the default board
 test-all map_file yaml_file="ci/applications_for_test.yaml":

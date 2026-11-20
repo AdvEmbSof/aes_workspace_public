@@ -153,9 +153,17 @@ int main() {
   } else if (button4.read() == zpp_lib::kPolarityPressed) {
     printk("Starting Consumer/Producer demo\n");
 
+#if CONFIG_QEMU_TARGET
+    // Using stream operators on qemu produces link errors
+    // Stream operators are used for outputting the data produced and consumed by the producer and consumer threads
+    // if these are not primitive types, so we use double as the data type for the producer and consumer threads
+    using BufferType     = double;
+    using ValueGenerator = RandomDoubleGenerator;
+#else
     using BufferType     = Rect;
     using ValueGenerator = RandomRectGenerator;
-    multi_tasking::Buffer<BufferType> buffer;
+#endif
+ multi_tasking::Buffer<BufferType> buffer;
     multi_tasking::Producer<BufferType, ValueGenerator> producer(buffer);
     multi_tasking::Consumer<BufferType> consumer(buffer);
 

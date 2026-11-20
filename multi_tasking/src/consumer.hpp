@@ -57,7 +57,12 @@ private:
       T consumer_data = {};
       uint32_t index  = _buffer.extract(consumer_data);
       consume(consumer_data);
+#if CONFIG_QEMU_TARGET
+      // use prink() instead of stream operators, because using stream operators on qemu produces link errors
+      printk("Consumer data is %f (index in buffer %d)\n", consumer_data, index);
+#else
       std::cout << "Consumer data is " << consumer_data << " (index in buffer " << index << ")" << std::endl;
+#endif  // CONFIG_QEMU_TARGET
     }
   }
 
