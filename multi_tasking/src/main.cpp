@@ -163,7 +163,7 @@ int main() {
     using BufferType     = Rect;
     using ValueGenerator = RandomRectGenerator;
 #endif
- multi_tasking::Buffer<BufferType> buffer;
+    multi_tasking::Buffer<BufferType> buffer;
     multi_tasking::Producer<BufferType, ValueGenerator> producer(buffer);
     multi_tasking::Consumer<BufferType> consumer(buffer);
 

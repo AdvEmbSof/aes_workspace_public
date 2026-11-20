@@ -29,6 +29,7 @@
 #include "zpp_include/this_thread.hpp"
 #include "zpp_include/time.hpp"
 #include "zpp_include/utils.hpp"
+#include "zpp_include/zephyr_error_code.hpp"
 #include "zpp_include/zpp_assert.hpp"
 #include "zpp_include/zpp_log.hpp"
 
@@ -48,6 +49,7 @@ WorkOnButton::WorkOnButton(const char* threadName)
 }
 
 zpp_lib::ZephyrResult WorkOnButton::start() {
+  // return zpp_lib::ZephyrResult();
   auto res = _thread.start([this]() { this->perform_work(); });
   if (!res) {
     ZPP_LOG_ERR("Failed to start thread: %d", static_cast<int>(res.error()));
@@ -58,7 +60,10 @@ zpp_lib::ZephyrResult WorkOnButton::start() {
 }
 
 void WorkOnButton::perform_work() {
+  using std::literals::chrono_literals::operator""s;
+  zpp_lib::ThisThread::sleep_for(1s);
   zpp_lib::Utils::log_threads_summary();
+  zpp_lib::Utils::log_threads_stack_info();
   // executes in thread context
   while (true) {
     // processing within cs
@@ -107,8 +112,19 @@ void WorkOnButton::on_button_pressed() {
     ZPP_LOG_ERR("Cannot call work in on_button_pressed: %d", static_cast<int>(res.error()));
   }
 #else
+  int marker = 0;
+  k_tid_t t  = k_current_get();
+  int* i     = (int*)malloc(sizeof(int) * 10);
+  i[3]       = 42;
+  free(i);
+  i = nullptr;
+  ZPP_LOG_INF("i[3] = %d", i[3]);
+  ZPP_LOG_INF("thread stack: start=%p size=%zu", (void*)t->stack_info.start, (size_t)t->stack_info.size);
+  ZPP_LOG_INF("MSP=%p PSP=%p", (void*)__get_MSP(), (void*)__get_PSP());
+  ZPP_LOG_INF("Thread %p, button pressed, executing work in ISR context (%p)", static_cast<void*>(k_current_get()), &marker);
   // execute the work in ISR context
   do_processing_with_cs();
+  ZPP_LOG_INF("Button pressed, work executed in ISR context");
 #endif
 }
 

@@ -65,7 +65,6 @@ private:
 #else
       std::cout << "Producer data is " << producer_data << " (index in buffer " << index << ")" << std::endl;
 #endif  // CONFIG_QEMU_TARGET
-
     }
   }
 
