@@ -37,6 +37,7 @@
 // local
 #include "buffer.hpp"
 #include "clock.hpp"
+#include "concurrent_access.hpp"
 #include "consumer.hpp"
 #include "deadlock.hpp"
 #include "producer.hpp"
@@ -96,7 +97,19 @@ int main() {
   zpp_lib::InterruptIn button2(zpp_lib::InterruptIn::PinName::BUTTON2);
   zpp_lib::InterruptIn button3(zpp_lib::InterruptIn::PinName::BUTTON3);
   zpp_lib::InterruptIn button4(zpp_lib::InterruptIn::PinName::BUTTON4);
-  if (button1.read() == zpp_lib::kPolarityPressed) {
+  if (button1.read() == zpp_lib::kPolarityPressed && button2.read() == zpp_lib::kPolarityPressed) {
+    printk("Starting ConcurrentAccess demo\n");
+
+    multi_tasking::ConcurrentAccess concurrent_access("ConcurrentAccessThread");
+    auto res = concurrent_access.start();
+    if (!res) {
+      ZPP_LOG_ERR("Cannot start concurrent_access: %d", static_cast<int>(res.error()));
+      return -1;
+    }
+
+    // access the shared resource
+    concurrent_access.access_shared_resources();
+  } else if (button1.read() == zpp_lib::kPolarityPressed) {
     // log thread statistics
     zpp_lib::Utils::log_threads_summary();
 
@@ -174,6 +187,8 @@ int main() {
     producer.wait();
     consumer.wait();
   } else {
+    printk("No button pressed, starting WorkOnButton demo\n");
+
     printk("Starting WorkOnButton demo\n");
 
     multi_tasking::WorkOnButton work_on_button("ButtonThread");

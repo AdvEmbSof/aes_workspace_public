@@ -16,4 +16,5 @@ target_sources(
     src/deadlock.cpp
     src/wait_on_button.cpp
     src/work_on_button.cpp
+    src/concurrent_access.cpp
 )
